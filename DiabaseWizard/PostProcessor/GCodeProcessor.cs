@@ -22,6 +22,10 @@ namespace DiabaseWizard
 
         private List<GCodeLayer> layers;
 
+        private List<bool> toolPrimed;
+        private double toolChangeRetractionDistance = 10.0;
+        private double toolChangeRetractionSpeed = 3600;
+
         private class Coordinate
         {
             public double X;
@@ -43,6 +47,11 @@ namespace DiabaseWizard
             maxProgress = setMaxProgress;
 
             layers = new List<GCodeLayer>();
+            toolPrimed = new List<bool>();
+            for(int i = 0; i < preferences.Tools.Length; i++)
+            {
+                toolPrimed.Add(false);
+            }
             lastPoint = new Coordinate();
         }
 
@@ -60,7 +69,7 @@ namespace DiabaseWizard
                 maxProgress.Report((int)input.Length);
 
                 double feedrate = DefaultFeedrate;
-                int lineNumber = 1, selectedTool = -1;
+                int lineNumber = 1, selectedTool = -1, numExtrusions = 0;
                 GCodeLayer layer = new GCodeLayer(0);
 
                 do {
@@ -81,6 +90,18 @@ namespace DiabaseWizard
                             // Keep first two comment lines but get rid of S3D process description and
                             // remove "; tool" as well as "; process" lines because they are completely useless
                             writeLine = false;
+
+                            // Try to get the tool change parameters
+                            if (lineBuffer.Contains("toolChangeRetractionDistance"))
+                            {
+                                double? value = line.GetFValue(',');
+                                if (value != null) { toolChangeRetractionDistance = value.Value; }
+                            }
+                            if (lineBuffer.Contains("toolChangeRetractionSpeed"))
+                            {
+                                double? value = line.GetFValue(',');
+                                if (value != null) { toolChangeRetractionSpeed = value.Value; }
+                            }
                         }
                     }
                     else
@@ -99,7 +120,7 @@ namespace DiabaseWizard
                                 if (xParam != null) { lastPoint.X = xParam.Value; }
                                 if (yParam != null) { lastPoint.Y = yParam.Value; }
                                 if (zParam != null) { lastPoint.Z = zParam.Value; }
-                                if (eParam != null && selectedTool == -1) { writeLine = false; }
+                                if (eParam != null && numExtrusions++ < 2) { writeLine = false; }
                                 if (fParam != null) { feedrate = fParam.Value / 60.0; }
                             }
                             // G10
@@ -267,6 +288,7 @@ namespace DiabaseWizard
                         continue;
                     }
 
+                    bool lastLineWasToolchange = false;
                     for(int lineIndex = 1; lineIndex < layer.Lines.Count; lineIndex++)
                     {
                         GCodeLine line = layer.Lines[lineIndex];
@@ -282,7 +304,17 @@ namespace DiabaseWizard
                                     // Insert tool changes after first G0/G1 code
                                     AddToolChange(replacementLayer, currentTool, toolNumber);
                                     currentTool = toolNumber;
+                                    lastLineWasToolchange = true;
                                 }
+                            }
+                            else if (lastLineWasToolchange)
+                            {
+                                if (currentTool > 0 && currentTool <= settings.Tools.Length && !toolPrimed[currentTool - 1])
+                                {
+                                    replacementLayer.AddLine($"G1 E{toolChangeRetractionDistance:0.000} F{toolChangeRetractionSpeed}");
+                                    toolPrimed[currentTool - 1] = true;
+                                }
+                                lastLineWasToolchange = false;
                             }
                         }
                     }

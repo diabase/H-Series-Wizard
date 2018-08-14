@@ -647,12 +647,6 @@ namespace DiabaseWizard
                     // Copy own factory peset to savedState.factory
                     File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "preset.factory"), Simplify3D.SavedStateFile);
                 }
-                else
-                {
-                    // Copy predefined factory file to savedState.factory
-                    string filename = (awContent.CurrentPage == awpTopSide) ? lstTopInputFiles.Items[0].ToString() : lstBottomInputFiles.Items[0].ToString();
-                    File.Copy(filename, Simplify3D.SavedStateFile);
-                }
             }
 
             // See if the files need to be unwrapped
@@ -666,26 +660,23 @@ namespace DiabaseWizard
                 }
             }
 
-            // Invoke S3D with STL files
+            // Invoke S3D with given input files
             string parameters = "";
-            if (UseSimplifyPreset)
+            foreach (string filename in files)
             {
-                foreach (string filename in files)
+                if (parameters != "")
                 {
-                    if (parameters != "")
-                    {
-                        parameters += ' ';
-                    }
+                    parameters += ' ';
+                }
 
-                    if (awContent.CurrentPage == awpTopSide ? chkTopUnwrap.Checked : chkBottomUnwrap.Checked)
-                    {
-                        string unwrappedFile = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + "-unwrapped.stl");
-                        parameters += '"' + unwrappedFile + '"';
-                    }
-                    else
-                    {
-                        parameters += '"' + filename + '"';
-                    }
+                if (UseSimplifyPreset && awContent.CurrentPage == awpTopSide ? chkTopUnwrap.Checked : chkBottomUnwrap.Checked)
+                {
+                    string unwrappedFile = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + "-unwrapped.stl");
+                    parameters += '"' + unwrappedFile + '"';
+                }
+                else
+                {
+                    parameters += '"' + filename + '"';
                 }
             }
 
