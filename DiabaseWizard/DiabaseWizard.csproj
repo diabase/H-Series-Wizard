@@ -76,6 +76,13 @@
   <ItemGroup>
     <Compile Include="Duet\MachineInfo.cs" />
     <Compile Include="Duet\Observer.cs" />
+    <Compile Include="Duet\UploadResponse.cs" />
+    <Compile Include="frmJobName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmJobName.Designer.cs">
+      <DependentUpon>frmJobName.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +100,9 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Simplify3D.cs" />
     <Compile Include="IPC\StreamString.cs" />
+    <EmbeddedResource Include="frmJobName.resx">
+      <DependentUpon>frmJobName.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>

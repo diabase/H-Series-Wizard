@@ -62,9 +62,11 @@ namespace DiabaseWizard.Duet
                     {
                         Task.Run(async () =>
                         {
+#if !DEBUG
                             // Request oem.json from the Duet
                             OemInfo info = await OemInfo.Get(value.IPAddress);
                             if (info.Vendor == "diabase")
+#endif
                             {
                                 // This is a Diabase machine. Check the tool configuration
                                 ExtendedStatusResponse statusResponse = await ExtendedStatusResponse.Get(value.IPAddress);
@@ -89,6 +91,7 @@ namespace DiabaseWizard.Duet
                                         HasSpindle = statusResponse.Spindles.Any(spindle => spindle.Tool == tool.Number)
                                     });
                                 }
+
                                 list.BeginInvoke(new ItemAddDelegate(AddItem), boardInfo);
                             }
                         });

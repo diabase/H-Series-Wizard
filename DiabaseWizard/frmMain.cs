@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Media;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -931,6 +932,125 @@ namespace DiabaseWizard
                     MessageBox.Show("Error: Failed to copy output file to selected file path!\r\n\r\n" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private string jobName;
+        private bool runPrintAfterUpload;
+
+        private void SetUploading(bool isUploading)
+        {
+            Cursor = isUploading ? Cursors.WaitCursor : Cursors.Default;
+            btnUpload.Enabled = !isUploading;
+            btnUploadPrint.Enabled = !isUploading;
+            btnCancel.Enabled = !isUploading;
+
+            if (isUploading)
+            {
+                frmJobName jobNameDialog = new frmJobName();
+                if (jobNameDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Set job name for upload target
+                    jobName = jobNameDialog.txtName.Text;
+                    if (!Path.HasExtension(jobName))
+                    {
+                        jobName = Path.ChangeExtension(jobName, ".gcode");
+                    }
+                }
+                else
+                {
+                    // Cannot proceed without a proper file name
+                    return;
+                }
+
+                lblProgress.Text = $"Uploading job {jobName} to {SelectedMachine.Name}...";
+                pbTotal.Maximum = pbStep.Maximum = 100;
+                pbTotal.Value = pbStep.Value = 0;
+            }
+        }
+
+        private void UploadProgressChanged(object sender, UploadProgressChangedEventArgs e)
+        {
+            BeginInvoke((Action)delegate ()
+            {
+                pbTotal.Value = e.ProgressPercentage;
+                pbStep.Value = e.ProgressPercentage;
+            });
+        }
+
+        private async void DoUpload(string ipAddress)
+        {
+            WebClient client = new WebClient();
+            client.UploadProgressChanged += UploadProgressChanged;
+
+            try
+            {
+                // Perform simple POST upload
+                string timeString = DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss");
+                byte[] uploadBytes = File.ReadAllBytes(outFilePath);
+                byte[] responseBytes = await client.UploadDataTaskAsync(new Uri($"http://{ipAddress}/rr_upload?name=0:/gcodes/{jobName}&time={timeString}"), uploadBytes);
+                string responseString = System.Text.Encoding.UTF8.GetString(responseBytes);
+
+                // See if that worked
+                Duet.UploadResponse response = JsonConvert.DeserializeObject<Duet.UploadResponse>(responseString);
+                if (response.Err != 0)
+                {
+                    throw new WebException($"The machine responded with error code {response.Err}");
+                }
+            }
+            catch (WebException e)
+            {
+                // Something didn't work...
+                BeginInvoke((Action)delegate
+                {
+                    SetUploading(false);
+                    lblProgress.Text = "Error: " + e.Message;
+                });
+                return;
+            }
+
+            // Upload complete, check if the print needs to be started
+            if (runPrintAfterUpload)
+            {
+                try
+                {
+                    HttpWebRequest request = WebRequest.CreateHttp($"http://{SelectedMachine.IPAddress}/rr_gcode?gcode=M32 \"0:/gcodes/{jobName}\"");
+                    await request.GetResponseAsync();
+                }
+                catch (WebException e)
+                {
+                    MessageBox.Show($"Failed to start print after upload:\r\n{e.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+
+            // Update UI
+            BeginInvoke((Action)delegate
+            {
+                SetUploading(false);
+                lblProgress.Text = "Done!";
+
+                if (MessageBox.Show("Your upload has finished. Would you like to open the web interface now?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    // OPTIONAL: If this does not work, use the IP address instead of the machine name
+                    Process.Start("http://" + SelectedMachine.Name + "/");
+                }
+
+                outFileSaved = true;
+                Close();
+            });
+        }
+
+        private void btnUpload_Click(object sender, EventArgs e)
+        {
+            runPrintAfterUpload = false;
+            SetUploading(true);
+            DoUpload(SelectedMachine.IPAddress);
+        }
+
+        private void btnUploadPrint_Click(object sender, EventArgs e)
+        {
+            runPrintAfterUpload = true;
+            SetUploading(true);
+            DoUpload(SelectedMachine.IPAddress);
         }
         #endregion
     }

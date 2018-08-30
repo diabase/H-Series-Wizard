@@ -30,6 +30,18 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.awContent = new AdvancedWizardControl.Wizard.AdvancedWizard();
+            this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
+            this.gbType = new System.Windows.Forms.GroupBox();
+            this.rbAdditiveSubstractive = new System.Windows.Forms.RadioButton();
+            this.rbAdditive = new System.Windows.Forms.RadioButton();
+            this.gbMachine = new System.Windows.Forms.GroupBox();
+            this.lstMachine = new System.Windows.Forms.ListBox();
+            this.chkConfigureManually = new System.Windows.Forms.CheckBox();
+            this.gbGeometry = new System.Windows.Forms.GroupBox();
+            this.rbRotary = new System.Windows.Forms.RadioButton();
+            this.rbTwoSided = new System.Windows.Forms.RadioButton();
+            this.rbOneSided = new System.Windows.Forms.RadioButton();
+            this.lblDescription = new System.Windows.Forms.Label();
             this.awpTopSide = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.gbTopFiles = new System.Windows.Forms.GroupBox();
             this.btnTopBrowseSubstractive = new System.Windows.Forms.Button();
@@ -123,18 +135,6 @@
             this.chkAutoClean2 = new System.Windows.Forms.CheckBox();
             this.lblTemp2 = new System.Windows.Forms.Label();
             this.nudTemp2 = new System.Windows.Forms.NumericUpDown();
-            this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
-            this.gbType = new System.Windows.Forms.GroupBox();
-            this.rbAdditiveSubstractive = new System.Windows.Forms.RadioButton();
-            this.rbAdditive = new System.Windows.Forms.RadioButton();
-            this.gbMachine = new System.Windows.Forms.GroupBox();
-            this.lstMachine = new System.Windows.Forms.ListBox();
-            this.chkConfigureManually = new System.Windows.Forms.CheckBox();
-            this.gbGeometry = new System.Windows.Forms.GroupBox();
-            this.rbRotary = new System.Windows.Forms.RadioButton();
-            this.rbTwoSided = new System.Windows.Forms.RadioButton();
-            this.rbOneSided = new System.Windows.Forms.RadioButton();
-            this.lblDescription = new System.Windows.Forms.Label();
             this.btnNext = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -145,6 +145,10 @@
             this.sfdGCode = new System.Windows.Forms.SaveFileDialog();
             this.sfdFactory = new System.Windows.Forms.SaveFileDialog();
             this.awContent.SuspendLayout();
+            this.awpWelcome.SuspendLayout();
+            this.gbType.SuspendLayout();
+            this.gbMachine.SuspendLayout();
+            this.gbGeometry.SuspendLayout();
             this.awpTopSide.SuspendLayout();
             this.gbTopFiles.SuspendLayout();
             this.gbTopSlicing.SuspendLayout();
@@ -172,26 +176,22 @@
             this.gbTool2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPreheat2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTemp2)).BeginInit();
-            this.awpWelcome.SuspendLayout();
-            this.gbType.SuspendLayout();
-            this.gbMachine.SuspendLayout();
-            this.gbGeometry.SuspendLayout();
             this.pnlButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBanner)).BeginInit();
             this.SuspendLayout();
             // 
             // awContent
             // 
-            this.awContent.BackButtonEnabled = false;
+            this.awContent.BackButtonEnabled = true;
             this.awContent.BackButtonText = "< Back";
             this.awContent.ButtonLayout = AdvancedWizardControl.Enums.ButtonLayoutKind.Default;
             this.awContent.ButtonsVisible = true;
             this.awContent.CancelButtonText = "&Cancel";
-            this.awContent.Controls.Add(this.awpWelcome);
-            this.awContent.Controls.Add(this.awpTopSide);
-            this.awContent.Controls.Add(this.awpBottomSide);
             this.awContent.Controls.Add(this.awpProgress);
+            this.awContent.Controls.Add(this.awpBottomSide);
+            this.awContent.Controls.Add(this.awpTopSide);
             this.awContent.Controls.Add(this.awpMachineProperties);
+            this.awContent.Controls.Add(this.awpWelcome);
             this.awContent.CurrentPageIsFinishPage = false;
             this.awContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.awContent.FinishButton = true;
@@ -202,7 +202,7 @@
             this.awContent.HelpButtonText = "&Help";
             this.awContent.Location = new System.Drawing.Point(0, 0);
             this.awContent.Name = "awContent";
-            this.awContent.NextButtonEnabled = true;
+            this.awContent.NextButtonEnabled = false;
             this.awContent.NextButtonText = "Next >";
             this.awContent.ProcessKeys = false;
             this.awContent.Size = new System.Drawing.Size(782, 473);
@@ -213,6 +213,155 @@
             this.awContent.WizardPages.Add(this.awpTopSide);
             this.awContent.WizardPages.Add(this.awpBottomSide);
             this.awContent.WizardPages.Add(this.awpProgress);
+            // 
+            // awpWelcome
+            // 
+            this.awpWelcome.Controls.Add(this.gbType);
+            this.awpWelcome.Controls.Add(this.gbMachine);
+            this.awpWelcome.Controls.Add(this.gbGeometry);
+            this.awpWelcome.Controls.Add(this.lblDescription);
+            this.awpWelcome.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.awpWelcome.Header = false;
+            this.awpWelcome.HeaderBackgroundColor = System.Drawing.Color.White;
+            this.awpWelcome.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.awpWelcome.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpWelcome.HeaderImage")));
+            this.awpWelcome.HeaderImageVisible = true;
+            this.awpWelcome.HeaderTitle = "Welcome to Advanced Wizard";
+            this.awpWelcome.Location = new System.Drawing.Point(0, 0);
+            this.awpWelcome.Name = "awpWelcome";
+            this.awpWelcome.PreviousPage = 0;
+            this.awpWelcome.Size = new System.Drawing.Size(782, 413);
+            this.awpWelcome.SubTitle = "Your page description goes here";
+            this.awpWelcome.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
+            this.awpWelcome.TabIndex = 1;
+            this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpWelcome_PageShow);
+            // 
+            // gbType
+            // 
+            this.gbType.Controls.Add(this.rbAdditiveSubstractive);
+            this.gbType.Controls.Add(this.rbAdditive);
+            this.gbType.Location = new System.Drawing.Point(501, 219);
+            this.gbType.Margin = new System.Windows.Forms.Padding(9, 3, 9, 3);
+            this.gbType.Name = "gbType";
+            this.gbType.Size = new System.Drawing.Size(263, 151);
+            this.gbType.TabIndex = 29;
+            this.gbType.TabStop = false;
+            this.gbType.Text = "Manufacturing Type";
+            // 
+            // rbAdditiveSubstractive
+            // 
+            this.rbAdditiveSubstractive.AutoSize = true;
+            this.rbAdditiveSubstractive.Location = new System.Drawing.Point(23, 83);
+            this.rbAdditiveSubstractive.Name = "rbAdditiveSubstractive";
+            this.rbAdditiveSubstractive.Size = new System.Drawing.Size(173, 38);
+            this.rbAdditiveSubstractive.TabIndex = 9;
+            this.rbAdditiveSubstractive.Text = "Additive + Substractive\r\nManufacturing";
+            this.rbAdditiveSubstractive.UseVisualStyleBackColor = true;
+            // 
+            // rbAdditive
+            // 
+            this.rbAdditive.AutoSize = true;
+            this.rbAdditive.Checked = true;
+            this.rbAdditive.Location = new System.Drawing.Point(23, 41);
+            this.rbAdditive.Name = "rbAdditive";
+            this.rbAdditive.Size = new System.Drawing.Size(213, 21);
+            this.rbAdditive.TabIndex = 8;
+            this.rbAdditive.TabStop = true;
+            this.rbAdditive.Text = "Standard Print (additive only)";
+            this.rbAdditive.UseVisualStyleBackColor = true;
+            // 
+            // gbMachine
+            // 
+            this.gbMachine.Controls.Add(this.lstMachine);
+            this.gbMachine.Controls.Add(this.chkConfigureManually);
+            this.gbMachine.Location = new System.Drawing.Point(15, 219);
+            this.gbMachine.Name = "gbMachine";
+            this.gbMachine.Padding = new System.Windows.Forms.Padding(9, 6, 9, 9);
+            this.gbMachine.Size = new System.Drawing.Size(293, 151);
+            this.gbMachine.TabIndex = 26;
+            this.gbMachine.TabStop = false;
+            this.gbMachine.Text = "Machine";
+            // 
+            // lstMachine
+            // 
+            this.lstMachine.Enabled = false;
+            this.lstMachine.FormattingEnabled = true;
+            this.lstMachine.ItemHeight = 16;
+            this.lstMachine.Items.AddRange(new object[] {
+            "Searching..."});
+            this.lstMachine.Location = new System.Drawing.Point(12, 28);
+            this.lstMachine.Name = "lstMachine";
+            this.lstMachine.Size = new System.Drawing.Size(267, 84);
+            this.lstMachine.TabIndex = 25;
+            this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.lstMachine_SelectedIndexChanged);
+            // 
+            // chkConfigureManually
+            // 
+            this.chkConfigureManually.AutoSize = true;
+            this.chkConfigureManually.Location = new System.Drawing.Point(12, 118);
+            this.chkConfigureManually.Name = "chkConfigureManually";
+            this.chkConfigureManually.Size = new System.Drawing.Size(151, 21);
+            this.chkConfigureManually.TabIndex = 26;
+            this.chkConfigureManually.Text = "Configure manually";
+            this.chkConfigureManually.UseVisualStyleBackColor = true;
+            this.chkConfigureManually.CheckedChanged += new System.EventHandler(this.chkConfigureManually_CheckedChanged);
+            // 
+            // gbGeometry
+            // 
+            this.gbGeometry.Controls.Add(this.rbRotary);
+            this.gbGeometry.Controls.Add(this.rbTwoSided);
+            this.gbGeometry.Controls.Add(this.rbOneSided);
+            this.gbGeometry.Location = new System.Drawing.Point(321, 219);
+            this.gbGeometry.Name = "gbGeometry";
+            this.gbGeometry.Size = new System.Drawing.Size(168, 151);
+            this.gbGeometry.TabIndex = 28;
+            this.gbGeometry.TabStop = false;
+            this.gbGeometry.Text = "Geometry";
+            // 
+            // rbRotary
+            // 
+            this.rbRotary.AutoSize = true;
+            this.rbRotary.Location = new System.Drawing.Point(27, 103);
+            this.rbRotary.Name = "rbRotary";
+            this.rbRotary.Size = new System.Drawing.Size(71, 21);
+            this.rbRotary.TabIndex = 2;
+            this.rbRotary.Text = "Rotary";
+            this.rbRotary.UseVisualStyleBackColor = true;
+            // 
+            // rbTwoSided
+            // 
+            this.rbTwoSided.AutoSize = true;
+            this.rbTwoSided.Location = new System.Drawing.Point(27, 69);
+            this.rbTwoSided.Name = "rbTwoSided";
+            this.rbTwoSided.Size = new System.Drawing.Size(96, 21);
+            this.rbTwoSided.TabIndex = 1;
+            this.rbTwoSided.Text = "Two-Sided";
+            this.rbTwoSided.UseVisualStyleBackColor = true;
+            // 
+            // rbOneSided
+            // 
+            this.rbOneSided.AutoSize = true;
+            this.rbOneSided.Checked = true;
+            this.rbOneSided.Location = new System.Drawing.Point(27, 33);
+            this.rbOneSided.Name = "rbOneSided";
+            this.rbOneSided.Size = new System.Drawing.Size(97, 21);
+            this.rbOneSided.TabIndex = 0;
+            this.rbOneSided.TabStop = true;
+            this.rbOneSided.Text = "One-Sided";
+            this.rbOneSided.UseVisualStyleBackColor = true;
+            // 
+            // lblDescription
+            // 
+            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDescription.AutoSize = true;
+            this.lblDescription.Location = new System.Drawing.Point(15, 136);
+            this.lblDescription.Margin = new System.Windows.Forms.Padding(0);
+            this.lblDescription.Name = "lblDescription";
+            this.lblDescription.Size = new System.Drawing.Size(598, 51);
+            this.lblDescription.TabIndex = 14;
+            this.lblDescription.Text = "Welcome to the Diabase toolpath generation wizard!\r\n\r\nPlease follow these instruc" +
+    "tions to generate a new toolpath for a working piece of your choice.";
             // 
             // awpTopSide
             // 
@@ -689,6 +838,7 @@
             this.btnUploadPrint.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnUploadPrint.UseVisualStyleBackColor = true;
             this.btnUploadPrint.Visible = false;
+            this.btnUploadPrint.Click += new System.EventHandler(this.btnUploadPrint_Click);
             // 
             // btnUpload
             // 
@@ -702,6 +852,7 @@
             this.btnUpload.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnUpload.UseVisualStyleBackColor = true;
             this.btnUpload.Visible = false;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // btnSave
             // 
@@ -1402,155 +1553,6 @@
             0,
             0});
             // 
-            // awpWelcome
-            // 
-            this.awpWelcome.Controls.Add(this.gbType);
-            this.awpWelcome.Controls.Add(this.gbMachine);
-            this.awpWelcome.Controls.Add(this.gbGeometry);
-            this.awpWelcome.Controls.Add(this.lblDescription);
-            this.awpWelcome.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.awpWelcome.Header = false;
-            this.awpWelcome.HeaderBackgroundColor = System.Drawing.Color.White;
-            this.awpWelcome.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
-            this.awpWelcome.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpWelcome.HeaderImage")));
-            this.awpWelcome.HeaderImageVisible = true;
-            this.awpWelcome.HeaderTitle = "Welcome to Advanced Wizard";
-            this.awpWelcome.Location = new System.Drawing.Point(0, 0);
-            this.awpWelcome.Name = "awpWelcome";
-            this.awpWelcome.PreviousPage = 0;
-            this.awpWelcome.Size = new System.Drawing.Size(782, 413);
-            this.awpWelcome.SubTitle = "Your page description goes here";
-            this.awpWelcome.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
-            this.awpWelcome.TabIndex = 1;
-            this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpWelcome_PageShow);
-            // 
-            // gbType
-            // 
-            this.gbType.Controls.Add(this.rbAdditiveSubstractive);
-            this.gbType.Controls.Add(this.rbAdditive);
-            this.gbType.Location = new System.Drawing.Point(501, 219);
-            this.gbType.Margin = new System.Windows.Forms.Padding(9, 3, 9, 3);
-            this.gbType.Name = "gbType";
-            this.gbType.Size = new System.Drawing.Size(263, 151);
-            this.gbType.TabIndex = 29;
-            this.gbType.TabStop = false;
-            this.gbType.Text = "Manufacturing Type";
-            // 
-            // rbAdditiveSubstractive
-            // 
-            this.rbAdditiveSubstractive.AutoSize = true;
-            this.rbAdditiveSubstractive.Location = new System.Drawing.Point(23, 83);
-            this.rbAdditiveSubstractive.Name = "rbAdditiveSubstractive";
-            this.rbAdditiveSubstractive.Size = new System.Drawing.Size(173, 38);
-            this.rbAdditiveSubstractive.TabIndex = 9;
-            this.rbAdditiveSubstractive.Text = "Additive + Substractive\r\nManufacturing";
-            this.rbAdditiveSubstractive.UseVisualStyleBackColor = true;
-            // 
-            // rbAdditive
-            // 
-            this.rbAdditive.AutoSize = true;
-            this.rbAdditive.Checked = true;
-            this.rbAdditive.Location = new System.Drawing.Point(23, 41);
-            this.rbAdditive.Name = "rbAdditive";
-            this.rbAdditive.Size = new System.Drawing.Size(213, 21);
-            this.rbAdditive.TabIndex = 8;
-            this.rbAdditive.TabStop = true;
-            this.rbAdditive.Text = "Standard Print (additive only)";
-            this.rbAdditive.UseVisualStyleBackColor = true;
-            // 
-            // gbMachine
-            // 
-            this.gbMachine.Controls.Add(this.lstMachine);
-            this.gbMachine.Controls.Add(this.chkConfigureManually);
-            this.gbMachine.Location = new System.Drawing.Point(15, 219);
-            this.gbMachine.Name = "gbMachine";
-            this.gbMachine.Padding = new System.Windows.Forms.Padding(9, 6, 9, 9);
-            this.gbMachine.Size = new System.Drawing.Size(293, 151);
-            this.gbMachine.TabIndex = 26;
-            this.gbMachine.TabStop = false;
-            this.gbMachine.Text = "Machine";
-            // 
-            // lstMachine
-            // 
-            this.lstMachine.Enabled = false;
-            this.lstMachine.FormattingEnabled = true;
-            this.lstMachine.ItemHeight = 16;
-            this.lstMachine.Items.AddRange(new object[] {
-            "Searching..."});
-            this.lstMachine.Location = new System.Drawing.Point(12, 28);
-            this.lstMachine.Name = "lstMachine";
-            this.lstMachine.Size = new System.Drawing.Size(267, 84);
-            this.lstMachine.TabIndex = 25;
-            this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.lstMachine_SelectedIndexChanged);
-            // 
-            // chkConfigureManually
-            // 
-            this.chkConfigureManually.AutoSize = true;
-            this.chkConfigureManually.Location = new System.Drawing.Point(12, 118);
-            this.chkConfigureManually.Name = "chkConfigureManually";
-            this.chkConfigureManually.Size = new System.Drawing.Size(151, 21);
-            this.chkConfigureManually.TabIndex = 26;
-            this.chkConfigureManually.Text = "Configure manually";
-            this.chkConfigureManually.UseVisualStyleBackColor = true;
-            this.chkConfigureManually.CheckedChanged += new System.EventHandler(this.chkConfigureManually_CheckedChanged);
-            // 
-            // gbGeometry
-            // 
-            this.gbGeometry.Controls.Add(this.rbRotary);
-            this.gbGeometry.Controls.Add(this.rbTwoSided);
-            this.gbGeometry.Controls.Add(this.rbOneSided);
-            this.gbGeometry.Location = new System.Drawing.Point(321, 219);
-            this.gbGeometry.Name = "gbGeometry";
-            this.gbGeometry.Size = new System.Drawing.Size(168, 151);
-            this.gbGeometry.TabIndex = 28;
-            this.gbGeometry.TabStop = false;
-            this.gbGeometry.Text = "Geometry";
-            // 
-            // rbRotary
-            // 
-            this.rbRotary.AutoSize = true;
-            this.rbRotary.Location = new System.Drawing.Point(27, 103);
-            this.rbRotary.Name = "rbRotary";
-            this.rbRotary.Size = new System.Drawing.Size(71, 21);
-            this.rbRotary.TabIndex = 2;
-            this.rbRotary.Text = "Rotary";
-            this.rbRotary.UseVisualStyleBackColor = true;
-            // 
-            // rbTwoSided
-            // 
-            this.rbTwoSided.AutoSize = true;
-            this.rbTwoSided.Location = new System.Drawing.Point(27, 69);
-            this.rbTwoSided.Name = "rbTwoSided";
-            this.rbTwoSided.Size = new System.Drawing.Size(96, 21);
-            this.rbTwoSided.TabIndex = 1;
-            this.rbTwoSided.Text = "Two-Sided";
-            this.rbTwoSided.UseVisualStyleBackColor = true;
-            // 
-            // rbOneSided
-            // 
-            this.rbOneSided.AutoSize = true;
-            this.rbOneSided.Checked = true;
-            this.rbOneSided.Location = new System.Drawing.Point(27, 33);
-            this.rbOneSided.Name = "rbOneSided";
-            this.rbOneSided.Size = new System.Drawing.Size(97, 21);
-            this.rbOneSided.TabIndex = 0;
-            this.rbOneSided.TabStop = true;
-            this.rbOneSided.Text = "One-Sided";
-            this.rbOneSided.UseVisualStyleBackColor = true;
-            // 
-            // lblDescription
-            // 
-            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDescription.AutoSize = true;
-            this.lblDescription.Location = new System.Drawing.Point(15, 136);
-            this.lblDescription.Margin = new System.Windows.Forms.Padding(0);
-            this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(598, 51);
-            this.lblDescription.TabIndex = 14;
-            this.lblDescription.Text = "Welcome to the Diabase toolpath generation wizard!\r\n\r\nPlease follow these instruc" +
-    "tions to generate a new toolpath for a working piece of your choice.";
-            // 
             // btnNext
             // 
             this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -1661,6 +1663,14 @@
             this.Deactivate += new System.EventHandler(this.frmMain_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.awContent.ResumeLayout(false);
+            this.awpWelcome.ResumeLayout(false);
+            this.awpWelcome.PerformLayout();
+            this.gbType.ResumeLayout(false);
+            this.gbType.PerformLayout();
+            this.gbMachine.ResumeLayout(false);
+            this.gbMachine.PerformLayout();
+            this.gbGeometry.ResumeLayout(false);
+            this.gbGeometry.PerformLayout();
             this.awpTopSide.ResumeLayout(false);
             this.gbTopFiles.ResumeLayout(false);
             this.gbTopFiles.PerformLayout();
@@ -1700,14 +1710,6 @@
             this.gbTool2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPreheat2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTemp2)).EndInit();
-            this.awpWelcome.ResumeLayout(false);
-            this.awpWelcome.PerformLayout();
-            this.gbType.ResumeLayout(false);
-            this.gbType.PerformLayout();
-            this.gbMachine.ResumeLayout(false);
-            this.gbMachine.PerformLayout();
-            this.gbGeometry.ResumeLayout(false);
-            this.gbGeometry.PerformLayout();
             this.pnlButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbBanner)).EndInit();
             this.ResumeLayout(false);
