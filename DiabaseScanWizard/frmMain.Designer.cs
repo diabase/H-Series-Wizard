@@ -31,13 +31,23 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.awContent = new AdvancedWizardControl.Wizard.AdvancedWizard();
             this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gbScannedFile = new System.Windows.Forms.GroupBox();
             this.btnBrowseScan = new System.Windows.Forms.Button();
             this.txtScan = new System.Windows.Forms.TextBox();
             this.lblOr = new System.Windows.Forms.Label();
             this.gbMachine = new System.Windows.Forms.GroupBox();
             this.lstMachine = new System.Windows.Forms.ListBox();
             this.lblDescription = new System.Windows.Forms.Label();
+            this.awpParameters = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
+            this.gbWidth = new System.Windows.Forms.GroupBox();
+            this.tbWidth = new System.Windows.Forms.TrackBar();
+            this.lblParameters = new System.Windows.Forms.Label();
+            this.awpScans = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
+            this.lblChooseScan = new System.Windows.Forms.Label();
+            this.lvScans = new System.Windows.Forms.ListView();
+            this.chName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chDateCreated = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.awpProgress = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.btnSave = new System.Windows.Forms.Button();
             this.pnlProgress = new System.Windows.Forms.Panel();
@@ -45,40 +55,38 @@
             this.pbTotal = new System.Windows.Forms.ProgressBar();
             this.pbStep = new System.Windows.Forms.ProgressBar();
             this.lblPleaseStandBy = new System.Windows.Forms.Label();
-            this.awpScans = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
-            this.lblChooseScan = new System.Windows.Forms.Label();
-            this.lvScans = new System.Windows.Forms.ListView();
-            this.chName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chDateCreated = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnNext = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.pnlButtons = new System.Windows.Forms.Panel();
             this.pbBanner = new System.Windows.Forms.PictureBox();
             this.ofdScan = new System.Windows.Forms.OpenFileDialog();
-            this.sfdSTL = new System.Windows.Forms.SaveFileDialog();
+            this.sfdOBJ = new System.Windows.Forms.SaveFileDialog();
             this.awContent.SuspendLayout();
             this.awpWelcome.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.gbScannedFile.SuspendLayout();
             this.gbMachine.SuspendLayout();
+            this.awpParameters.SuspendLayout();
+            this.gbWidth.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbWidth)).BeginInit();
+            this.awpScans.SuspendLayout();
             this.awpProgress.SuspendLayout();
             this.pnlProgress.SuspendLayout();
-            this.awpScans.SuspendLayout();
             this.pnlButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBanner)).BeginInit();
             this.SuspendLayout();
             // 
             // awContent
             // 
-            this.awContent.BackButtonEnabled = false;
+            this.awContent.BackButtonEnabled = true;
             this.awContent.BackButtonText = "< Back";
             this.awContent.ButtonLayout = AdvancedWizardControl.Enums.ButtonLayoutKind.Default;
             this.awContent.ButtonsVisible = false;
             this.awContent.CancelButtonText = "&Cancel";
-            this.awContent.Controls.Add(this.awpWelcome);
             this.awContent.Controls.Add(this.awpProgress);
+            this.awContent.Controls.Add(this.awpParameters);
             this.awContent.Controls.Add(this.awpScans);
+            this.awContent.Controls.Add(this.awpWelcome);
             this.awContent.CurrentPageIsFinishPage = false;
             this.awContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.awContent.FinishButton = true;
@@ -90,7 +98,7 @@
             this.awContent.Location = new System.Drawing.Point(0, 0);
             this.awContent.Margin = new System.Windows.Forms.Padding(2);
             this.awContent.Name = "awContent";
-            this.awContent.NextButtonEnabled = true;
+            this.awContent.NextButtonEnabled = false;
             this.awContent.NextButtonText = "Next >";
             this.awContent.ProcessKeys = false;
             this.awContent.Size = new System.Drawing.Size(586, 384);
@@ -98,11 +106,12 @@
             this.awContent.TouchScreen = true;
             this.awContent.WizardPages.Add(this.awpWelcome);
             this.awContent.WizardPages.Add(this.awpScans);
+            this.awContent.WizardPages.Add(this.awpParameters);
             this.awContent.WizardPages.Add(this.awpProgress);
             // 
             // awpWelcome
             // 
-            this.awpWelcome.Controls.Add(this.groupBox1);
+            this.awpWelcome.Controls.Add(this.gbScannedFile);
             this.awpWelcome.Controls.Add(this.lblOr);
             this.awpWelcome.Controls.Add(this.gbMachine);
             this.awpWelcome.Controls.Add(this.lblDescription);
@@ -123,18 +132,18 @@
             this.awpWelcome.TabIndex = 1;
             this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpWelcome_PageShow);
             // 
-            // groupBox1
+            // gbScannedFile
             // 
-            this.groupBox1.Controls.Add(this.btnBrowseScan);
-            this.groupBox1.Controls.Add(this.txtScan);
-            this.groupBox1.Location = new System.Drawing.Point(310, 178);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(7, 5, 7, 7);
-            this.groupBox1.Size = new System.Drawing.Size(264, 130);
-            this.groupBox1.TabIndex = 28;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Scanned File";
+            this.gbScannedFile.Controls.Add(this.btnBrowseScan);
+            this.gbScannedFile.Controls.Add(this.txtScan);
+            this.gbScannedFile.Location = new System.Drawing.Point(310, 178);
+            this.gbScannedFile.Margin = new System.Windows.Forms.Padding(2);
+            this.gbScannedFile.Name = "gbScannedFile";
+            this.gbScannedFile.Padding = new System.Windows.Forms.Padding(7, 5, 7, 7);
+            this.gbScannedFile.Size = new System.Drawing.Size(264, 130);
+            this.gbScannedFile.TabIndex = 28;
+            this.gbScannedFile.TabStop = false;
+            this.gbScannedFile.Text = "Scanned File";
             // 
             // btnBrowseScan
             // 
@@ -202,92 +211,55 @@
             this.lblDescription.Text = "Welcome to the Diabase Scan Wizard!\r\n\r\nPlease choose a Diabase machine or a 3D Sc" +
     "an that you downloaded before to create an STL file.";
             // 
-            // awpProgress
+            // awpParameters
             // 
-            this.awpProgress.Controls.Add(this.btnSave);
-            this.awpProgress.Controls.Add(this.pnlProgress);
-            this.awpProgress.Controls.Add(this.lblPleaseStandBy);
-            this.awpProgress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.awpProgress.Header = true;
-            this.awpProgress.HeaderBackgroundColor = System.Drawing.Color.White;
-            this.awpProgress.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
-            this.awpProgress.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpProgress.HeaderImage")));
-            this.awpProgress.HeaderImageVisible = true;
-            this.awpProgress.HeaderTitle = "Welcome to Advanced Wizard";
-            this.awpProgress.Location = new System.Drawing.Point(0, 0);
-            this.awpProgress.Margin = new System.Windows.Forms.Padding(2);
-            this.awpProgress.Name = "awpProgress";
-            this.awpProgress.PreviousPage = 1;
-            this.awpProgress.Size = new System.Drawing.Size(586, 384);
-            this.awpProgress.SubTitle = "Your page description goes here";
-            this.awpProgress.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
-            this.awpProgress.TabIndex = 4;
-            this.awpProgress.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpProgress_PageShow);
+            this.awpParameters.Controls.Add(this.gbWidth);
+            this.awpParameters.Controls.Add(this.lblParameters);
+            this.awpParameters.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.awpParameters.Header = true;
+            this.awpParameters.HeaderBackgroundColor = System.Drawing.Color.White;
+            this.awpParameters.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.awpParameters.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpParameters.HeaderImage")));
+            this.awpParameters.HeaderImageVisible = true;
+            this.awpParameters.HeaderTitle = "Welcome to Advanced Wizard";
+            this.awpParameters.Location = new System.Drawing.Point(0, 0);
+            this.awpParameters.Name = "awpParameters";
+            this.awpParameters.PreviousPage = 1;
+            this.awpParameters.Size = new System.Drawing.Size(586, 384);
+            this.awpParameters.SubTitle = "Your page description goes here";
+            this.awpParameters.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
+            this.awpParameters.TabIndex = 5;
+            this.awpParameters.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpParameters_PageShow);
             // 
-            // btnSave
+            // gbWidth
             // 
-            this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
-            this.btnSave.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnSave.Location = new System.Drawing.Point(220, 252);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(146, 31);
-            this.btnSave.TabIndex = 6;
-            this.btnSave.Text = "Save STL File";
-            this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Visible = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.gbWidth.Controls.Add(this.tbWidth);
+            this.gbWidth.Location = new System.Drawing.Point(14, 138);
+            this.gbWidth.Name = "gbWidth";
+            this.gbWidth.Size = new System.Drawing.Size(280, 71);
+            this.gbWidth.TabIndex = 2;
+            this.gbWidth.TabStop = false;
+            this.gbWidth.Text = "Resolution (Width)";
             // 
-            // pnlProgress
+            // tbWidth
             // 
-            this.pnlProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlProgress.Controls.Add(this.lblProgress);
-            this.pnlProgress.Controls.Add(this.pbTotal);
-            this.pnlProgress.Controls.Add(this.pbStep);
-            this.pnlProgress.Location = new System.Drawing.Point(22, 148);
-            this.pnlProgress.Margin = new System.Windows.Forms.Padding(2);
-            this.pnlProgress.Name = "pnlProgress";
-            this.pnlProgress.Size = new System.Drawing.Size(543, 94);
-            this.pnlProgress.TabIndex = 4;
+            this.tbWidth.Location = new System.Drawing.Point(6, 22);
+            this.tbWidth.Maximum = 250;
+            this.tbWidth.Minimum = 50;
+            this.tbWidth.Name = "tbWidth";
+            this.tbWidth.Size = new System.Drawing.Size(268, 45);
+            this.tbWidth.TabIndex = 0;
+            this.tbWidth.TickFrequency = 50;
+            this.tbWidth.Value = 50;
             // 
-            // lblProgress
+            // lblParameters
             // 
-            this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(10, 11);
-            this.lblProgress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(61, 13);
-            this.lblProgress.TabIndex = 5;
-            this.lblProgress.Text = "Initializing...";
-            // 
-            // pbTotal
-            // 
-            this.pbTotal.Location = new System.Drawing.Point(12, 60);
-            this.pbTotal.Margin = new System.Windows.Forms.Padding(2);
-            this.pbTotal.Name = "pbTotal";
-            this.pbTotal.Size = new System.Drawing.Size(514, 19);
-            this.pbTotal.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pbTotal.TabIndex = 4;
-            // 
-            // pbStep
-            // 
-            this.pbStep.Location = new System.Drawing.Point(12, 31);
-            this.pbStep.Margin = new System.Windows.Forms.Padding(2);
-            this.pbStep.Name = "pbStep";
-            this.pbStep.Size = new System.Drawing.Size(514, 19);
-            this.pbStep.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pbStep.TabIndex = 3;
-            // 
-            // lblPleaseStandBy
-            // 
-            this.lblPleaseStandBy.AutoSize = true;
-            this.lblPleaseStandBy.Location = new System.Drawing.Point(20, 120);
-            this.lblPleaseStandBy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblPleaseStandBy.Name = "lblPleaseStandBy";
-            this.lblPleaseStandBy.Size = new System.Drawing.Size(274, 13);
-            this.lblPleaseStandBy.TabIndex = 3;
-            this.lblPleaseStandBy.Text = "Please stand by while your 3D scan is being converted...";
+            this.lblParameters.AutoSize = true;
+            this.lblParameters.Location = new System.Drawing.Point(12, 110);
+            this.lblParameters.Name = "lblParameters";
+            this.lblParameters.Size = new System.Drawing.Size(276, 13);
+            this.lblParameters.TabIndex = 1;
+            this.lblParameters.Text = "Please choose your Parameters for the Scan Conversion:";
             // 
             // awpScans
             // 
@@ -349,6 +321,93 @@
             // 
             this.chDateCreated.Text = "Date Created";
             this.chDateCreated.Width = 225;
+            // 
+            // awpProgress
+            // 
+            this.awpProgress.Controls.Add(this.btnSave);
+            this.awpProgress.Controls.Add(this.pnlProgress);
+            this.awpProgress.Controls.Add(this.lblPleaseStandBy);
+            this.awpProgress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.awpProgress.Header = true;
+            this.awpProgress.HeaderBackgroundColor = System.Drawing.Color.White;
+            this.awpProgress.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.awpProgress.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpProgress.HeaderImage")));
+            this.awpProgress.HeaderImageVisible = true;
+            this.awpProgress.HeaderTitle = "Welcome to Advanced Wizard";
+            this.awpProgress.Location = new System.Drawing.Point(0, 0);
+            this.awpProgress.Margin = new System.Windows.Forms.Padding(2);
+            this.awpProgress.Name = "awpProgress";
+            this.awpProgress.PreviousPage = 2;
+            this.awpProgress.Size = new System.Drawing.Size(586, 384);
+            this.awpProgress.SubTitle = "Your page description goes here";
+            this.awpProgress.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
+            this.awpProgress.TabIndex = 4;
+            this.awpProgress.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpProgress_PageShow);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
+            this.btnSave.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnSave.Location = new System.Drawing.Point(220, 252);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(146, 31);
+            this.btnSave.TabIndex = 6;
+            this.btnSave.Text = "Save OBJ File";
+            this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Visible = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // pnlProgress
+            // 
+            this.pnlProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlProgress.Controls.Add(this.lblProgress);
+            this.pnlProgress.Controls.Add(this.pbTotal);
+            this.pnlProgress.Controls.Add(this.pbStep);
+            this.pnlProgress.Location = new System.Drawing.Point(22, 148);
+            this.pnlProgress.Margin = new System.Windows.Forms.Padding(2);
+            this.pnlProgress.Name = "pnlProgress";
+            this.pnlProgress.Size = new System.Drawing.Size(543, 94);
+            this.pnlProgress.TabIndex = 4;
+            // 
+            // lblProgress
+            // 
+            this.lblProgress.AutoSize = true;
+            this.lblProgress.Location = new System.Drawing.Point(10, 11);
+            this.lblProgress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblProgress.Name = "lblProgress";
+            this.lblProgress.Size = new System.Drawing.Size(61, 13);
+            this.lblProgress.TabIndex = 5;
+            this.lblProgress.Text = "Initializing...";
+            // 
+            // pbTotal
+            // 
+            this.pbTotal.Location = new System.Drawing.Point(12, 60);
+            this.pbTotal.Margin = new System.Windows.Forms.Padding(2);
+            this.pbTotal.Name = "pbTotal";
+            this.pbTotal.Size = new System.Drawing.Size(514, 19);
+            this.pbTotal.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbTotal.TabIndex = 4;
+            // 
+            // pbStep
+            // 
+            this.pbStep.Location = new System.Drawing.Point(12, 31);
+            this.pbStep.Margin = new System.Windows.Forms.Padding(2);
+            this.pbStep.Name = "pbStep";
+            this.pbStep.Size = new System.Drawing.Size(514, 19);
+            this.pbStep.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbStep.TabIndex = 3;
+            // 
+            // lblPleaseStandBy
+            // 
+            this.lblPleaseStandBy.AutoSize = true;
+            this.lblPleaseStandBy.Location = new System.Drawing.Point(20, 120);
+            this.lblPleaseStandBy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPleaseStandBy.Name = "lblPleaseStandBy";
+            this.lblPleaseStandBy.Size = new System.Drawing.Size(274, 13);
+            this.lblPleaseStandBy.TabIndex = 3;
+            this.lblPleaseStandBy.Text = "Please stand by while your 3D scan is being converted...";
             // 
             // btnNext
             // 
@@ -428,10 +487,10 @@
             this.ofdScan.RestoreDirectory = true;
             this.ofdScan.Title = "Select STL file...";
             // 
-            // sfdSTL
+            // sfdOBJ
             // 
-            this.sfdSTL.Filter = "STL Files (*.stl)|*.stl|All Files (*.*)|*.*";
-            this.sfdSTL.RestoreDirectory = true;
+            this.sfdOBJ.Filter = "OBJ Files (*.obj)|*.obj|All Files (*.*)|*.*";
+            this.sfdOBJ.RestoreDirectory = true;
             // 
             // frmMain
             // 
@@ -454,15 +513,20 @@
             this.awContent.ResumeLayout(false);
             this.awpWelcome.ResumeLayout(false);
             this.awpWelcome.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.gbScannedFile.ResumeLayout(false);
+            this.gbScannedFile.PerformLayout();
             this.gbMachine.ResumeLayout(false);
+            this.awpParameters.ResumeLayout(false);
+            this.awpParameters.PerformLayout();
+            this.gbWidth.ResumeLayout(false);
+            this.gbWidth.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbWidth)).EndInit();
+            this.awpScans.ResumeLayout(false);
+            this.awpScans.PerformLayout();
             this.awpProgress.ResumeLayout(false);
             this.awpProgress.PerformLayout();
             this.pnlProgress.ResumeLayout(false);
             this.pnlProgress.PerformLayout();
-            this.awpScans.ResumeLayout(false);
-            this.awpScans.PerformLayout();
             this.pnlButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbBanner)).EndInit();
             this.ResumeLayout(false);
@@ -487,7 +551,7 @@
         private System.Windows.Forms.ProgressBar pbTotal;
         private System.Windows.Forms.ProgressBar pbStep;
         private System.Windows.Forms.Label lblPleaseStandBy;
-        private System.Windows.Forms.SaveFileDialog sfdSTL;
+        private System.Windows.Forms.SaveFileDialog sfdOBJ;
         private System.Windows.Forms.ListView lvScans;
         private System.Windows.Forms.ColumnHeader chName;
         private System.Windows.Forms.ColumnHeader chSize;
@@ -495,11 +559,15 @@
         private System.Windows.Forms.GroupBox gbMachine;
         private System.Windows.Forms.ListBox lstMachine;
         private System.Windows.Forms.Label lblOr;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox gbScannedFile;
         private System.Windows.Forms.Button btnBrowseScan;
         private System.Windows.Forms.TextBox txtScan;
         private System.Windows.Forms.Label lblChooseScan;
         private System.Windows.Forms.Button btnSave;
+        private AdvancedWizardControl.WizardPages.AdvancedWizardPage awpParameters;
+        private System.Windows.Forms.GroupBox gbWidth;
+        private System.Windows.Forms.TrackBar tbWidth;
+        private System.Windows.Forms.Label lblParameters;
     }
 }
 

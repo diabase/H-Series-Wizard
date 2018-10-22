@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiabasePrintingWizard", "Di
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiabaseScanWizard", "DiabaseScanWizard\DiabaseScanWizard.csproj", "{24745D69-66C5-4F38-8BA8-F0AD7025A72A}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{4E12ECF0-66DA-4A3F-A151-B6130E06DD37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,8 @@ Global
 		{24745D69-66C5-4F38-8BA8-F0AD7025A72A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24745D69-66C5-4F38-8BA8-F0AD7025A72A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24745D69-66C5-4F38-8BA8-F0AD7025A72A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E12ECF0-66DA-4A3F-A151-B6130E06DD37}.Debug|Any CPU.ActiveCfg = Debug
+		{4E12ECF0-66DA-4A3F-A151-B6130E06DD37}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

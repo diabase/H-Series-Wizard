@@ -59,14 +59,27 @@ namespace DiabaseScanWizard
                 }
                 else
                 {
+                    // Let user choose parameters
+                    awContent.GoToPage(awpParameters);
+                }
+            }
+            else if (awContent.CurrentPage == awpParameters)
+            {
+                if (lstMachine.SelectedIndex == -1)
+                {
                     // Convert given PLY file
-                    ConvertFile(txtScan.Text);
+                    ConvertFile(txtScan.Text, tbWidth.Value);
+                }
+                else
+                {
+                    // Download selected scan and convert it
+                    DownloadAndConvertFile(lvScans.SelectedItems[0].Text, long.Parse(lvScans.SelectedItems[0].SubItems[3].Text), tbWidth.Value);
                 }
             }
             else
             {
-                // Download selected scan and convert it
-                DownloadAndConvertFile(lvScans.SelectedItems[0].Text, long.Parse(lvScans.SelectedItems[0].SubItems[3].Text));
+                // Go to the next page
+                awContent.ClickNext();
             }
         }
         #endregion
@@ -153,13 +166,23 @@ namespace DiabaseScanWizard
         }
         #endregion
 
+        #region Parameters page
+        private void awpParameters_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
+        {
+            btnBack.Enabled = true;
+            btnNext.Enabled = true;
+        }
+        #endregion
+
         #region Progress page
         private void awpProgress_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnBack.Enabled = false;
             btnNext.Enabled = false;
         }
+        #endregion
 
+        #region Conversion
         private long fileSize;
         private void SetProgress(long bytesReceived)
         {
@@ -168,7 +191,7 @@ namespace DiabaseScanWizard
             pbTotal.Value = (int)(progress / 2);
         }
 
-        private void DownloadAndConvertFile(string file, long size)
+        private void DownloadAndConvertFile(string file, long size, int scanWidth)
         {
             lblProgress.Text = $"Downloading {file}...";
             pbStep.Value = 0;
@@ -193,7 +216,7 @@ namespace DiabaseScanWizard
                     else
                     {
                         // Got the file, convert it next
-                        ConvertFile(file);
+                        ConvertFile(file, scanWidth);
                     }
                 });
             });
@@ -202,7 +225,7 @@ namespace DiabaseScanWizard
         private string outFile;
         private Process quadProcess;
 
-        private void ConvertFile(string file)
+        private void ConvertFile(string file, int scanWidth)
         {
             lblProgress.Text = "Converting file...";
             pbStep.Value = 0;
@@ -211,7 +234,8 @@ namespace DiabaseScanWizard
             UseWaitCursor = true;
 
             outFile = Path.GetTempFileName();
-            ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine(Directory.GetCurrentDirectory(), @"VTK\quad.exe"), $"\"{file}\" \"{outFile}\"");
+            ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine(Directory.GetCurrentDirectory(), @"VTK\quad.exe"));
+            startInfo.Arguments = $"\"{file},{outFile},{scanWidth},90,0,0,0,0,1,99,1,99,\"";
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             try
@@ -249,11 +273,11 @@ namespace DiabaseScanWizard
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (sfdSTL.ShowDialog() == DialogResult.OK)
+            if (sfdOBJ.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    File.Copy(outFile, sfdSTL.FileName, true);
+                    File.Copy(outFile, sfdOBJ.FileName, true);
                     Close();
                 }
                 catch (Exception ex)
