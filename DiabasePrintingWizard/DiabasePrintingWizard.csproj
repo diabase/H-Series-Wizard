@@ -98,10 +98,11 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="PostProcessor\FileStructure\GCodeSegment.cs" />
     <Compile Include="PostProcessor\OverrideRule.cs" />
-    <Compile Include="PostProcessor\GCodeLine.cs" />
+    <Compile Include="PostProcessor\FileStructure\GCodeLine.cs" />
     <Compile Include="PostProcessor\GCodeProcessor.cs" />
-    <Compile Include="PostProcessor\GCodeLayer.cs" />
+    <Compile Include="PostProcessor\FileStructure\GCodeLayer.cs" />
     <Compile Include="PostProcessor\ProcessorException.cs" />
     <Compile Include="PostProcessor\Task.cs" />
     <Compile Include="Program.cs" />

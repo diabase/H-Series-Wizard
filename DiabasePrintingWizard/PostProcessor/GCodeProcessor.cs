@@ -56,6 +56,12 @@ namespace DiabasePrintingWizard
             lastPoint = new Coordinate();
         }
 
+        // Split up the G-code file into different segments holding corresponding G-code lines plus feedrate
+        // Each segment is created when
+        // - the tool number OR
+        // - the print region as indicated by S3D ("; feature..." or "; ...")
+        // changes.
+        // These segments are combined later on in the post-processing step
         public async Task PreProcess()
         {
             StreamReader reader = new StreamReader(input);
@@ -70,11 +76,14 @@ namespace DiabasePrintingWizard
                 maxProgress.Report((int)input.Length);
 
                 double feedrate = DefaultFeedrate;
-                int lineNumber = 1, selectedTool = -1, numExtrusions = 0;
-                string region = "None";
-                GCodeLayer layer = new GCodeLayer(0);
+                int lineNumber = 1, numExtrusions = 0;
+                bool isInterfacingSet = true;
+                GCodeLayer layer = new GCodeLayer(0, 0.0), lastLayer = null;
+                GCodeSegment segment = new GCodeSegment("Initialization", -1, null);
+                layer.Segments.Add(segment);
 
-                do {
+                do
+                {
                     bool writeLine = true;
                     GCodeLine line = new GCodeLine(lineBuffer);
 
@@ -84,7 +93,17 @@ namespace DiabasePrintingWizard
                         {
                             // Add past layer
                             layers.Add(layer);
-                            layer = new GCodeLayer(layer.Number + 1);
+                            lastLayer = layer;
+
+                            // Get the Z height. S3D provides it via the comment except before the end
+                            string lastParameter = lineBuffer.Split(' ').Last();
+                            double zHeight = (lastParameter == "end") ? double.NaN : double.Parse(lastParameter);
+
+                            // Create a new one
+                            layer = new GCodeLayer(layer.Number + 1, zHeight);
+                            segment = new GCodeSegment(segment.Name, segment.Tool, segment);
+                            layer.Segments.Add(segment);
+                            isInterfacingSet = layer.Number < 2;
                         }
                         else if ((layer.Number == 0 && lineNumber > 2 && !lineBuffer.Contains("layerHeight")) ||
                             lineBuffer.StartsWith("; tool") || lineBuffer.StartsWith("; process"))
@@ -107,7 +126,17 @@ namespace DiabasePrintingWizard
                         }
                         else
                         {
-                            region = lineBuffer.Substring(1).Trim();
+                            // T-codes are generated just before a new segment starts
+                            string region = lineBuffer.Substring(lineBuffer.StartsWith("; feature") ? 9 : 1).Trim();
+                            if (segment.Lines.Count == 0)
+                            {
+                                segment.Name = region;
+                            }
+                            else
+                            {
+                                segment = new GCodeSegment(region, segment.Tool, segment);
+                                layer.Segments.Add(segment);
+                            }
                         }
                     }
                     else
@@ -121,13 +150,28 @@ namespace DiabasePrintingWizard
                                 double? xParam = line.GetFValue('X');
                                 double? yParam = line.GetFValue('Y');
                                 double? zParam = line.GetFValue('Z');
-                                double? eParam = line.GetFValue('E');
-                                double? fParam = line.GetFValue('F');
                                 if (xParam != null) { lastPoint.X = xParam.Value; }
                                 if (yParam != null) { lastPoint.Y = yParam.Value; }
                                 if (zParam != null) { lastPoint.Z = zParam.Value; }
-                                if (eParam != null && numExtrusions++ < 2) { writeLine = false; }
+
+                                if (numExtrusions < 2)
+                                {
+                                    double? eParam = line.GetFValue('E');
+                                    if (eParam != null)
+                                    {
+                                        numExtrusions++;
+                                        writeLine = false;
+                                    }
+                                }
+
+                                double? fParam = line.GetFValue('F');
                                 if (fParam != null) { feedrate = fParam.Value / 60.0; }
+
+                                if (!isInterfacingSet && segment.Tool != -1 && xParam.HasValue && yParam.HasValue)
+                                {
+                                    segment.IsInterfacing = GetClosestSegment(lastLayer, xParam.Value, yParam.Value)?.Tool != segment.Tool;
+                                    isInterfacingSet = true;
+                                }
                             }
                             // G10
                             else if (gCode == 10)
@@ -162,15 +206,18 @@ namespace DiabasePrintingWizard
                                         tParam != null && tParam.Value > 0 && tParam.Value <= settings.Tools.Length)
                                     {
                                         ToolSettings toolSettings = settings.Tools[tParam.Value - 1];
-                                        if (toolSettings.ActiveTemperature <= 0m)
-                                        {
-                                            toolSettings.ActiveTemperature = (decimal)sParam.Value;
-                                            layer.AddLine($"G10 P{tParam} R{toolSettings.StandbyTemperature} S{toolSettings.ActiveTemperature}");
-                                        }
-                                        else
-                                        {
-                                            layer.AddLine($"G10 P{tParam} S{sParam}");
-                                        }
+										if (toolSettings.Type == ToolType.Nozzle)
+										{
+											if (toolSettings.ActiveTemperature <= 0m)
+											{
+												toolSettings.ActiveTemperature = (decimal)sParam.Value;
+												segment.AddLine($"G10 P{tParam} R{toolSettings.StandbyTemperature} S{toolSettings.ActiveTemperature}");
+											}
+											else
+											{
+												segment.AddLine($"G10 P{tParam} S{sParam}");
+											}
+										}
                                         writeLine = false;
                                     }
                                 }
@@ -186,7 +233,15 @@ namespace DiabasePrintingWizard
                                         if (settings.Tools[tCode.Value - 1].Type == ToolType.Nozzle)
                                         {
                                             // Keep track of tools in use. Tool change sequences are inserted by the post-processor
-                                            selectedTool = tCode.Value;
+                                            if (segment.Lines.Count == 0)
+                                            {
+                                                segment.Tool = tCode.Value;
+                                            }
+                                            else
+                                            {
+                                                segment = new GCodeSegment(segment.Name, tCode.Value, segment);
+                                                layer.Segments.Add(segment);
+                                            }
                                             writeLine = false;
                                         }
                                         else
@@ -195,9 +250,14 @@ namespace DiabasePrintingWizard
                                             throw new ProcessorException($"Tool {tCode} is not configured as a nozzle (see line {lineNumber})");
                                         }
                                     }
+                                    else if (segment.Lines.Count == 0)
+                                    {
+                                        segment.Tool = -1;
+                                    }
                                     else
                                     {
-                                        selectedTool = -1;
+                                        segment = new GCodeSegment(segment.Name, -1, segment);
+                                        layer.Segments.Add(segment);
                                     }
                                 }
                             }
@@ -207,10 +267,8 @@ namespace DiabasePrintingWizard
                     // Add this line unless it was handled before
                     if (writeLine)
                     {
-                        line.Tool = selectedTool;
                         line.Feedrate = feedrate;
-                        line.Region = region;
-                        layer.AddLine(line);
+                        segment.AddLine(line);
                     }
                     lineBuffer = await reader.ReadLineAsync();
                     lineNumber++;
@@ -231,42 +289,50 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void AddToolChange(GCodeLayer layer, int oldToolNumber, int newToolNumber)
+        private GCodeSegment GetClosestSegment(GCodeLayer layer, double x, double y)
         {
-            if (oldToolNumber > 0 && oldToolNumber <= settings.Tools.Length)
+            GCodeSegment minSegment = null;
+            double minDistance = 0.0;
+            double lastX = double.NaN, lastY = double.NaN;
+            foreach(GCodeSegment segment in layer.Segments)
             {
-                ToolSettings oldTool = settings.Tools[oldToolNumber - 1];
-                if (oldTool.PreheatTime > 0m)
+                foreach(GCodeLine line in segment.Lines)
                 {
-                    layer.AddLine($"G10 P{oldToolNumber} R{oldTool.StandbyTemperature}");
+                    int? gCode = line.GetIValue('G');
+                    if (gCode == 0 || gCode == 1)
+                    {
+                        double? xCoord = line.GetFValue('X');
+                        double? yCoord = line.GetFValue('Y');
+                        if (xCoord.HasValue && yCoord.HasValue)
+                        {
+                            if (double.IsNaN(lastX) || double.IsNaN(lastY))
+                            {
+                                lastX = xCoord.Value;
+                                lastY = yCoord.Value;
+                            }
+                            else if (line.GetFValue('E').HasValue)
+                            {
+                                // Get distance from the extruding G0/G1 line segment ([lastX, lastY] to [xCoord, yCoord]) to [x, y]
+                                double distance = Math.Abs((yCoord.Value - lastY) * x - (xCoord.Value - lastX) * y + xCoord.Value * lastY - yCoord.Value * lastX) /
+                                    Math.Sqrt(Math.Pow(yCoord.Value - lastY, 2) + Math.Pow(xCoord.Value - lastX, 2));
+                                if (minSegment == null || distance < minDistance)
+                                {
+                                    minSegment = segment;
+                                    minDistance = distance;
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
-            ToolSettings newTool = settings.Tools[newToolNumber - 1];
-            if (newTool.AutoClean)
-            {
-                if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
-                {
-                    layer.AddLine(new GCodeLine("T" + newToolNumber + " P0") { Tool = newToolNumber });
-                    layer.AddLine("M116 P" + newToolNumber);
-                }
-                layer.AddLine(new GCodeLine("M98 P\"tprime" + newToolNumber + ".g\"") { Tool = newToolNumber });
-            }
-            else
-            {
-                layer.AddLine(new GCodeLine("T" + newToolNumber) { Tool = newToolNumber });
-                if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
-                {
-                    layer.AddLine("M116 P" + newToolNumber);
-                }
-            }
+            return minSegment;
         }
 
-        private OverrideRule GetRule(int tool, int layer, string region)
+        private OverrideRule GetRule(int tool, int layer, GCodeSegment segment)
         {
             foreach(OverrideRule rule in rules)
             {
-                if (rule.Matches(tool, layer, region))
+                if (rule.Matches(tool, layer, segment))
                 {
                     return rule;
                 }
@@ -276,90 +342,49 @@ namespace DiabasePrintingWizard
 
         public void PostProcess()
         {
-            // Figure out how much we have to do
-            int numIterations = 0;
-            for(int i = 0; i < layers.Count; i++)
-            {
-                // This is for the island combination
-                numIterations += layers[i].Lines.Count * settings.Tools.Length;
-
-                // And this for the preheating
-                if (i != 0)
-                {
-                    numIterations += layers[i].Lines.Count;
-                }
-            }
-            maxProgress.Report(numIterations);
+            // We know how much we need to do here...
+            maxProgress.Report(Math.Max(layers.Count * 2 - 2, 0));
 
             // Combine tool islands per layer, adjust tool change sequences and take care of rules
+            bool startWithLowestTool = true;
             int iteration = 1, currentTool = -1;
             OverrideRule activeRule = null;
             for(int layerIndex = 1; layerIndex < layers.Count; layerIndex++)
             {
                 GCodeLayer layer = layers[layerIndex];
-                GCodeLayer replacementLayer = new GCodeLayer(layer.Number);
-                replacementLayer.Lines.Add(layer.Lines[0]);
+                GCodeLayer replacementLayer = new GCodeLayer(layerIndex, layer.ZHeight);
 
-                for(int toolNumber = 1; toolNumber <= settings.Tools.Length; toolNumber++)
+                if (startWithLowestTool)
                 {
-                    if (settings.Tools[toolNumber - 1].Type != ToolType.Nozzle)
+                    for (int toolNumber = 1; toolNumber <= settings.Tools.Length; toolNumber++)
                     {
-                        // Don't bother with unconfigured tools
-                        continue;
-                    }
-
-                    bool lastLineWasToolchange = false;
-                    for(int lineIndex = 1; lineIndex < layer.Lines.Count; lineIndex++)
-                    {
-                        GCodeLine line = layer.Lines[lineIndex];
-                        if (line.Tool == toolNumber)
-                        {
-                            replacementLayer.AddLine(line);
-
-                            if (currentTool != toolNumber)
-                            {
-                                int? gCode = line.GetIValue('G');
-                                if (gCode == 0 || gCode == 1)
-                                {
-                                    // Insert tool changes after first G0/G1 code
-                                    AddToolChange(replacementLayer, currentTool, toolNumber);
-                                    currentTool = toolNumber;
-                                    lastLineWasToolchange = true;
-                                }
-                            }
-                            else if (lastLineWasToolchange)
-                            {
-                                if (currentTool > 0 && currentTool <= settings.Tools.Length && !toolPrimed[currentTool - 1])
-                                {
-                                    replacementLayer.AddLine($"G1 E{toolChangeRetractionDistance:0.000} F{toolChangeRetractionSpeed}");
-                                    toolPrimed[currentTool - 1] = true;
-                                }
-                                lastLineWasToolchange = false;
-                            }
-
-                            OverrideRule rule = GetRule(currentTool, layerIndex, line.Region);
-                            if (rule != activeRule)
-                            {
-                                if (rule == null)
-                                {
-                                    // Reset speed and/or extrusion factor
-                                    if (activeRule.SpeedFactor != 100) { replacementLayer.AddLine("M220 S100"); }
-                                    if (activeRule.ExtrusionFactor != 100) { replacementLayer.AddLine("M221 S100"); }
-                                }
-                                else
-                                {
-                                    // Apply new speed and/or extrusion factor
-                                    if ((activeRule == null && rule.SpeedFactor != 100) || (activeRule != null && activeRule.SpeedFactor != rule.SpeedFactor)) { replacementLayer.AddLine($"M220 S{rule.SpeedFactor}"); }
-                                    if ((activeRule == null && rule.ExtrusionFactor != 100) || (activeRule != null && activeRule.ExtrusionFactor != rule.ExtrusionFactor)) { replacementLayer.AddLine($"M221 S{rule.ExtrusionFactor}"); }
-                                }
-                                activeRule = rule;
-                            }
-                        }
+                        // Go from T1-T5
+                        GCodeSegment segment = CombineSegments(layer, toolNumber, ref currentTool, ref activeRule);
+                        if (segment != null) { replacementLayer.Segments.Add(segment); }
                     }
                 }
+                else
+                {
+                    for (int toolNumber = settings.Tools.Length; toolNumber >= 1; toolNumber--)
+                    {
+                        // Go from T5-T1
+                        GCodeSegment segment = CombineSegments(layer, toolNumber, ref currentTool, ref activeRule);
+                        if (segment != null) { replacementLayer.Segments.Add(segment); }
+                    }
+                }
+                startWithLowestTool = !startWithLowestTool;
 
                 layers[layerIndex] = replacementLayer;
                 progress.Report(iteration++);
+            }
+
+            // Make sure the last applied rule is reset before the print finishes
+            if (activeRule != null)
+            {
+                GCodeSegment lastSegment = layers.Last((layer) => layer.Segments.Count > 0).Segments.Last();
+                if (activeRule.SpeedFactor != 100) { lastSegment.Lines.Add(new GCodeLine("M220 S100")); }
+                if (activeRule.ExtrusionFactor != 100) { lastSegment.Lines.Add(new GCodeLine("M221 S100")); }
+                activeRule = null;
             }
 
             // Add preheating sequences
@@ -368,126 +393,129 @@ namespace DiabasePrintingWizard
             int selectedTool = -1;
 
             Dictionary<int, double> preheatCounters = new Dictionary<int, double>();   // Tool number vs. Elapsed time
-            for (int layerIndex = layers.Count - 1; layerIndex >= 1; layerIndex--)
+            for(int layerNumber = 1; layerNumber < layers.Count; layerNumber++)
             {
-                GCodeLayer layer = layers[layerIndex];
-                for (int lineIndex = layer.Lines.Count - 1; lineIndex >= 0; lineIndex--)
+                GCodeLayer layer = layers[layerNumber];
+                double timeSpent = 0;
+
+                foreach (GCodeSegment segment in layer.Segments)
                 {
-                    double timeSpent = 0;
-                    GCodeLine line = layer.Lines[lineIndex];
                     if (selectedTool == -1)
                     {
-                        selectedTool = line.Tool;
+                        selectedTool = segment.Tool;
                     }
-                    else if (selectedTool != line.Tool)
+                    else if (selectedTool != segment.Tool)
                     {
-                        if (selectedTool >= 0 && selectedTool <= settings.Tools.Length)
-                        {
-                            // Take into account tool change times
-                            ToolSettings tool = settings.Tools[selectedTool - 1];
-                            timeSpent += (settings.Tools[selectedTool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
+                        // Take into account tool change times
+                        ToolSettings tool = settings.Tools[selectedTool - 1];
+                        timeSpent += (settings.Tools[selectedTool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
 
-                            // See if we need to use preheating for this tool
-                            if (tool.PreheatTime > 0.0m)
+                        // See if we need to use preheating for this tool
+                        if (tool.PreheatTime > 0.0m)
+                        {
+                            if (preheatCounters.ContainsKey(selectedTool))
                             {
-                                if (preheatCounters.ContainsKey(selectedTool))
+                                preheatCounters[selectedTool] = 0.0;
+                            }
+                            else
+                            {
+                                preheatCounters.Add(selectedTool, 0.0);
+                            }
+                        }
+                        selectedTool = segment.Tool;
+                    }
+
+                    for (int lineIndex = segment.Lines.Count - 1; lineIndex >= 0; lineIndex--)
+                    {
+                        GCodeLine line = segment.Lines[lineIndex];
+
+                        // Any counters running?
+                        if (preheatCounters.Count > 0)
+                        {
+                            int? gCode = line.GetIValue('G');
+
+                            // G0 / G1
+                            if (gCode == 0 || gCode == 1)
+                            {
+                                double? xParam = line.GetFValue('X');
+                                double? yParam = line.GetFValue('Y');
+                                double? zParam = line.GetFValue('Z');
+                                double? eParam = line.GetFValue('E');
+                                if (xParam != null) { previousPosition.X = xParam.Value; }
+                                if (yParam != null) { previousPosition.Y = yParam.Value; }
+                                if (zParam != null) { previousPosition.Z = zParam.Value; }
+
+                                double distance = Math.Sqrt(Math.Pow(position.X - previousPosition.X, 2) +
+                                                            Math.Pow(position.Y - previousPosition.Y, 2) +
+                                                            Math.Pow(position.Z - previousPosition.Z, 2) +
+                                                            (eParam.HasValue ? Math.Pow(eParam.Value, 2) : 0));
+                                double feedrate = line.Feedrate;
+                                if (line.Feedrate > 0.0)
                                 {
-                                    preheatCounters[selectedTool] = 0.0;
+                                    // TODO: Take into account accelerations here
+                                    timeSpent += distance / line.Feedrate;
+                                }
+
+                                position.AssignFrom(previousPosition);
+                            }
+                            // G4
+                            else if (gCode == 4)
+                            {
+                                double? sParam = line.GetFValue('S');
+                                if (sParam != null)
+                                {
+                                    timeSpent += sParam.Value;
                                 }
                                 else
                                 {
-                                    preheatCounters.Add(selectedTool, 0.0);
+                                    int? pParam = line.GetIValue('P');
+                                    if (pParam != null)
+                                    {
+                                        timeSpent += pParam.Value * 1000.0;
+                                    }
                                 }
                             }
-                        }
-                        selectedTool = line.Tool;
-                    }
-
-                    // Any counters running?
-                    if (preheatCounters.Count > 0)
-                    {
-                        int? gCode = line.GetIValue('G');
-
-                        // G0 / G1
-                        if (gCode == 0 || gCode == 1)
-                        {
-                            double? xParam = line.GetFValue('X');
-                            double? yParam = line.GetFValue('Y');
-                            double? zParam = line.GetFValue('Z');
-                            if (xParam != null) { previousPosition.X = xParam.Value; }
-                            if (yParam != null) { previousPosition.Y = yParam.Value; }
-                            if (zParam != null) { previousPosition.Z = zParam.Value; }
-
-                            double distance = Math.Sqrt(Math.Pow(position.X - previousPosition.X, 2) +
-                                                        Math.Pow(position.Y - previousPosition.Y, 2) +
-                                                        Math.Pow(position.Z - previousPosition.Z, 2));
-                            double feedrate = line.Feedrate;
-                            if (line.Feedrate > 0.0)
-                            {
-                                // TODO: Take into account E axis and accelerations here
-                                timeSpent += distance / line.Feedrate;
-                            }
-
-                            position.AssignFrom(previousPosition);
-                        }
-                        // G4
-                        else if (gCode == 4)
-                        {
-                            double? sParam = line.GetFValue('S');
-                            if (sParam != null)
-                            {
-                                timeSpent += sParam.Value;
-                            }
-                            else
+                            // G10 P... R...
+                            else if (gCode == 10)
                             {
                                 int? pParam = line.GetIValue('P');
-                                if (pParam != null)
+                                int? rParam = line.GetIValue('R');
+                                if (pParam != null && rParam != null && pParam > 0 && pParam <= settings.Tools.Length)
                                 {
-                                    timeSpent += pParam.Value * 1000.0;
+                                    if (preheatCounters.ContainsKey(pParam.Value))
+                                    {
+                                        // Remove this line again if we are still preheating
+                                        segment.Lines.RemoveAt(lineIndex);
+                                    }
                                 }
                             }
-                        }
-                        // G10 P... R...
-                        else if (gCode == 10)
-                        {
-                            int? pParam = line.GetIValue('P');
-                            int? rParam = line.GetIValue('R');
-                            if (pParam != null && rParam != null && pParam > 0 && pParam <= settings.Tools.Length)
-                            {
-                                if (preheatCounters.ContainsKey(pParam.Value))
-                                {
-                                    // Remove this line again if we are still preheating
-                                    layer.Lines.RemoveAt(lineIndex);
-                                }
-                            }
-                        }
 
-                        foreach(int toolNumber in preheatCounters.Keys.ToList())
-                        {
-                            ToolSettings tool = settings.Tools[toolNumber - 1];
-                            double totalTimeSpent = preheatCounters[toolNumber] + timeSpent;
-                            if (totalTimeSpent > (double)tool.PreheatTime)
+                            foreach (int toolNumber in preheatCounters.Keys.ToList())
                             {
-                                // We've been doing enough stuff to generate a good G10 code
-                                layer.Lines.Insert(lineIndex, new GCodeLine($"G10 P{toolNumber} R{tool.ActiveTemperature}"));
-                                preheatCounters.Remove(toolNumber);
-                            }
-                            else
-                            {
-                                // Need to do some more...
-                                preheatCounters[toolNumber] = totalTimeSpent;
+                                ToolSettings tool = settings.Tools[toolNumber - 1];
+                                double totalTimeSpent = preheatCounters[toolNumber] + timeSpent;
+                                if (totalTimeSpent > (double)tool.PreheatTime)
+                                {
+                                    // We've been doing enough stuff to generate a good G10 code
+                                    segment.Lines.Insert(lineIndex, new GCodeLine($"G10 P{toolNumber} R{tool.ActiveTemperature}"));
+                                    preheatCounters.Remove(toolNumber);
+                                }
+                                else
+                                {
+                                    // Need to do some more...
+                                    preheatCounters[toolNumber] = totalTimeSpent;
+                                }
                             }
                         }
                     }
                 }
-
                 progress.Report(iteration++);
             }
 
             // Override first generated G10 codes if we could not preheat in time
-            if (preheatCounters.Count > 0 && layers.Count > 0)
+            if (preheatCounters.Count > 0 && layers.Count > 0 && layers[0].Segments.Count > 0)
             {
-                foreach (GCodeLine line in layers[0].Lines)
+                foreach (GCodeLine line in layers[0].Segments[0].Lines)
                 {
                     int? gCode = line.GetIValue('G');
                     if (gCode == 10)
@@ -497,24 +525,143 @@ namespace DiabasePrintingWizard
                         {
                             ToolSettings tool = settings.Tools[pParam.Value - 1];
                             line.Content = $"G10 P{pParam} R{tool.ActiveTemperature} S{tool.ActiveTemperature}";
+                            preheatCounters.Remove(pParam.Value);
                         }
                     }
+                }
+            }
+        }
+        
+        // Perform island combination for a given tool on a given layer returning a segment for the selected tool
+        private GCodeSegment CombineSegments(GCodeLayer layer, int toolNumber, ref int currentTool, ref OverrideRule activeRule)
+        {
+            if (settings.Tools[toolNumber - 1].Type != ToolType.Nozzle)
+            {
+                // Don't bother with unconfigured tools
+                return null;
+            }
+
+            List<GCodeLine> replacementLines = new List<GCodeLine>();
+            double currentZ = 0.0;
+            bool primeTool = false;
+            foreach (GCodeSegment segment in layer.Segments)
+            {
+                if (segment.Tool == toolNumber)
+                {
+                    foreach (GCodeLine line in segment.Lines)
+                    {
+                        // Add next line
+                        int? gCode = line.GetIValue('G');
+                        if (gCode == 0 || gCode == 1)
+                        {
+                            // Keep track of the current Z position
+                            double? zPosition = line.GetFValue('Z');
+                            if (zPosition.HasValue) { currentZ = zPosition.Value; }
+
+                            // Make sure to un-hop before the first extrusion if required
+                            if (!double.IsNaN(layer.ZHeight) && currentZ != layer.ZHeight && line.GetFValue('E').HasValue)
+                            {
+                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight:0.000} F{line.Feedrate * 60.0:0}"));
+                                currentZ = layer.ZHeight;
+                            }
+
+                            // Add next movement of the segment
+                            replacementLines.Add(line);
+
+                            // Insert potential tool changes after first G0/G1 code
+                            if (toolNumber != currentTool)
+                            {
+                                AddToolChange(replacementLines, currentTool, toolNumber);
+                                currentTool = toolNumber;
+                                primeTool = !toolPrimed[currentTool - 1];
+                            }
+                            else if (primeTool)
+                            {
+                                // Prime tool after the following G0/G1 code
+                                replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance:0.00} F{toolChangeRetractionSpeed}", toolChangeRetractionSpeed / 60.0));
+                                toolPrimed[currentTool - 1] = true;
+                                primeTool = false;
+                            }
+                        }
+                        else
+                        {
+                            // Always add it if is no movement
+                            replacementLines.Add(line);
+                        }
+
+                        // Deal with custom rules
+                        OverrideRule rule = GetRule(currentTool, layer.Number, segment);
+                        if (rule != activeRule)
+                        {
+                            if (rule == null)
+                            {
+                                // Reset speed and/or extrusion factor
+                                if (activeRule.SpeedFactor != 100) { replacementLines.Add(new GCodeLine("M220 S100")); }
+                                if (activeRule.ExtrusionFactor != 100) { replacementLines.Add(new GCodeLine("M221 S100")); }
+                            }
+                            else
+                            {
+                                // Apply new speed and/or extrusion factor
+                                if ((activeRule == null && rule.SpeedFactor != 100) || (activeRule != null && activeRule.SpeedFactor != rule.SpeedFactor))
+                                {
+                                    replacementLines.Add(new GCodeLine($"M220 S{rule.SpeedFactor}"));
+                                }
+                                if ((activeRule == null && rule.ExtrusionFactor != 100) || (activeRule != null && activeRule.ExtrusionFactor != rule.ExtrusionFactor))
+                                {
+                                    replacementLines.Add(new GCodeLine($"M221 S{rule.ExtrusionFactor}"));
+                                }
+                            }
+                            activeRule = rule;
+                        }
+                    }
+                }
+            }
+            return (replacementLines.Count == 0) ? null : new GCodeSegment($"T{toolNumber}", toolNumber, null) { Lines = replacementLines };
+        }
+
+        private void AddToolChange(List<GCodeLine> lines, int oldToolNumber, int newToolNumber)
+        {
+            if (oldToolNumber > 0 && oldToolNumber <= settings.Tools.Length)
+            {
+                ToolSettings oldTool = settings.Tools[oldToolNumber - 1];
+                if (oldTool.PreheatTime > 0m)
+                {
+                    lines.Add(new GCodeLine($"G10 P{oldToolNumber} R{oldTool.StandbyTemperature}"));
+                }
+            }
+
+            ToolSettings newTool = settings.Tools[newToolNumber - 1];
+            if (newTool.AutoClean)
+            {
+                if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
+                {
+                    lines.Add(new GCodeLine("T" + newToolNumber + " P0"));
+                    lines.Add(new GCodeLine("M116 P" + newToolNumber));
+                }
+                lines.Add(new GCodeLine("M98 P\"tprime" + newToolNumber + ".g\""));
+            }
+            else
+            {
+                lines.Add(new GCodeLine("T" + newToolNumber));
+                if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
+                {
+                    lines.Add(new GCodeLine("M116 P" + newToolNumber));
                 }
             }
         }
 
         public async Task WriteToFile(FileStream stream)
         {
-            maxProgress.Report(layers.Count);
-
             StreamWriter sw = new StreamWriter(stream);
-            for (int i = 0; i < layers.Count; i++)
+            foreach(GCodeLayer layer in layers)
             {
-                foreach (GCodeLine line in layers[i].Lines)
+                foreach(GCodeSegment segment in layer.Segments)
                 {
-                    await sw.WriteLineAsync(line.Content);
+                    foreach(GCodeLine line in segment.Lines)
+                    {
+                        await sw.WriteLineAsync(line.Content);
+                    }
                 }
-                progress.Report(i + 1);
             }
             sw.Flush();
         }

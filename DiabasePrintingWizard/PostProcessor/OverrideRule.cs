@@ -59,11 +59,16 @@ namespace DiabasePrintingWizard
 
         public string Region { get; set; } = "Any";
 
-        public bool Matches(int tool, int layer, string region)
+        public bool Matches(int tool, int layer, GCodeSegment segment)
         {
-            return ((_tool == -1 || _tool == tool) &&
-                (_layer == -1 || _layer == layer) &&
-                (Region == "Any" || Region.Equals(region, StringComparison.InvariantCultureIgnoreCase)));
+            if ((_tool == -1 || _tool == tool) &&
+                (_layer == -1 || _layer == layer))
+            {
+                return (Region == "Any") ||
+                       (Region.Equals(segment.Name, StringComparison.InvariantCultureIgnoreCase)) ||
+                       (Region.Equals("Material Intersection", StringComparison.InvariantCultureIgnoreCase) && segment.IsInterfacing);
+            }
+            return false;
         }
 
         public double SpeedFactor { get; set; } = 100;

@@ -4,13 +4,14 @@
     {
         public string Content { get; set; }
 
-        public int Tool { get; set; }
-        
-        public double Feedrate { get; set; }
-
-        public string Region { get; set; }
+        public double Feedrate { get; set; }        // in mm/s
 
         public GCodeLine(string content) => Content = content;
+        public GCodeLine(string content, double feedrate)
+        {
+            Content = content;
+            Feedrate = feedrate;
+        }
 
         public int? GetIValue(char chr)
         {
