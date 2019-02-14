@@ -13,6 +13,8 @@ namespace DiabasePrintingWizard
 
         public List<GCodeLine> Lines { get; set; }          // Segment G-Code Instructions
 
+        public Coordinate LastPosition { get; set; }        // Last position in this segment
+
         private readonly GCodeSegment last;
 
         public GCodeSegment(string name, int tool, GCodeSegment lastSegment)
