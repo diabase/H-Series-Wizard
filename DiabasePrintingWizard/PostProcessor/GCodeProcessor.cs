@@ -76,6 +76,8 @@ namespace DiabasePrintingWizard
                 GCodeSegment segment = new GCodeSegment("Initialization", -1, null);
                 layer.Segments.Add(segment);
 
+                HashSet<int> usedTools = new HashSet<int>();
+
                 do
                 {
                     bool writeLine = true;
@@ -230,6 +232,7 @@ namespace DiabasePrintingWizard
                                 {
                                     if (tCode > 0 && tCode <= settings.Tools.Length)
                                     {
+                                        usedTools.Add(tCode.Value);
                                         if (settings.Tools[tCode.Value - 1].Type == ToolType.Nozzle)
                                         {
                                             // Keep track of tools in use. Tool change sequences are inserted by the post-processor
@@ -278,6 +281,29 @@ namespace DiabasePrintingWizard
                 } while (lineBuffer != null);
 
                 layers.Add(layer);
+
+                // Filter out heating for unsused tools
+                foreach (GCodeLayer l in layers)
+                {
+                    foreach (GCodeSegment s in l.Segments)
+                    {
+                        for (int i = 0; i < s.Lines.Count; i++)
+                        {
+                            GCodeLine line = s.Lines[i];
+                            if (line.Content.StartsWith($"G10 P"))
+                            {
+                                int? toolNo = line.GetIValue('P');
+                                if (!usedTools.Contains(toolNo.Value))
+                                {
+                                    // If this tool was never called remove it's heating command
+                                    s.Lines.RemoveAt(i);
+                                    // We need to manually decrement i to not miss the next line
+                                    --i;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else if (lineBuffer.Contains("Diabase"))
             {
