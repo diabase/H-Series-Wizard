@@ -98,6 +98,7 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="PostProcessor\FileStructure\Coordinate.cs" />
     <Compile Include="PostProcessor\FileStructure\GCodeSegment.cs" />
     <Compile Include="PostProcessor\OverrideRule.cs" />
     <Compile Include="PostProcessor\FileStructure\GCodeLine.cs" />
