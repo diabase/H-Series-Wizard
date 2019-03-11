@@ -5,13 +5,15 @@
 * Download Community Edition
 * Select .NET Development when asked which components to Install
 * On first start select Visual C# as Development Settings
+* After Visual Studio started install the following extension
+  Tools -> Extensions and Updates... -> Online -> Microsoft Visual Studio Installer Projects
+* Restart Visual Studio to complete installation
 
 # Building the project
 In Visual Studio
 * Click Teams -> Manage Connections
 * Under "Local Git Repositories" in side bar select clone and enter URL of repo
-* If there is an error on importing "Setup" close it
-* In the Solution Explorer Sidebar right-click on DiabasePrintingWizard and select Build
-* If building was successful (status in bottom-left corner) right-click again and select publish
-* Choose the location where to output the application and click on Finish (leaving everything else at its defaults)
+* In the top toolbar select "Release" in the Solution Configurations drop-down menul
+* In the Solution Explorer Sidebar right-click on Setup and select Build
+* If building was successful two files setup.exe and Setup.msi will be located inside the source folder's Setup\Release directory
 * Done
