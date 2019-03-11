@@ -666,7 +666,23 @@ namespace DiabasePrintingWizard
                 foreach (string filename in files)
                 {
                     string unwrappedFile = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + "-unwrapped.stl");
-                    Process.Start(@"VTK\warp.exe", $"\"{filename}\" \"{unwrappedFile}\" 0.25").WaitForExit();
+                    var processStartInfo = new ProcessStartInfo
+                    {
+                        FileName = @"VTK\warp.exe",
+                        Arguments = $"\"{filename}\" \"{unwrappedFile}\" 0.25",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false
+                    };
+                    var process = Process.Start(processStartInfo);
+                    var output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+
+                    // TODO: Add output parsing
+                    this.Settings.RotaryPrinting = new RotaryPrintingSettings
+                    {
+                        InnerDiameter = 7.99979,
+                        OuterDiameter = 16.0
+                    };
                 }
             }
 

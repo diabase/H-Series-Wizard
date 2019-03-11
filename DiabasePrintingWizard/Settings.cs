@@ -20,6 +20,13 @@
         public bool AutoClean { get; set; }
     }
 
+    public class RotaryPrintingSettings
+    {
+        public double InnerDiameter { get; set; }
+
+        public double OuterDiameter { get; set; }
+    }
+
     class SettingsContainer
     {
         public bool ConfigureManually { get; set; }
@@ -29,5 +36,7 @@
         public bool UseOwnSettings { get; set; }
 
         public bool GenerateSpecialSupport { get; set; }
+
+        public RotaryPrintingSettings RotaryPrinting { get; set; }
     }
 }

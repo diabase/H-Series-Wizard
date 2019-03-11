@@ -149,7 +149,22 @@ namespace DiabasePrintingWizard
                                 double? yParam = line.GetFValue('Y');
                                 double? zParam = line.GetFValue('Z');
                                 if (xParam != null) { lastPoint.X = xParam.Value; }
-                                if (yParam != null) { lastPoint.Y = yParam.Value; }
+                                if (yParam != null)
+                                {
+                                    if (settings.RotaryPrinting != null)
+                                    {
+                                        // TODO: Subtract height of first layer
+                                        if (line.UpdateFValue('Y', yParam.Value * (180 / (Math.PI * (settings.RotaryPrinting.InnerDiameter + lastPoint.Z)))))
+                                        {
+                                            yParam = line.GetFValue('Y');
+                                        }
+                                        else
+                                        {
+                                            throw new ProcessorException($"Y could not be updated on {line.Content}");
+                                        }
+                                    }
+                                    lastPoint.Y = yParam.Value;
+                                }
                                 if (zParam != null) { lastPoint.Z = zParam.Value; }
 
                                 if (numExtrusions < 2)
