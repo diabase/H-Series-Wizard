@@ -70,6 +70,7 @@ namespace DiabasePrintingWizard
                 maxProgress.Report((int)input.Length);
 
                 double feedrate = DefaultFeedrate;
+                double firstLayerHeight = 0;
                 int lineNumber = 1, numExtrusions = 0;
                 bool isInterfacingSet = true;
                 GCodeLayer layer = new GCodeLayer(0, 0.0), lastLayer = null;
@@ -95,6 +96,10 @@ namespace DiabasePrintingWizard
                             // Get the Z height. S3D provides it via the comment except before the end
                             string lastParameter = lineBuffer.Split(' ').Last();
                             double zHeight = (lastParameter == "end") ? double.NaN : double.Parse(lastParameter);
+                            if (lineBuffer.StartsWith("; layer 1, Z ="))
+                            {
+                                firstLayerHeight = zHeight;
+                            }
 
                             // Create a new one
                             layer = new GCodeLayer(layer.Number + 1, zHeight);
@@ -153,15 +158,12 @@ namespace DiabasePrintingWizard
                                 {
                                     if (settings.RotaryPrinting != null)
                                     {
-                                        // TODO: Subtract height of first layer
-                                        if (line.UpdateFValue('Y', yParam.Value * (180 / (Math.PI * (settings.RotaryPrinting.InnerDiameter + lastPoint.Z)))))
-                                        {
-                                            yParam = line.GetFValue('Y');
-                                        }
-                                        else
+                                        double scaledY = yParam.Value * (180 / (Math.PI * (settings.RotaryPrinting.InnerDiameter + lastPoint.Z - firstLayerHeight)));
+                                        if (!line.UpdateFValue('Y', scaledY))
                                         {
                                             throw new ProcessorException($"Y could not be updated on {line.Content}");
                                         }
+                                        yParam = line.GetFValue('Y');
                                     }
                                     lastPoint.Y = yParam.Value;
                                 }

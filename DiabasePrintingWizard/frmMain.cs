@@ -669,7 +669,7 @@ namespace DiabasePrintingWizard
                     var processStartInfo = new ProcessStartInfo
                     {
                         FileName = @"VTK\warp.exe",
-                        Arguments = $"\"{filename}\" \"{unwrappedFile}\" 0.25",
+                        Arguments = $"\"{filename}\" \"{unwrappedFile}\" 0",
                         RedirectStandardOutput = true,
                         UseShellExecute = false
                     };
@@ -680,8 +680,7 @@ namespace DiabasePrintingWizard
                     // TODO: Add output parsing
                     this.Settings.RotaryPrinting = new RotaryPrintingSettings
                     {
-                        InnerDiameter = 7.99979,
-                        OuterDiameter = 16.0
+                        InnerDiameter = 7.99979
                     };
                 }
             }
