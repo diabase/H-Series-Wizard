@@ -677,10 +677,32 @@ namespace DiabasePrintingWizard
                     var output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
 
-                    // TODO: Add output parsing
+                    bool foundFirst = false;
+                    double zMin = 0;
+                    foreach (var line in output.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (!line.StartsWith("zmin:"))
+                        {
+                            continue;
+                        }
+                        if (!foundFirst)
+                        {
+                            foundFirst = true;
+                            continue;
+                        }
+                        var split = line.Split(new char[] { ' ' });
+                        zMin = double.Parse(split[1]);
+                        break;
+                    }
+
+                    if (zMin == 0)
+                    {
+                        throw new ProcessorException("Could not find zmin value");
+                    }
+
                     this.Settings.RotaryPrinting = new RotaryPrintingSettings
                     {
-                        InnerDiameter = 7.99979
+                        InnerDiameter = Math.Round(zMin, 3)
                     };
                 }
             }
