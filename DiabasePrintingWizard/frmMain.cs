@@ -100,6 +100,8 @@ namespace DiabasePrintingWizard
         }
 
         #region Settings
+        private RotaryPrintingSettings rotaryPrintingSettings = null;
+
         private SettingsContainer Settings
         {
             get => new SettingsContainer
@@ -144,7 +146,8 @@ namespace DiabasePrintingWizard
                     }
                 },
                 UseOwnSettings = chkTopUseOwnSettings.Checked,
-                GenerateSpecialSupport = chkTopGenerateSupport.Checked
+                GenerateSpecialSupport = chkTopGenerateSupport.Checked,
+                RotaryPrinting = rotaryPrintingSettings
             };
 
             set
@@ -671,14 +674,15 @@ namespace DiabasePrintingWizard
                         FileName = @"VTK\warp.exe",
                         Arguments = $"\"{filename}\" \"{unwrappedFile}\" 0",
                         RedirectStandardOutput = true,
-                        UseShellExecute = false
+                        UseShellExecute = false,
+                        CreateNoWindow = true
                     };
                     var process = Process.Start(processStartInfo);
                     var output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
 
                     bool foundFirst = false;
-                    double zMin = 0;
+                    double? zMin = null;
                     foreach (var line in output.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (!line.StartsWith("zmin:"))
@@ -695,15 +699,14 @@ namespace DiabasePrintingWizard
                         break;
                     }
 
-                    if (zMin == 0)
+                    if (zMin.HasValue)
                     {
-                        throw new ProcessorException("Could not find zmin value");
+                        // TODO: Handle multiple files?
+                        rotaryPrintingSettings = new RotaryPrintingSettings
+                        {
+                            InnerDiameter = Math.Round(zMin.Value, 3)
+                        };
                     }
-
-                    this.Settings.RotaryPrinting = new RotaryPrintingSettings
-                    {
-                        InnerDiameter = Math.Round(zMin, 3)
-                    };
                 }
             }
 
@@ -752,7 +755,8 @@ namespace DiabasePrintingWizard
 
         private void Simplify3D_Exited(object sender, EventArgs e)
         {
-            BeginInvoke((Action)delegate () {
+            BeginInvoke((Action)delegate ()
+            {
                 // Reset UI
                 s3dProcess = null;
                 gbTopSlicing.Enabled = true;
@@ -903,6 +907,32 @@ namespace DiabasePrintingWizard
             else if (rbRotary.Checked)
             {
                 sides = "rotary";
+                if (rotaryPrintingSettings == null)
+                {
+                    string idStr = "";
+                    var result = ShowInputDialog(ref idStr);
+                    if (result != DialogResult.OK)
+                    {
+                        topAdditiveFile?.Close();
+                        topSubstractiveFile?.Close();
+                        bottomAdditiveFile?.Close();
+                        MessageBox.Show("Inner diameter of model not available", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    double id;
+                    if (!double.TryParse(idStr, out id))
+                    {
+                        topAdditiveFile?.Close();
+                        topSubstractiveFile?.Close();
+                        bottomAdditiveFile?.Close();
+                        MessageBox.Show($"Not a valid number {idStr}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    rotaryPrintingSettings = new RotaryPrintingSettings
+                    {
+                        InnerDiameter = Math.Round(id, 3)
+                    };
+                }
             }
 
             // Try to open a temporary file to write to and write header
@@ -993,6 +1023,59 @@ namespace DiabasePrintingWizard
             btnCancel.Enabled = true;
 
             postProcessingTask = null;
+        }
+
+        private static DialogResult ShowInputDialog(ref string input)
+        {
+            System.Drawing.Size size = new System.Drawing.Size(200, 70);
+            Form inputBox = new Form
+            {
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                ClientSize = size,
+                Text = "Enter Inner Diameter of Model"
+            };
+
+            Label label = new Label()
+            {
+                AutoSize = true,
+                Text = "Inner Diameter in mm"
+            };
+            inputBox.Controls.Add(label);
+
+            TextBox textBox = new TextBox
+            {
+                Size = new System.Drawing.Size(size.Width - 10, 23),
+                Location = new System.Drawing.Point(5, 15),
+                Text = input
+            };
+            inputBox.Controls.Add(textBox);
+
+            Button okButton = new Button
+            {
+                DialogResult = DialogResult.OK,
+                Name = "okButton",
+                Size = new System.Drawing.Size(75, 23),
+                Text = "&OK",
+                Location = new System.Drawing.Point(size.Width - 80 - 80, 39)
+            };
+            inputBox.Controls.Add(okButton);
+
+            Button cancelButton = new Button
+            {
+                DialogResult = DialogResult.Cancel,
+                Name = "cancelButton",
+                Size = new System.Drawing.Size(75, 23),
+                Text = "&Cancel",
+                Location = new System.Drawing.Point(size.Width - 80, 39)
+            };
+            inputBox.Controls.Add(cancelButton);
+
+            inputBox.AcceptButton = okButton;
+            inputBox.CancelButton = cancelButton;
+
+            DialogResult result = inputBox.ShowDialog();
+            input = textBox.Text;
+            return result;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
