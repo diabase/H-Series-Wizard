@@ -8155,7 +8155,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC6D5E2964D74C42870ED98C82123DE5"
             {
-            "SourcePath" = "8:..\\..\\..\\..\\..\\Desktop\\Simplify3D\\preset.factory"
+            "SourcePath" = "8:Assets\\preset.factory"
             "TargetName" = "8:preset.factory"
             "Tag" = "8:"
             "Folder" = "8:_3743F0E3B18F434A908A73C99A4B7B13"
