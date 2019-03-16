@@ -23,8 +23,6 @@
     public class RotaryPrintingSettings
     {
         public double InnerDiameter { get; set; }
-
-        public double OuterDiameter { get; set; }
     }
 
     class SettingsContainer

@@ -158,7 +158,7 @@ namespace DiabasePrintingWizard
                                 {
                                     if (settings.RotaryPrinting != null)
                                     {
-                                        double scaledY = yParam.Value * (180 / (Math.PI * (settings.RotaryPrinting.InnerDiameter + lastPoint.Z - firstLayerHeight)));
+                                        double scaledY = yParam.Value * (180 / (Math.PI * ((settings.RotaryPrinting.InnerDiameter / 2) + lastPoint.Z - firstLayerHeight)));
                                         if (!line.UpdateFValue('Y', scaledY))
                                         {
                                             throw new ProcessorException($"Y could not be updated on {line.Content}");

@@ -704,7 +704,7 @@ namespace DiabasePrintingWizard
                         // TODO: Handle multiple files?
                         rotaryPrintingSettings = new RotaryPrintingSettings
                         {
-                            InnerDiameter = Math.Round(zMin.Value, 3)
+                            InnerDiameter = Math.Round(zMin.Value * 2, 3)
                         };
                     }
                 }
