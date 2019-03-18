@@ -13,6 +13,8 @@ namespace DiabasePrintingWizard
         private static readonly double ToolChangeDuration = 4.0;                // in s
         private static readonly double ToolChangeDurationWithCleaning = 10.0;   // in s
 
+        private static readonly double OneeightyOverPI = 180 / Math.PI;
+
         private FileStream input;
         private SettingsContainer settings;
         private IList<OverrideRule> rules;
@@ -71,6 +73,7 @@ namespace DiabasePrintingWizard
 
                 double feedrate = DefaultFeedrate;
                 double firstLayerHeight = 0;
+                bool rotaryPrinting = settings.RotaryPrinting != null;
                 int lineNumber = 1, numExtrusions = 0;
                 bool isInterfacingSet = true;
                 GCodeLayer layer = new GCodeLayer(0, 0.0), lastLayer = null;
@@ -156,7 +159,10 @@ namespace DiabasePrintingWizard
                                 if (xParam != null) { lastPoint.X = xParam.Value; }
                                 if (yParam != null)
                                 {
-                                    yParam = handleRescale(firstLayerHeight, line, yParam);
+                                    if (rotaryPrinting)
+                                    {
+                                        yParam = HandleRescale(firstLayerHeight, line, yParam);
+                                    }
                                     lastPoint.Y = yParam.Value;
                                 }
                                 if (zParam != null) { lastPoint.Z = zParam.Value; }
@@ -324,17 +330,14 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private double? handleRescale(double firstLayerHeight, GCodeLine line, double? yParam)
+        private double? HandleRescale(double firstLayerHeight, GCodeLine line, double? yParam)
         {
-            if (settings.RotaryPrinting != null)
+            double scaledY = yParam.Value * (OneeightyOverPI / (settings.RotaryPrinting.InnerRadius + lastPoint.Z - firstLayerHeight));
+            if (!line.UpdateFValue('Y', scaledY))
             {
-                double scaledY = yParam.Value * (180 / (Math.PI * ((settings.RotaryPrinting.InnerDiameter / 2) + lastPoint.Z - firstLayerHeight)));
-                if (!line.UpdateFValue('Y', scaledY))
-                {
-                    throw new ProcessorException($"Y could not be updated on {line.Content}");
-                }
-                yParam = line.GetFValue('Y');
+                throw new ProcessorException($"Y could not be updated on {line.Content}");
             }
+            yParam = line.GetFValue('Y');
 
             return yParam;
         }

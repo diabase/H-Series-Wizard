@@ -701,11 +701,17 @@ namespace DiabasePrintingWizard
 
                     if (zMin.HasValue)
                     {
-                        // TODO: Handle multiple files?
-                        rotaryPrintingSettings = new RotaryPrintingSettings
+                        double innerRadius = Math.Round(zMin.Value, 3);
+                        if (rotaryPrintingSettings == null)
                         {
-                            InnerDiameter = Math.Round(zMin.Value * 2, 3)
-                        };
+                            rotaryPrintingSettings = new RotaryPrintingSettings
+                            {
+                                InnerRadius = innerRadius
+                            };
+                        } else if (innerRadius < rotaryPrintingSettings.InnerRadius)
+                        {
+                            rotaryPrintingSettings.InnerRadius = innerRadius;
+                        }
                     }
                 }
             }
@@ -930,7 +936,7 @@ namespace DiabasePrintingWizard
                     }
                     rotaryPrintingSettings = new RotaryPrintingSettings
                     {
-                        InnerDiameter = Math.Round(id, 3)
+                        InnerRadius = Math.Round(id / 2, 3)
                     };
                 }
             }
