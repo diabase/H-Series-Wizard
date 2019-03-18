@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace DiabasePrintingWizard
 {
-    public partial class frmMain : Form
+    public partial class FrmMain : Form
     {
         private Duet.Observer observer;
         private List<Duet.MachineInfo> boards = new List<Duet.MachineInfo>();
@@ -33,7 +33,7 @@ namespace DiabasePrintingWizard
 
         private BindingList<OverrideRule> overrideRules = new BindingList<OverrideRule>();
 
-        public frmMain()
+        public FrmMain()
         {
             InitializeComponent();
             dgvCustomActions.AutoGenerateColumns = false;
@@ -59,12 +59,12 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void frmMain_Deactivate(object sender, EventArgs e)
+        private void FrmMain_Deactivate(object sender, EventArgs e)
         {
             UseWaitCursor = false;
         }
 
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Try to restore Simplify3D settings before leaving
             if (!chkTopUseOwnSettings.Checked && s3dProcess != null &&
@@ -220,17 +220,17 @@ namespace DiabasePrintingWizard
         #endregion
 
         #region Navigation
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void btnBack_Click(object sender, EventArgs e)
+        private void BtnBack_Click(object sender, EventArgs e)
         {
             awContent.ClickBack();
         }
 
-        private void btnNext_Click(object sender, EventArgs e)
+        private void BtnNext_Click(object sender, EventArgs e)
         {
             if (s3dProcess != null)
             {
@@ -263,13 +263,13 @@ namespace DiabasePrintingWizard
         }
 
         // Welcome page
-        private void awpWelcome_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
+        private void AwpWelcome_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnBack.Enabled = false;
             btnNext.Enabled = chkConfigureManually.Checked || lstMachine.SelectedIndex != -1;
         }
 
-        private void lstMachine_SelectedIndexChanged(object sender, EventArgs e)
+        private void LstMachine_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = lstMachine.SelectedIndex != -1;
         }
@@ -282,7 +282,7 @@ namespace DiabasePrintingWizard
                 cboTool4.SelectedIndex + cboTool5.SelectedIndex > 0;
         }
 
-        private void awpMachineProperties_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
+        private void AwpMachineProperties_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnBack.Enabled = true;
             btnNext.Enabled = IsToolSelected();
@@ -360,7 +360,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void chkConfigureManually_CheckedChanged(object sender, EventArgs e)
+        private void ChkConfigureManually_CheckedChanged(object sender, EventArgs e)
         {
             if (chkConfigureManually.Checked)
             {
@@ -374,31 +374,31 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void cboTool1_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboTool1_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool1.Enabled = cboTool1.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
         }
 
-        private void cboTool2_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboTool2_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool2.Enabled = cboTool2.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
         }
 
-        private void cboTool3_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboTool3_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool3.Enabled = cboTool3.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
         }
 
-        private void cboTool4_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboTool4_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool4.Enabled = cboTool4.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
         }
 
-        private void cboTool5_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboTool5_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool5.Enabled = cboTool5.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
@@ -413,7 +413,7 @@ namespace DiabasePrintingWizard
             return valid;
         }
 
-        private void awpTopSide_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
+        private void AwpTopSide_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             // Allow unwrapping only in rotary printing mode
             chkTopUnwrap.Enabled = rbRotary.Checked;
@@ -430,7 +430,7 @@ namespace DiabasePrintingWizard
             btnNext.Enabled = TopGCodeFilesAreValid();
         }
 
-        private void btnTopAddFiles_Click(object sender, EventArgs e)
+        private void BtnTopAddFiles_Click(object sender, EventArgs e)
         {
             if (ofdInputs.ShowDialog() == DialogResult.OK)
             {
@@ -454,7 +454,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void btnTopRemoveFiles_Click(object sender, EventArgs e)
+        private void BtnTopRemoveFiles_Click(object sender, EventArgs e)
         {
             if (lstTopInputFiles.SelectedIndex == -1)
             {
@@ -476,22 +476,22 @@ namespace DiabasePrintingWizard
                 btnTopSlice.Enabled = false;
             }
         }
-        private void chkTopUseOwnSettings_CheckedChanged(object sender, EventArgs e)
+        private void ChkTopUseOwnSettings_CheckedChanged(object sender, EventArgs e)
         {
             chkBottomUseOwnSettings.Checked = chkTopUseOwnSettings.Checked;
         }
 
-        private void chkTopUnwrap_CheckedChanged(object sender, EventArgs e)
+        private void ChkTopUnwrap_CheckedChanged(object sender, EventArgs e)
         {
             chkBottomUnwrap.Checked = chkTopUnwrap.Checked;
         }
 
-        private void chkTopGenerateSupport_CheckedChanged(object sender, EventArgs e)
+        private void ChkTopGenerateSupport_CheckedChanged(object sender, EventArgs e)
         {
             chkBottomGenerateSupport.Checked = chkTopGenerateSupport.Checked;
         }
 
-        private void btnTopBrowseAdditive_Click(object sender, EventArgs e)
+        private void BtnTopBrowseAdditive_Click(object sender, EventArgs e)
         {
             if (ofdGCode.ShowDialog() == DialogResult.OK)
             {
@@ -499,7 +499,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void btnTopBrowseSubstractive_Click(object sender, EventArgs e)
+        private void BtnTopBrowseSubstractive_Click(object sender, EventArgs e)
         {
             if (ofdGCode.ShowDialog() == DialogResult.OK)
             {
@@ -507,7 +507,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void txtTopGCodeFiles_TextChanged(object sender, EventArgs e)
+        private void TxtTopGCodeFiles_TextChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = TopGCodeFilesAreValid();
         }
@@ -521,7 +521,7 @@ namespace DiabasePrintingWizard
             return valid;
         }
 
-        private void awpBottomSide_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
+        private void AwpBottomSide_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             // Allow unwrapping only in rotary printing mode
             chkBottomUnwrap.Enabled = rbRotary.Checked;
@@ -538,7 +538,7 @@ namespace DiabasePrintingWizard
             btnNext.Enabled = BottomGCodeFilesAreValid();
         }
 
-        private void btnBottomAddFiles_Click(object sender, EventArgs e)
+        private void BtnBottomAddFiles_Click(object sender, EventArgs e)
         {
             if (ofdInputs.ShowDialog() == DialogResult.OK)
             {
@@ -565,7 +565,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void btnBottomRemoveFiles_Click(object sender, EventArgs e)
+        private void BtnBottomRemoveFiles_Click(object sender, EventArgs e)
         {
             if (lstBottomInputFiles.SelectedIndex == -1)
             {
@@ -587,22 +587,22 @@ namespace DiabasePrintingWizard
                 btnBottomSlice.Enabled = false;
             }
         }
-        private void chkBottomUseOwnSettings_CheckedChanged(object sender, EventArgs e)
+        private void ChkBottomUseOwnSettings_CheckedChanged(object sender, EventArgs e)
         {
             chkTopUseOwnSettings.Checked = chkBottomUseOwnSettings.Checked;
         }
 
-        private void chkBottomUnwrap_CheckedChanged(object sender, EventArgs e)
+        private void ChkBottomUnwrap_CheckedChanged(object sender, EventArgs e)
         {
             chkTopUnwrap.Checked = chkBottomUnwrap.Checked;
         }
 
-        private void chkBottomGenerateSupport_CheckedChanged(object sender, EventArgs e)
+        private void ChkBottomGenerateSupport_CheckedChanged(object sender, EventArgs e)
         {
             chkTopGenerateSupport.Checked = chkBottomGenerateSupport.Checked;
         }
 
-        private void btnBottomBrowseAdditive_Click(object sender, EventArgs e)
+        private void BtnBottomBrowseAdditive_Click(object sender, EventArgs e)
         {
             if (ofdGCode.ShowDialog() == DialogResult.OK)
             {
@@ -610,7 +610,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void btnBottomBrowseSubstractive_Click(object sender, EventArgs e)
+        private void BtnBottomBrowseSubstractive_Click(object sender, EventArgs e)
         {
             if (ofdGCode.ShowDialog() == DialogResult.OK)
             {
@@ -618,7 +618,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void txtBottomGCodeFiles_TextChanged(object sender, EventArgs e)
+        private void TxtBottomGCodeFiles_TextChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = BottomGCodeFilesAreValid();
         }
@@ -631,7 +631,7 @@ namespace DiabasePrintingWizard
                 (awContent.CurrentPage == awpBottomSide && btnBottomAddFiles.Enabled);
         }
 
-        private void btnSlice_Click(object sender, EventArgs e)
+        private void BtnSlice_Click(object sender, EventArgs e)
         {
             postProcessorCalled = false;
 
@@ -795,7 +795,7 @@ namespace DiabasePrintingWizard
         #endregion
 
         #region Rules
-        private void dgvCustomActions_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        private void DgvCustomActions_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             DataGridViewColumn selectedColumn = dgvCustomActions.CurrentCell?.OwningColumn;
             if (selectedColumn == dgcLayer || selectedColumn == dgcRegion)
@@ -805,7 +805,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void dgvCustomActions_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        private void DgvCustomActions_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
             if (e.ColumnIndex == dgcLayer.Index || e.ColumnIndex == dgcRegion.Index)
             {
@@ -819,14 +819,14 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void dgvCustomActions_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        private void DgvCustomActions_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             MessageBox.Show("Invalid value!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         #endregion
 
         #region Progress page
-        private void awpProgress_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
+        private void AwpProgress_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnUpload.Enabled = !chkConfigureManually.Checked;
             btnUploadPrint.Enabled = !chkConfigureManually.Checked;
@@ -925,8 +925,7 @@ namespace DiabasePrintingWizard
                         MessageBox.Show("Inner diameter of model not available", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    double id;
-                    if (!double.TryParse(idStr, out id))
+                    if (!double.TryParse(idStr, out double id))
                     {
                         topAdditiveFile?.Close();
                         topSubstractiveFile?.Close();
@@ -1084,7 +1083,7 @@ namespace DiabasePrintingWizard
             return result;
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private void BtnSave_Click(object sender, EventArgs e)
         {
             if (sfdGCode.ShowDialog() == DialogResult.OK)
             {
@@ -1206,14 +1205,14 @@ namespace DiabasePrintingWizard
             });
         }
 
-        private void btnUpload_Click(object sender, EventArgs e)
+        private void BtnUpload_Click(object sender, EventArgs e)
         {
             runPrintAfterUpload = false;
             SetUploading(true);
             DoUpload(SelectedMachine.IPAddress);
         }
 
-        private void btnUploadPrint_Click(object sender, EventArgs e)
+        private void BtnUploadPrint_Click(object sender, EventArgs e)
         {
             runPrintAfterUpload = true;
             SetUploading(true);

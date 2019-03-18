@@ -1,6 +1,6 @@
 ﻿namespace DiabasePrintingWizard
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.awContent = new AdvancedWizardControl.Wizard.AdvancedWizard();
             this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.gbType = new System.Windows.Forms.GroupBox();
@@ -248,7 +248,7 @@
             this.awpWelcome.SubTitle = "Your page description goes here";
             this.awpWelcome.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
             this.awpWelcome.TabIndex = 1;
-            this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpWelcome_PageShow);
+            this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpWelcome_PageShow);
             // 
             // gbType
             // 
@@ -311,7 +311,7 @@
             this.lstMachine.Name = "lstMachine";
             this.lstMachine.Size = new System.Drawing.Size(201, 69);
             this.lstMachine.TabIndex = 25;
-            this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.lstMachine_SelectedIndexChanged);
+            this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.LstMachine_SelectedIndexChanged);
             // 
             // chkConfigureManually
             // 
@@ -323,7 +323,7 @@
             this.chkConfigureManually.TabIndex = 26;
             this.chkConfigureManually.Text = "Configure manually";
             this.chkConfigureManually.UseVisualStyleBackColor = true;
-            this.chkConfigureManually.CheckedChanged += new System.EventHandler(this.chkConfigureManually_CheckedChanged);
+            this.chkConfigureManually.CheckedChanged += new System.EventHandler(this.ChkConfigureManually_CheckedChanged);
             // 
             // gbGeometry
             // 
@@ -430,9 +430,9 @@
             this.dgvCustomActions.Name = "dgvCustomActions";
             this.dgvCustomActions.Size = new System.Drawing.Size(566, 196);
             this.dgvCustomActions.TabIndex = 1;
-            this.dgvCustomActions.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgvCustomActions_CellValidating);
-            this.dgvCustomActions.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvCustomActions_DataError);
-            this.dgvCustomActions.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dgvCustomActions_EditingControlShowing);
+            this.dgvCustomActions.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DgvCustomActions_CellValidating);
+            this.dgvCustomActions.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DgvCustomActions_DataError);
+            this.dgvCustomActions.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.DgvCustomActions_EditingControlShowing);
             // 
             // awpBottomSide
             // 
@@ -453,7 +453,7 @@
             this.awpBottomSide.SubTitle = "Your page description goes here";
             this.awpBottomSide.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
             this.awpBottomSide.TabIndex = 3;
-            this.awpBottomSide.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpBottomSide_PageShow);
+            this.awpBottomSide.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpBottomSide_PageShow);
             // 
             // gbBottomFiles
             // 
@@ -481,7 +481,7 @@
             this.btnBottomBrowseSubstractive.TabIndex = 16;
             this.btnBottomBrowseSubstractive.Text = "...";
             this.btnBottomBrowseSubstractive.UseVisualStyleBackColor = true;
-            this.btnBottomBrowseSubstractive.Click += new System.EventHandler(this.btnBottomBrowseSubstractive_Click);
+            this.btnBottomBrowseSubstractive.Click += new System.EventHandler(this.BtnBottomBrowseSubstractive_Click);
             // 
             // btnBottomBrowseAdditive
             // 
@@ -492,7 +492,7 @@
             this.btnBottomBrowseAdditive.TabIndex = 15;
             this.btnBottomBrowseAdditive.Text = "...";
             this.btnBottomBrowseAdditive.UseVisualStyleBackColor = true;
-            this.btnBottomBrowseAdditive.Click += new System.EventHandler(this.btnBottomBrowseAdditive_Click);
+            this.btnBottomBrowseAdditive.Click += new System.EventHandler(this.BtnBottomBrowseAdditive_Click);
             // 
             // txtBottomFileSubstractive
             // 
@@ -501,7 +501,7 @@
             this.txtBottomFileSubstractive.Name = "txtBottomFileSubstractive";
             this.txtBottomFileSubstractive.Size = new System.Drawing.Size(229, 20);
             this.txtBottomFileSubstractive.TabIndex = 14;
-            this.txtBottomFileSubstractive.Click += new System.EventHandler(this.txtBottomGCodeFiles_TextChanged);
+            this.txtBottomFileSubstractive.Click += new System.EventHandler(this.TxtBottomGCodeFiles_TextChanged);
             // 
             // lblBottomFileSubstractive
             // 
@@ -520,7 +520,7 @@
             this.txtBottomFileAdditive.Name = "txtBottomFileAdditive";
             this.txtBottomFileAdditive.Size = new System.Drawing.Size(229, 20);
             this.txtBottomFileAdditive.TabIndex = 12;
-            this.txtBottomFileAdditive.Click += new System.EventHandler(this.txtBottomGCodeFiles_TextChanged);
+            this.txtBottomFileAdditive.Click += new System.EventHandler(this.TxtBottomGCodeFiles_TextChanged);
             // 
             // lblBottomFileAdditive
             // 
@@ -561,7 +561,7 @@
             this.chkBottomGenerateSupport.TabIndex = 21;
             this.chkBottomGenerateSupport.Text = "Generate Special Support";
             this.chkBottomGenerateSupport.UseVisualStyleBackColor = true;
-            this.chkBottomGenerateSupport.CheckedChanged += new System.EventHandler(this.chkBottomGenerateSupport_CheckedChanged);
+            this.chkBottomGenerateSupport.CheckedChanged += new System.EventHandler(this.ChkBottomGenerateSupport_CheckedChanged);
             // 
             // btnBottomSlice
             // 
@@ -576,7 +576,7 @@
             this.btnBottomSlice.Text = "Process via Simplify3D®";
             this.btnBottomSlice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnBottomSlice.UseVisualStyleBackColor = true;
-            this.btnBottomSlice.Click += new System.EventHandler(this.btnSlice_Click);
+            this.btnBottomSlice.Click += new System.EventHandler(this.BtnSlice_Click);
             // 
             // tlpBottomFileButtons
             // 
@@ -607,7 +607,7 @@
             this.btnBottomRemoveFiles.Text = "Remove File(s)";
             this.btnBottomRemoveFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnBottomRemoveFiles.UseVisualStyleBackColor = true;
-            this.btnBottomRemoveFiles.Click += new System.EventHandler(this.btnBottomRemoveFiles_Click);
+            this.btnBottomRemoveFiles.Click += new System.EventHandler(this.BtnBottomRemoveFiles_Click);
             // 
             // btnBottomAddFiles
             // 
@@ -622,7 +622,7 @@
             this.btnBottomAddFiles.Text = "Add File(s)";
             this.btnBottomAddFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnBottomAddFiles.UseVisualStyleBackColor = true;
-            this.btnBottomAddFiles.Click += new System.EventHandler(this.btnBottomAddFiles_Click);
+            this.btnBottomAddFiles.Click += new System.EventHandler(this.BtnBottomAddFiles_Click);
             // 
             // lstBottomInputFiles
             // 
@@ -644,7 +644,7 @@
             this.chkBottomUseOwnSettings.TabIndex = 15;
             this.chkBottomUseOwnSettings.Text = "Use own Simplify3D® settings";
             this.chkBottomUseOwnSettings.UseVisualStyleBackColor = true;
-            this.chkBottomUseOwnSettings.CheckedChanged += new System.EventHandler(this.chkBottomUseOwnSettings_CheckedChanged);
+            this.chkBottomUseOwnSettings.CheckedChanged += new System.EventHandler(this.ChkBottomUseOwnSettings_CheckedChanged);
             // 
             // chkBottomUnwrap
             // 
@@ -656,7 +656,7 @@
             this.chkBottomUnwrap.TabIndex = 14;
             this.chkBottomUnwrap.Text = "Unwrap STL Files";
             this.chkBottomUnwrap.UseVisualStyleBackColor = true;
-            this.chkBottomUnwrap.CheckedChanged += new System.EventHandler(this.chkBottomUnwrap_CheckedChanged);
+            this.chkBottomUnwrap.CheckedChanged += new System.EventHandler(this.ChkBottomUnwrap_CheckedChanged);
             // 
             // lblBottomFiles
             // 
@@ -687,7 +687,7 @@
             this.awpTopSide.SubTitle = "Your page description goes here";
             this.awpTopSide.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
             this.awpTopSide.TabIndex = 3;
-            this.awpTopSide.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpTopSide_PageShow);
+            this.awpTopSide.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpTopSide_PageShow);
             // 
             // gbTopFiles
             // 
@@ -715,7 +715,7 @@
             this.btnTopBrowseSubstractive.TabIndex = 16;
             this.btnTopBrowseSubstractive.Text = "...";
             this.btnTopBrowseSubstractive.UseVisualStyleBackColor = true;
-            this.btnTopBrowseSubstractive.Click += new System.EventHandler(this.btnTopBrowseSubstractive_Click);
+            this.btnTopBrowseSubstractive.Click += new System.EventHandler(this.BtnTopBrowseSubstractive_Click);
             // 
             // btnTopBrowseAdditive
             // 
@@ -726,7 +726,7 @@
             this.btnTopBrowseAdditive.TabIndex = 15;
             this.btnTopBrowseAdditive.Text = "...";
             this.btnTopBrowseAdditive.UseVisualStyleBackColor = true;
-            this.btnTopBrowseAdditive.Click += new System.EventHandler(this.btnTopBrowseAdditive_Click);
+            this.btnTopBrowseAdditive.Click += new System.EventHandler(this.BtnTopBrowseAdditive_Click);
             // 
             // txtTopFileSubstractive
             // 
@@ -735,7 +735,7 @@
             this.txtTopFileSubstractive.Name = "txtTopFileSubstractive";
             this.txtTopFileSubstractive.Size = new System.Drawing.Size(229, 20);
             this.txtTopFileSubstractive.TabIndex = 14;
-            this.txtTopFileSubstractive.TextChanged += new System.EventHandler(this.txtTopGCodeFiles_TextChanged);
+            this.txtTopFileSubstractive.TextChanged += new System.EventHandler(this.TxtTopGCodeFiles_TextChanged);
             // 
             // lblTopFileSubstractive
             // 
@@ -754,7 +754,7 @@
             this.txtTopFileAdditive.Name = "txtTopFileAdditive";
             this.txtTopFileAdditive.Size = new System.Drawing.Size(229, 20);
             this.txtTopFileAdditive.TabIndex = 12;
-            this.txtTopFileAdditive.TextChanged += new System.EventHandler(this.txtTopGCodeFiles_TextChanged);
+            this.txtTopFileAdditive.TextChanged += new System.EventHandler(this.TxtTopGCodeFiles_TextChanged);
             // 
             // lblTopFileAdditive
             // 
@@ -795,7 +795,7 @@
             this.chkTopGenerateSupport.TabIndex = 21;
             this.chkTopGenerateSupport.Text = "Generate Special Support";
             this.chkTopGenerateSupport.UseVisualStyleBackColor = true;
-            this.chkTopGenerateSupport.CheckedChanged += new System.EventHandler(this.chkTopGenerateSupport_CheckedChanged);
+            this.chkTopGenerateSupport.CheckedChanged += new System.EventHandler(this.ChkTopGenerateSupport_CheckedChanged);
             // 
             // btnTopSlice
             // 
@@ -810,7 +810,7 @@
             this.btnTopSlice.Text = "Process via Simplify3D®";
             this.btnTopSlice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnTopSlice.UseVisualStyleBackColor = true;
-            this.btnTopSlice.Click += new System.EventHandler(this.btnSlice_Click);
+            this.btnTopSlice.Click += new System.EventHandler(this.BtnSlice_Click);
             // 
             // tlpTopFileButtons
             // 
@@ -841,7 +841,7 @@
             this.btnTopRemoveFiles.Text = "Remove File(s)";
             this.btnTopRemoveFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnTopRemoveFiles.UseVisualStyleBackColor = true;
-            this.btnTopRemoveFiles.Click += new System.EventHandler(this.btnTopRemoveFiles_Click);
+            this.btnTopRemoveFiles.Click += new System.EventHandler(this.BtnTopRemoveFiles_Click);
             // 
             // btnTopAddFiles
             // 
@@ -856,7 +856,7 @@
             this.btnTopAddFiles.Text = "Add File(s)";
             this.btnTopAddFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnTopAddFiles.UseVisualStyleBackColor = true;
-            this.btnTopAddFiles.Click += new System.EventHandler(this.btnTopAddFiles_Click);
+            this.btnTopAddFiles.Click += new System.EventHandler(this.BtnTopAddFiles_Click);
             // 
             // lstTopInputFiles
             // 
@@ -878,7 +878,7 @@
             this.chkTopUseOwnSettings.TabIndex = 15;
             this.chkTopUseOwnSettings.Text = "Use own Simplify3D® settings";
             this.chkTopUseOwnSettings.UseVisualStyleBackColor = true;
-            this.chkTopUseOwnSettings.CheckedChanged += new System.EventHandler(this.chkTopUseOwnSettings_CheckedChanged);
+            this.chkTopUseOwnSettings.CheckedChanged += new System.EventHandler(this.ChkTopUseOwnSettings_CheckedChanged);
             // 
             // chkTopUnwrap
             // 
@@ -890,7 +890,7 @@
             this.chkTopUnwrap.TabIndex = 14;
             this.chkTopUnwrap.Text = "Unwrap STL Files";
             this.chkTopUnwrap.UseVisualStyleBackColor = true;
-            this.chkTopUnwrap.CheckedChanged += new System.EventHandler(this.chkTopUnwrap_CheckedChanged);
+            this.chkTopUnwrap.CheckedChanged += new System.EventHandler(this.ChkTopUnwrap_CheckedChanged);
             // 
             // lblTopInputFiles
             // 
@@ -921,7 +921,7 @@
             this.awpMachineProperties.SubTitle = "Your page description goes here";
             this.awpMachineProperties.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
             this.awpMachineProperties.TabIndex = 2;
-            this.awpMachineProperties.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpMachineProperties_PageShow);
+            this.awpMachineProperties.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpMachineProperties_PageShow);
             // 
             // lblWelcome
             // 
@@ -974,7 +974,7 @@
             this.cboTool1.Name = "cboTool1";
             this.cboTool1.Size = new System.Drawing.Size(99, 21);
             this.cboTool1.TabIndex = 5;
-            this.cboTool1.SelectedIndexChanged += new System.EventHandler(this.cboTool1_SelectedIndexChanged);
+            this.cboTool1.SelectedIndexChanged += new System.EventHandler(this.CboTool1_SelectedIndexChanged);
             // 
             // gbTool3
             // 
@@ -1099,7 +1099,7 @@
             this.cboTool2.Name = "cboTool2";
             this.cboTool2.Size = new System.Drawing.Size(99, 21);
             this.cboTool2.TabIndex = 6;
-            this.cboTool2.SelectedIndexChanged += new System.EventHandler(this.cboTool2_SelectedIndexChanged);
+            this.cboTool2.SelectedIndexChanged += new System.EventHandler(this.CboTool2_SelectedIndexChanged);
             // 
             // gbTool5
             // 
@@ -1224,7 +1224,7 @@
             this.cboTool3.Name = "cboTool3";
             this.cboTool3.Size = new System.Drawing.Size(99, 21);
             this.cboTool3.TabIndex = 7;
-            this.cboTool3.SelectedIndexChanged += new System.EventHandler(this.cboTool3_SelectedIndexChanged);
+            this.cboTool3.SelectedIndexChanged += new System.EventHandler(this.CboTool3_SelectedIndexChanged);
             // 
             // gbTool4
             // 
@@ -1349,7 +1349,7 @@
             this.cboTool4.Name = "cboTool4";
             this.cboTool4.Size = new System.Drawing.Size(99, 21);
             this.cboTool4.TabIndex = 8;
-            this.cboTool4.SelectedIndexChanged += new System.EventHandler(this.cboTool4_SelectedIndexChanged);
+            this.cboTool4.SelectedIndexChanged += new System.EventHandler(this.CboTool4_SelectedIndexChanged);
             // 
             // gbTool1
             // 
@@ -1474,7 +1474,7 @@
             this.cboTool5.Name = "cboTool5";
             this.cboTool5.Size = new System.Drawing.Size(102, 21);
             this.cboTool5.TabIndex = 9;
-            this.cboTool5.SelectedIndexChanged += new System.EventHandler(this.cboTool5_SelectedIndexChanged);
+            this.cboTool5.SelectedIndexChanged += new System.EventHandler(this.CboTool5_SelectedIndexChanged);
             // 
             // gbTool2
             // 
@@ -1607,7 +1607,7 @@
             this.awpProgress.SubTitle = "Your page description goes here";
             this.awpProgress.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
             this.awpProgress.TabIndex = 4;
-            this.awpProgress.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.awpProgress_PageShow);
+            this.awpProgress.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpProgress_PageShow);
             // 
             // btnUploadPrint
             // 
@@ -1622,7 +1622,7 @@
             this.btnUploadPrint.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnUploadPrint.UseVisualStyleBackColor = true;
             this.btnUploadPrint.Visible = false;
-            this.btnUploadPrint.Click += new System.EventHandler(this.btnUploadPrint_Click);
+            this.btnUploadPrint.Click += new System.EventHandler(this.BtnUploadPrint_Click);
             // 
             // btnUpload
             // 
@@ -1637,7 +1637,7 @@
             this.btnUpload.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnUpload.UseVisualStyleBackColor = true;
             this.btnUpload.Visible = false;
-            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
+            this.btnUpload.Click += new System.EventHandler(this.BtnUpload_Click);
             // 
             // btnSave
             // 
@@ -1652,7 +1652,7 @@
             this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Visible = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
             // 
             // pnlProgress
             // 
@@ -1719,7 +1719,7 @@
             this.btnNext.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnNext.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.btnNext.UseVisualStyleBackColor = false;
-            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            this.btnNext.Click += new System.EventHandler(this.BtnNext_Click);
             // 
             // btnBack
             // 
@@ -1735,7 +1735,7 @@
             this.btnBack.Text = "&Back";
             this.btnBack.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnBack.UseVisualStyleBackColor = false;
-            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            this.btnBack.Click += new System.EventHandler(this.BtnBack_Click);
             // 
             // btnCancel
             // 
@@ -1749,7 +1749,7 @@
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancel.UseVisualStyleBackColor = false;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // pnlButtons
             // 
@@ -1874,8 +1874,8 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Diabase Printing Wizard";
-            this.Deactivate += new System.EventHandler(this.frmMain_Deactivate);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
+            this.Deactivate += new System.EventHandler(this.FrmMain_Deactivate);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             this.awContent.ResumeLayout(false);
             this.awpWelcome.ResumeLayout(false);
             this.awpWelcome.PerformLayout();
