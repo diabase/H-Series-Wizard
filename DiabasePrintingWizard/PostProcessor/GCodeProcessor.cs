@@ -703,6 +703,9 @@ namespace DiabasePrintingWizard
                                 AddToolChange(replacementLines, currentTool, toolNumber);
                                 currentTool = toolNumber;
                                 primeTool = !toolPrimed[currentTool - 1];
+
+                                // Make sure we go to the height of the current layer after tool change
+                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight:0.000} F{line.Feedrate * 60.0:0}"));
                             }
                             else if (primeTool)
                             {
@@ -763,19 +766,19 @@ namespace DiabasePrintingWizard
             ToolSettings newTool = settings.Tools[newToolNumber - 1];
             if (newTool.AutoClean)
             {
-                if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
-                {
-                    lines.Add(new GCodeLine("T" + newToolNumber + " P0"));
-                    lines.Add(new GCodeLine("M116 P" + newToolNumber));
-                }
-                lines.Add(new GCodeLine("M98 P\"tprime" + newToolNumber + ".g\""));
+                //if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
+                //{
+                //    lines.Add(new GCodeLine($"T{newToolNumber} P0"));
+                //    lines.Add(new GCodeLine($"M116 P{newToolNumber}"));
+                //}
+                lines.Add(new GCodeLine($"M98 P\"tprime{newToolNumber}.g\""));
             }
             else
             {
-                lines.Add(new GCodeLine("T" + newToolNumber));
+                lines.Add(new GCodeLine($"T{newToolNumber}"));
                 if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
                 {
-                    lines.Add(new GCodeLine("M116 P" + newToolNumber));
+                    lines.Add(new GCodeLine($"M116 P{newToolNumber}"));
                 }
             }
         }
