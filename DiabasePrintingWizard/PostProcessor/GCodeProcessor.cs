@@ -672,6 +672,7 @@ namespace DiabasePrintingWizard
             List<GCodeLine> replacementLines = new List<GCodeLine>();
             double currentZ = 0.0;
             bool primeTool = false;
+            bool toolChangeHappened = false;
             Coordinate lastPosition = null;
             foreach (GCodeSegment segment in layer.Segments)
             {
@@ -685,13 +686,20 @@ namespace DiabasePrintingWizard
                         {
                             // Keep track of the current Z position
                             double? zPosition = line.GetFValue('Z');
-                            if (zPosition.HasValue) { currentZ = zPosition.Value; }
+                            if (zPosition.HasValue) { 
+                                currentZ = zPosition.Value;
+                                if (toolChangeHappened)
+                                {
+                                    toolChangeHappened = false;
+                                }
+                            }
 
                             // Make sure to un-hop before the first extrusion if required
-                            if (!double.IsNaN(layer.ZHeight) && currentZ != layer.ZHeight && line.GetFValue('E').HasValue)
+                            if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || toolChangeHappened))
                             {
                                 replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight:0.000} F{line.Feedrate * 60.0:0}"));
                                 currentZ = layer.ZHeight;
+                                toolChangeHappened = false;
                             }
 
                             // Add next movement of the segment
@@ -704,8 +712,8 @@ namespace DiabasePrintingWizard
                                 currentTool = toolNumber;
                                 primeTool = !toolPrimed[currentTool - 1];
 
-                                // Make sure we go to the height of the current layer after tool change
-                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight:0.000} F{line.Feedrate * 60.0:0}"));
+                                // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
+                                toolChangeHappened = true;
                             }
                             else if (primeTool)
                             {
