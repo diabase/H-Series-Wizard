@@ -698,7 +698,7 @@ namespace DiabasePrintingWizard
                             // Make sure to un-hop before the first extrusion if required
                             if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || toolChangeHappened))
                             {
-                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("D", FrmMain.numberFormat)}"));
+                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
                                 currentZ = layer.ZHeight;
                                 toolChangeHappened = false;
                             }
