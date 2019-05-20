@@ -1,4 +1,6 @@
-﻿namespace DiabasePrintingWizard
+﻿using System.Globalization;
+
+namespace DiabasePrintingWizard
 {
     class GCodeLine
     {
@@ -15,50 +17,45 @@
 
         public bool UpdateFValue(char chr, double newValue)
         {
-            bool found = false;
-            string expression = "";
-            FindParameter(chr, ref found, ref expression, true);
-
-            if (found && expression != "")
+            if (FindParameter(chr, out string expression, true) && expression != "")
             {
-                this.Content = this.Content.Replace($"{chr}{expression}", $"{chr}" + newValue);
+                this.Content = this.Content.Replace($"{chr}{expression}", $"{chr}{newValue}".ToString(FrmMain.numberFormat));
                 return true;
             }
             return false;
         }
 
-        public int? GetIValue(char chr)
+        public int? GetIValue(char chr, bool allowInComment = false)
         {
-            bool found = false;
-            string expression = "";
-            FindParameter(chr, ref found, ref expression, false);
-
-            if (found && expression != "")
+            if (FindParameter(chr, out string expression, false, allowInComment) && expression != "")
             {
                 return int.TryParse(expression, out int result) ? new int?(result) : null;
             }
             return null;
         }
 
-        public double? GetFValue(char chr)
+        public double? GetFValue(char chr, bool allowInComment = false)
         {
-            bool found = false;
-            string expression = "";
-            FindParameter(chr, ref found, ref expression, true);
-
-            if (found && expression != "")
+            if (FindParameter(chr, out string expression, true, allowInComment) && expression != "")
             {
-                return double.TryParse(expression, out double result) ? new double?(result) : null;
+                return double.TryParse(
+                        expression,
+                        NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                        FrmMain.numberFormat,
+                        out double result)
+                    ? new double?(result) : null;
             }
             return null;
         }
 
-        private void FindParameter(char chr, ref bool found, ref string expression, bool decimalNumber)
+        private bool FindParameter(char chr, out string expression, bool decimalNumber, bool allowCommentLine = false)
         {
+            expression = "";
             bool inComment = false;
+            bool found = false;
             foreach (char c in Content)
             {
-                if (c == ';')
+                if (c == ';' && !allowCommentLine)
                 {
                     break;
                 }
@@ -87,6 +84,7 @@
                     }
                 }
             }
+            return found;
         }
     }
 }
