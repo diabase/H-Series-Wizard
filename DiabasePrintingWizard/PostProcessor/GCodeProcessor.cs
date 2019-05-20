@@ -698,7 +698,7 @@ namespace DiabasePrintingWizard
                             // Make sure to un-hop before the first extrusion if required
                             if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || toolChangeHappened))
                             {
-                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight:0.000} F{line.Feedrate * 60.0:0}".ToString(FrmMain.numberFormat)));
+                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("D", FrmMain.numberFormat)}"));
                                 currentZ = layer.ZHeight;
                                 toolChangeHappened = false;
                             }
@@ -719,7 +719,7 @@ namespace DiabasePrintingWizard
                             else if (primeTool)
                             {
                                 // Prime tool after the following G0/G1 code
-                                replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance:0.00} F{toolChangeRetractionSpeed}".ToString(FrmMain.numberFormat), toolChangeRetractionSpeed / 60.0));
+                                replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed}".ToString(FrmMain.numberFormat), toolChangeRetractionSpeed / 60.0));
                                 toolPrimed[currentTool - 1] = true;
                                 primeTool = false;
                             }
