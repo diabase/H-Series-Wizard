@@ -19,7 +19,7 @@ namespace DiabasePrintingWizard
         {
             if (FindParameter(chr, out string expression, true) && expression != "")
             {
-                this.Content = this.Content.Replace($"{chr}{expression}", $"{chr}{newValue}".ToString(FrmMain.numberFormat));
+                this.Content = this.Content.Replace($"{chr}{expression}", $"{chr}{newValue.ToString("F3", FrmMain.numberFormat)}");
                 return true;
             }
             return false;
