@@ -16,6 +16,7 @@ namespace DiabasePrintingWizard
 {
     public partial class FrmMain : Form
     {
+        public static readonly string version = "v1.0.2";
         public static readonly NumberFormatInfo numberFormat = CultureInfo.CreateSpecificCulture("en-US").NumberFormat;
 
         private Duet.Observer observer;
@@ -40,6 +41,7 @@ namespace DiabasePrintingWizard
         {
             numberFormat.NumberGroupSeparator = "";
             InitializeComponent();
+            lblVersion.Text = version;
             dgvCustomActions.AutoGenerateColumns = false;
             dgvCustomActions.DataSource = overrideRules;
 
