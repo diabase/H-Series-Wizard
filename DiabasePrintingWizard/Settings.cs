@@ -36,5 +36,7 @@
         public bool GenerateSpecialSupport { get; set; }
 
         public RotaryPrintingSettings RotaryPrinting { get; set; }
+
+        public bool IslandCombining { get; set; } = true;
     }
 }

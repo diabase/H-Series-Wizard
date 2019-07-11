@@ -434,36 +434,40 @@ namespace DiabasePrintingWizard
             maxProgress.Report(Math.Max(layers.Count * 2 - 2, 0));
 
             // Combine tool islands per layer, adjust tool change sequences and take care of rules
-            bool startWithLowestTool = true;
-            int iteration = 1, currentTool = -1;
             OverrideRule activeRule = null;
-            for (int layerIndex = 1; layerIndex < layers.Count; layerIndex++)
+            int iteration = 1;
+            if (this.settings.IslandCombining)
             {
-                GCodeLayer layer = layers[layerIndex];
-                GCodeLayer replacementLayer = new GCodeLayer(layerIndex, layer.ZHeight);
-
-                if (startWithLowestTool)
+                bool startWithLowestTool = true;
+                int currentTool = -1;
+                for (int layerIndex = 1; layerIndex < layers.Count; layerIndex++)
                 {
-                    for (int toolNumber = 1; toolNumber <= settings.Tools.Length; toolNumber++)
-                    {
-                        // Go from T1-T5
-                        GCodeSegment segment = CombineSegments(layer, toolNumber, ref currentTool, ref activeRule);
-                        if (segment != null) { replacementLayer.Segments.Add(segment); }
-                    }
-                }
-                else
-                {
-                    for (int toolNumber = settings.Tools.Length; toolNumber >= 1; toolNumber--)
-                    {
-                        // Go from T5-T1
-                        GCodeSegment segment = CombineSegments(layer, toolNumber, ref currentTool, ref activeRule);
-                        if (segment != null) { replacementLayer.Segments.Add(segment); }
-                    }
-                }
-                startWithLowestTool = !startWithLowestTool;
+                    GCodeLayer layer = layers[layerIndex];
+                    GCodeLayer replacementLayer = new GCodeLayer(layerIndex, layer.ZHeight);
 
-                layers[layerIndex] = replacementLayer;
-                progress.Report(iteration++);
+                    if (startWithLowestTool)
+                    {
+                        for (int toolNumber = 1; toolNumber <= settings.Tools.Length; toolNumber++)
+                        {
+                            // Go from T1-T5
+                            GCodeSegment segment = CombineSegments(layer, toolNumber, ref currentTool, ref activeRule);
+                            if (segment != null) { replacementLayer.Segments.Add(segment); }
+                        }
+                    }
+                    else
+                    {
+                        for (int toolNumber = settings.Tools.Length; toolNumber >= 1; toolNumber--)
+                        {
+                            // Go from T5-T1
+                            GCodeSegment segment = CombineSegments(layer, toolNumber, ref currentTool, ref activeRule);
+                            if (segment != null) { replacementLayer.Segments.Add(segment); }
+                        }
+                    }
+                    startWithLowestTool = !startWithLowestTool;
+
+                    layers[layerIndex] = replacementLayer;
+                    progress.Report(iteration++);
+                }
             }
 
             // Make sure the last applied rule is reset before the print finishes
