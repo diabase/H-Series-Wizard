@@ -467,10 +467,21 @@ namespace DiabasePrintingWizard
                 }
                 else
                 {
-                    for (int segNo = 0; segNo < layer.Segments.Count; segNo++)
+                    double currentZ = 0.0;
+                    foreach (GCodeSegment segment in layer.Segments)
                     {
-                        GCodeSegment segment = CombineSegments(layer, layer.Segments[segNo].Tool, ref currentTool, ref activeRule, segNo);
-                        if (segment != null) { replacementLayer.Segments.Add(segment); }
+                        int toolNumber = segment.Tool;
+                        List<GCodeLine> replacementLines = new List<GCodeLine>();
+                        Coordinate lastPosition = EnrichSegment(layer, toolNumber, ref currentTool, ref activeRule, replacementLines, ref currentZ, segment);
+                        if (replacementLines.Count > 0)
+                        {
+                            replacementLayer.Segments.Add(
+                            new GCodeSegment($"T{toolNumber}", toolNumber, null)
+                            {
+                                Lines = replacementLines,
+                                LastPosition = lastPosition
+                            });
+                        }
                     }
                 }
 
@@ -687,89 +698,89 @@ namespace DiabasePrintingWizard
 
             List<GCodeLine> replacementLines = new List<GCodeLine>();
             double currentZ = 0.0;
-            bool primeTool = false;
-            bool ensureUnhopAfterToolChange = false;
             Coordinate lastPosition = null;
-            for (int segNo = startSegment; segNo < layer.Segments.Count; segNo++)
+            foreach (GCodeSegment segment in layer.Segments)
             {
-                GCodeSegment segment = layer.Segments[segNo];
                 // Filter to the requested tool
-                if (!settings.IslandCombining || segment.Tool == toolNumber)
+                if (segment.Tool == toolNumber)
                 {
-                    foreach (GCodeLine line in segment.Lines)
-                    {
-                        // We have to check StartsWith in case there is any other code that has G as a parameter
-                        if (line.Content.StartsWith("G", StringComparison.InvariantCulture))
-                        {
-
-                            // Get GCode of current line
-                            int? gCode = line.GetIValue('G');
-
-                            // Movement
-                            if (gCode == 0 || gCode == 1)
-                            {
-                                // Keep track of the current Z position
-                                double? zPosition = line.GetFValue('Z');
-                                if (zPosition.HasValue)
-                                {
-                                    currentZ = zPosition.Value;
-
-                                    // Since we have a Z height in this line we don't have to insert an artificial one
-                                    ensureUnhopAfterToolChange = false;
-                                }
-
-                                // Make sure to un-hop before the first extrusion if required
-                                if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || ensureUnhopAfterToolChange))
-                                {
-                                    replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
-                                    currentZ = layer.ZHeight;
-                                    ensureUnhopAfterToolChange = false;
-                                }
-
-                                // Add next movement of the segment
-                                replacementLines.Add(line);
-
-                                // Insert potential tool changes after first G0/G1 code
-                                if (toolNumber != currentTool)
-                                {
-                                    AddToolChange(replacementLines, currentTool, toolNumber);
-                                    currentTool = toolNumber;
-                                    primeTool = !toolPrimed[currentTool - 1];
-
-                                    // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
-                                    ensureUnhopAfterToolChange = true;
-                                }
-                                else if (primeTool)
-                                {
-                                    // Prime tool after the following G0/G1 code
-                                    replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed}".ToString(FrmMain.numberFormat), toolChangeRetractionSpeed / 60.0));
-                                    toolPrimed[currentTool - 1] = true;
-                                    primeTool = false;
-                                }
-                            }
-                        }
-                        // Always add it if is no movement
-                        else
-                        {
-                            replacementLines.Add(line);
-                        }
-
-                        // Deal with custom rules
-                        OverrideRule rule = GetRule(currentTool, layer.Number, segment);
-                        if (rule != activeRule)
-                        {
-                            ApplyRule(activeRule, replacementLines, rule);
-                            activeRule = rule;
-                        }
-                    }
-                    lastPosition = segment.LastPosition;
-                    if (!settings.IslandCombining)
-                    {
-                        break;
-                    }
+                    lastPosition = EnrichSegment(layer, toolNumber, ref currentTool, ref activeRule, replacementLines, ref currentZ, segment);
                 }
             }
             return (replacementLines.Count == 0) ? null : new GCodeSegment($"T{toolNumber}", toolNumber, null) { Lines = replacementLines, LastPosition = lastPosition };
+        }
+
+        private Coordinate EnrichSegment(GCodeLayer layer, int toolNumber, ref int currentTool, ref OverrideRule activeRule, List<GCodeLine> replacementLines, ref double currentZ, GCodeSegment segment)
+        {
+            bool primeTool = false;
+            bool ensureUnhopAfterToolChange = false;
+            foreach (GCodeLine line in segment.Lines)
+            {
+                // We have to check StartsWith in case there is any other code that has G as a parameter
+                if (line.Content.StartsWith("G", StringComparison.InvariantCulture))
+                {
+
+                    // Get GCode of current line
+                    int? gCode = line.GetIValue('G');
+
+                    // Movement
+                    if (gCode == 0 || gCode == 1)
+                    {
+                        // Keep track of the current Z position
+                        double? zPosition = line.GetFValue('Z');
+                        if (zPosition.HasValue)
+                        {
+                            currentZ = zPosition.Value;
+
+                            // Since we have a Z height in this line we don't have to insert an artificial one
+                            ensureUnhopAfterToolChange = false;
+                        }
+
+                        // Make sure to un-hop before the first extrusion if required
+                        if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || ensureUnhopAfterToolChange))
+                        {
+                            replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
+                            currentZ = layer.ZHeight;
+                            ensureUnhopAfterToolChange = false;
+                        }
+
+                        // Add next movement of the segment
+                        replacementLines.Add(line);
+
+                        // Insert potential tool changes after first G0/G1 code
+                        if (toolNumber != currentTool)
+                        {
+                            AddToolChange(replacementLines, currentTool, toolNumber);
+                            currentTool = toolNumber;
+                            primeTool = !toolPrimed[currentTool - 1];
+
+                            // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
+                            ensureUnhopAfterToolChange = true;
+                        }
+                        else if (primeTool)
+                        {
+                            // Prime tool after the following G0/G1 code
+                            replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed}".ToString(FrmMain.numberFormat), toolChangeRetractionSpeed / 60.0));
+                            toolPrimed[currentTool - 1] = true;
+                            primeTool = false;
+                        }
+                    }
+                }
+                // Always add it if is no movement
+                else
+                {
+                    replacementLines.Add(line);
+                }
+
+                // Deal with custom rules
+                OverrideRule rule = GetRule(currentTool, layer.Number, segment);
+                if (rule != activeRule)
+                {
+                    ApplyRule(activeRule, replacementLines, rule);
+                    activeRule = rule;
+                }
+            }
+            return segment.LastPosition;
         }
 
         private static void ApplyRule(OverrideRule activeRule, List<GCodeLine> replacementLines, OverrideRule rule)
