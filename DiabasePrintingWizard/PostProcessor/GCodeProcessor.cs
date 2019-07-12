@@ -18,8 +18,8 @@ namespace DiabasePrintingWizard
 
         private FileStream input;
         private SettingsContainer settings;
-        private IList<OverrideRule> rules;
-        private Duet.MachineInfo machineInfo;
+        private readonly IList<OverrideRule> rules;
+        private readonly Duet.MachineInfo machineInfo;
         private IProgress<int> progress;
         private IProgress<int> maxProgress;
 
@@ -88,9 +88,9 @@ namespace DiabasePrintingWizard
                     bool writeLine = true;
                     GCodeLine line = new GCodeLine(lineBuffer);
 
-                    if (lineBuffer.StartsWith(";"))
+                    if (lineBuffer.StartsWith(";", StringComparison.InvariantCulture))
                     {
-                        if (lineBuffer.StartsWith("; layer "))
+                        if (lineBuffer.StartsWith("; layer ", StringComparison.InvariantCulture))
                         {
                             segment.LastPosition = lastPoint.Clone();
                             // Add past layer
@@ -100,7 +100,7 @@ namespace DiabasePrintingWizard
                             // Get the Z height. S3D provides it via the comment except before the end
                             string lastParameter = lineBuffer.Split(' ').Last();
                             double zHeight = (lastParameter == "end") ? double.NaN : double.Parse(lastParameter, FrmMain.numberFormat);
-                            if (lineBuffer.StartsWith("; layer 1, Z ="))
+                            if (lineBuffer.StartsWith("; layer 1, Z =", StringComparison.InvariantCulture))
                             {
                                 firstLayerHeight = zHeight;
                             }
@@ -112,8 +112,8 @@ namespace DiabasePrintingWizard
                             isInterfacingSet = layer.Number < 2;
                         }
                         else if ((layer.Number == 0 && lineNumber > 2 && !lineBuffer.Contains("layerHeight"))
-                                    || lineBuffer.StartsWith("; tool")
-                                    || lineBuffer.StartsWith("; process"))
+                                    || lineBuffer.StartsWith("; tool", StringComparison.InvariantCulture)
+                                    || lineBuffer.StartsWith("; process", StringComparison.InvariantCulture))
                         {
                             // Keep first two comment lines but get rid of S3D process description and
                             // remove "; tool" as well as "; process" lines because they are completely useless
@@ -134,7 +134,7 @@ namespace DiabasePrintingWizard
                         else if (layer.Number > 0)
                         {
                             // T-codes are generated just before a new segment starts
-                            string region = lineBuffer.Substring(lineBuffer.StartsWith("; feature") ? 9 : 1).Trim();
+                            string region = lineBuffer.Substring(lineBuffer.StartsWith("; feature", StringComparison.InvariantCulture) ? 9 : 1).Trim();
                             if (segment.Lines.Count == 0)
                             {
                                 segment.Name = region;
@@ -323,13 +323,13 @@ namespace DiabasePrintingWizard
             for (int i = 0; i < initialization.Lines.Count; i++)
             {
                 GCodeLine line = initialization.Lines[i];
-                if (line.Content.StartsWith("G28"))
+                if (line.Content.StartsWith("G28", StringComparison.InvariantCulture))
                 {
                     initialization.Lines.RemoveAt(i);
                     // We need to manually decrement i to not miss the next line
                     --i;
                 }
-                else if (line.Content.StartsWith("G32"))
+                else if (line.Content.StartsWith("G32", StringComparison.InvariantCulture))
                 {
                     initialization.Lines.RemoveAt(i);
                     initialization.Lines.Insert(i, new GCodeLine("G29 S1 ; Load height map"));
@@ -349,7 +349,7 @@ namespace DiabasePrintingWizard
                     for (int i = 0; i < s.Lines.Count; i++)
                     {
                         GCodeLine line = s.Lines[i];
-                        if (line.Content.StartsWith("G10 P"))
+                        if (line.Content.StartsWith("G10 P", StringComparison.InvariantCulture))
                         {
                             int? toolNo = line.GetIValue('P');
                             if (!usedTools.Contains(toolNo.Value))
@@ -436,15 +436,15 @@ namespace DiabasePrintingWizard
             // Combine tool islands per layer, adjust tool change sequences and take care of rules
             OverrideRule activeRule = null;
             int iteration = 1;
-            if (this.settings.IslandCombining)
+            bool startWithLowestTool = true;
+            int currentTool = -1;
+            for (int layerIndex = 1; layerIndex < layers.Count; layerIndex++)
             {
-                bool startWithLowestTool = true;
-                int currentTool = -1;
-                for (int layerIndex = 1; layerIndex < layers.Count; layerIndex++)
-                {
-                    GCodeLayer layer = layers[layerIndex];
-                    GCodeLayer replacementLayer = new GCodeLayer(layerIndex, layer.ZHeight);
+                GCodeLayer layer = layers[layerIndex];
+                GCodeLayer replacementLayer = new GCodeLayer(layerIndex, layer.ZHeight);
 
+                if (settings.IslandCombining)
+                {
                     if (startWithLowestTool)
                     {
                         for (int toolNumber = 1; toolNumber <= settings.Tools.Length; toolNumber++)
@@ -464,10 +464,18 @@ namespace DiabasePrintingWizard
                         }
                     }
                     startWithLowestTool = !startWithLowestTool;
-
-                    layers[layerIndex] = replacementLayer;
-                    progress.Report(iteration++);
                 }
+                else
+                {
+                    for (int segNo = 0; segNo < layer.Segments.Count; segNo++)
+                    {
+                        GCodeSegment segment = CombineSegments(layer, layer.Segments[segNo].Tool, ref currentTool, ref activeRule, segNo);
+                        if (segment != null) { replacementLayer.Segments.Add(segment); }
+                    }
+                }
+
+                layers[layerIndex] = replacementLayer;
+                progress.Report(iteration++);
             }
 
             // Make sure the last applied rule is reset before the print finishes
@@ -610,13 +618,15 @@ namespace DiabasePrintingWizard
                         for (int i = 0; i < segment.Lines.Count; i++)
                         {
                             string content = segment.Lines[i].Content;
-                            if (content.StartsWith($"G10 P{toolNumber} R"))
+                            if (content.StartsWith($"G10 P{toolNumber} R", StringComparison.InvariantCulture))
                             {
                                 // Replace the command setting the tool to standby temp if it will be next anyway
                                 segment.Lines.RemoveAt(i);
                                 segment.Lines.Insert(i, new GCodeLine($"G10 P{toolNumber} R{tool.ActiveTemperature}".ToString(FrmMain.numberFormat)));
                                 break;
-                            } else if (content.StartsWith("T") || content.StartsWith("M98 P\"tprime")) {
+                            }
+                            else if (content.StartsWith("T", StringComparison.InvariantCulture) || content.StartsWith("M98 P\"tprime", StringComparison.InvariantCulture))
+                            {
                                 // Insert command for preheating right before Tnnn or the priming macro
                                 segment.Lines.Insert(i, new GCodeLine($"G10 P{toolNumber} R{tool.ActiveTemperature}".ToString(FrmMain.numberFormat)));
                                 break;
@@ -658,7 +668,8 @@ namespace DiabasePrintingWizard
             if (this.layers[layerNumber].Segments.Count > segmentNumber + 1)
             {
                 return this.layers[layerNumber].Segments[segmentNumber + 1].Tool;
-            } else if (this.layers.Count > layerNumber + 1 && this.layers[layerNumber + 1].Segments.Count > 0)
+            }
+            else if (this.layers.Count > layerNumber + 1 && this.layers[layerNumber + 1].Segments.Count > 0)
             {
                 return this.layers[layerNumber + 1].Segments[0].Tool;
             }
@@ -666,7 +677,7 @@ namespace DiabasePrintingWizard
         }
 
         // Perform island combination for a given tool on a given layer returning a segment for the selected tool
-        private GCodeSegment CombineSegments(GCodeLayer layer, int toolNumber, ref int currentTool, ref OverrideRule activeRule)
+        private GCodeSegment CombineSegments(GCodeLayer layer, int toolNumber, ref int currentTool, ref OverrideRule activeRule, int startSegment = 0)
         {
             if (settings.Tools[toolNumber - 1].Type != ToolType.Nozzle)
             {
@@ -677,60 +688,69 @@ namespace DiabasePrintingWizard
             List<GCodeLine> replacementLines = new List<GCodeLine>();
             double currentZ = 0.0;
             bool primeTool = false;
-            bool toolChangeHappened = false;
+            bool ensureUnhopAfterToolChange = false;
             Coordinate lastPosition = null;
-            foreach (GCodeSegment segment in layer.Segments)
+            for (int segNo = startSegment; segNo < layer.Segments.Count; segNo++)
             {
-                if (segment.Tool == toolNumber)
+                GCodeSegment segment = layer.Segments[segNo];
+                // Filter to the requested tool
+                if (!settings.IslandCombining || segment.Tool == toolNumber)
                 {
                     foreach (GCodeLine line in segment.Lines)
                     {
-                        // Add next line
-                        int? gCode = line.GetIValue('G');
-                        if (gCode == 0 || gCode == 1)
+                        // We have to check StartsWith in case there is any other code that has G as a parameter
+                        if (line.Content.StartsWith("G", StringComparison.InvariantCulture))
                         {
-                            // Keep track of the current Z position
-                            double? zPosition = line.GetFValue('Z');
-                            if (zPosition.HasValue) { 
-                                currentZ = zPosition.Value;
-                                if (toolChangeHappened)
+
+                            // Get GCode of current line
+                            int? gCode = line.GetIValue('G');
+
+                            // Movement
+                            if (gCode == 0 || gCode == 1)
+                            {
+                                // Keep track of the current Z position
+                                double? zPosition = line.GetFValue('Z');
+                                if (zPosition.HasValue)
                                 {
-                                    toolChangeHappened = false;
+                                    currentZ = zPosition.Value;
+
+                                    // Since we have a Z height in this line we don't have to insert an artificial one
+                                    ensureUnhopAfterToolChange = false;
+                                }
+
+                                // Make sure to un-hop before the first extrusion if required
+                                if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || ensureUnhopAfterToolChange))
+                                {
+                                    replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
+                                    currentZ = layer.ZHeight;
+                                    ensureUnhopAfterToolChange = false;
+                                }
+
+                                // Add next movement of the segment
+                                replacementLines.Add(line);
+
+                                // Insert potential tool changes after first G0/G1 code
+                                if (toolNumber != currentTool)
+                                {
+                                    AddToolChange(replacementLines, currentTool, toolNumber);
+                                    currentTool = toolNumber;
+                                    primeTool = !toolPrimed[currentTool - 1];
+
+                                    // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
+                                    ensureUnhopAfterToolChange = true;
+                                }
+                                else if (primeTool)
+                                {
+                                    // Prime tool after the following G0/G1 code
+                                    replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed}".ToString(FrmMain.numberFormat), toolChangeRetractionSpeed / 60.0));
+                                    toolPrimed[currentTool - 1] = true;
+                                    primeTool = false;
                                 }
                             }
-
-                            // Make sure to un-hop before the first extrusion if required
-                            if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || toolChangeHappened))
-                            {
-                                replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
-                                currentZ = layer.ZHeight;
-                                toolChangeHappened = false;
-                            }
-
-                            // Add next movement of the segment
-                            replacementLines.Add(line);
-
-                            // Insert potential tool changes after first G0/G1 code
-                            if (toolNumber != currentTool)
-                            {
-                                AddToolChange(replacementLines, currentTool, toolNumber);
-                                currentTool = toolNumber;
-                                primeTool = !toolPrimed[currentTool - 1];
-
-                                // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
-                                toolChangeHappened = true;
-                            }
-                            else if (primeTool)
-                            {
-                                // Prime tool after the following G0/G1 code
-                                replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed}".ToString(FrmMain.numberFormat), toolChangeRetractionSpeed / 60.0));
-                                toolPrimed[currentTool - 1] = true;
-                                primeTool = false;
-                            }
                         }
+                        // Always add it if is no movement
                         else
                         {
-                            // Always add it if is no movement
                             replacementLines.Add(line);
                         }
 
@@ -738,31 +758,40 @@ namespace DiabasePrintingWizard
                         OverrideRule rule = GetRule(currentTool, layer.Number, segment);
                         if (rule != activeRule)
                         {
-                            if (rule == null)
-                            {
-                                // Reset speed and/or extrusion factor
-                                if (activeRule.SpeedFactor != 100) { replacementLines.Add(new GCodeLine("M220 S100")); }
-                                if (activeRule.ExtrusionFactor != 100) { replacementLines.Add(new GCodeLine("M221 S100")); }
-                            }
-                            else
-                            {
-                                // Apply new speed and/or extrusion factor
-                                if ((activeRule == null && rule.SpeedFactor != 100) || (activeRule != null && activeRule.SpeedFactor != rule.SpeedFactor))
-                                {
-                                    replacementLines.Add(new GCodeLine($"M220 S{rule.SpeedFactor}".ToString(FrmMain.numberFormat)));
-                                }
-                                if ((activeRule == null && rule.ExtrusionFactor != 100) || (activeRule != null && activeRule.ExtrusionFactor != rule.ExtrusionFactor))
-                                {
-                                    replacementLines.Add(new GCodeLine($"M221 S{rule.ExtrusionFactor}".ToString(FrmMain.numberFormat)));
-                                }
-                            }
+                            ApplyRule(activeRule, replacementLines, rule);
                             activeRule = rule;
                         }
                     }
                     lastPosition = segment.LastPosition;
+                    if (!settings.IslandCombining)
+                    {
+                        break;
+                    }
                 }
             }
             return (replacementLines.Count == 0) ? null : new GCodeSegment($"T{toolNumber}", toolNumber, null) { Lines = replacementLines, LastPosition = lastPosition };
+        }
+
+        private static void ApplyRule(OverrideRule activeRule, List<GCodeLine> replacementLines, OverrideRule rule)
+        {
+            if (rule == null)
+            {
+                // Reset speed and/or extrusion factor
+                if (activeRule.SpeedFactor != 100) { replacementLines.Add(new GCodeLine("M220 S100")); }
+                if (activeRule.ExtrusionFactor != 100) { replacementLines.Add(new GCodeLine("M221 S100")); }
+            }
+            else
+            {
+                // Apply new speed and/or extrusion factor
+                if ((activeRule == null && rule.SpeedFactor != 100) || (activeRule != null && activeRule.SpeedFactor != rule.SpeedFactor))
+                {
+                    replacementLines.Add(new GCodeLine($"M220 S{rule.SpeedFactor}".ToString(FrmMain.numberFormat)));
+                }
+                if ((activeRule == null && rule.ExtrusionFactor != 100) || (activeRule != null && activeRule.ExtrusionFactor != rule.ExtrusionFactor))
+                {
+                    replacementLines.Add(new GCodeLine($"M221 S{rule.ExtrusionFactor}".ToString(FrmMain.numberFormat)));
+                }
+            }
         }
 
         private void AddToolChange(List<GCodeLine> lines, int oldToolNumber, int newToolNumber)
@@ -799,11 +828,11 @@ namespace DiabasePrintingWizard
         public async Task WriteToFile(FileStream stream)
         {
             StreamWriter sw = new StreamWriter(stream);
-            foreach(GCodeLayer layer in layers)
+            foreach (GCodeLayer layer in layers)
             {
-                foreach(GCodeSegment segment in layer.Segments)
+                foreach (GCodeSegment segment in layer.Segments)
                 {
-                    foreach(GCodeLine line in segment.Lines)
+                    foreach (GCodeLine line in segment.Lines)
                     {
                         await sw.WriteLineAsync(line.Content);
                     }
