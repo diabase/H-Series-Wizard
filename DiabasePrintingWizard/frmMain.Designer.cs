@@ -262,12 +262,13 @@
             // 
             // lblVersion
             // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(536, 106);
+            this.lblVersion.AutoSize = false;
+            this.lblVersion.Location = new System.Drawing.Point(471, 106);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(35, 13);
+            this.lblVersion.Size = new System.Drawing.Size(100, 13);
             this.lblVersion.TabIndex = 30;
             this.lblVersion.Text = "vDEV";
+            this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // gbType
             // 
@@ -395,7 +396,7 @@
             // 
             // lblDescription
             // 
-            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDescription.AutoSize = true;
             this.lblDescription.Location = new System.Drawing.Point(11, 110);
@@ -1135,7 +1136,7 @@
             // 
             // nudPreheat3
             // 
-            this.nudPreheat3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudPreheat3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat3.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat3.Margin = new System.Windows.Forms.Padding(2);
@@ -1192,7 +1193,7 @@
             // 
             // nudTemp3
             // 
-            this.nudTemp3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudTemp3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp3.DecimalPlaces = 1;
             this.nudTemp3.Location = new System.Drawing.Point(7, 49);
@@ -1260,7 +1261,7 @@
             // 
             // nudPreheat5
             // 
-            this.nudPreheat5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudPreheat5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat5.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat5.Margin = new System.Windows.Forms.Padding(2);
@@ -1317,7 +1318,7 @@
             // 
             // nudTemp5
             // 
-            this.nudTemp5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudTemp5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp5.DecimalPlaces = 1;
             this.nudTemp5.Location = new System.Drawing.Point(7, 49);
@@ -1385,7 +1386,7 @@
             // 
             // nudPreheat4
             // 
-            this.nudPreheat4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudPreheat4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat4.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat4.Margin = new System.Windows.Forms.Padding(2);
@@ -1442,7 +1443,7 @@
             // 
             // nudTemp4
             // 
-            this.nudTemp4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudTemp4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp4.DecimalPlaces = 1;
             this.nudTemp4.Location = new System.Drawing.Point(7, 49);
@@ -1510,7 +1511,7 @@
             // 
             // nudPreheat1
             // 
-            this.nudPreheat1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudPreheat1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat1.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat1.Margin = new System.Windows.Forms.Padding(2);
@@ -1567,7 +1568,7 @@
             // 
             // nudTemp1
             // 
-            this.nudTemp1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudTemp1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp1.DecimalPlaces = 1;
             this.nudTemp1.Location = new System.Drawing.Point(7, 49);
@@ -1635,7 +1636,7 @@
             // 
             // nudPreheat2
             // 
-            this.nudPreheat2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudPreheat2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat2.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat2.Margin = new System.Windows.Forms.Padding(2);
@@ -1692,7 +1693,7 @@
             // 
             // nudTemp2
             // 
-            this.nudTemp2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.nudTemp2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp2.DecimalPlaces = 1;
             this.nudTemp2.Location = new System.Drawing.Point(7, 49);

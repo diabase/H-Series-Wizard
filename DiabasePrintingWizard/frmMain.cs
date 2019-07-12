@@ -16,7 +16,7 @@ namespace DiabasePrintingWizard
 {
     public partial class FrmMain : Form
     {
-        public static readonly string version = "v1.0.2";
+        public static readonly string version = "v1.0.2-dev";
         public static readonly NumberFormatInfo numberFormat = CultureInfo.CreateSpecificCulture("en-US").NumberFormat;
 
         private Duet.Observer observer;
@@ -720,7 +720,8 @@ namespace DiabasePrintingWizard
                             {
                                 InnerRadius = innerRadius
                             };
-                        } else if (innerRadius < rotaryPrintingSettings.InnerRadius)
+                        }
+                        else if (innerRadius < rotaryPrintingSettings.InnerRadius)
                         {
                             rotaryPrintingSettings.InnerRadius = innerRadius;
                         }
@@ -812,8 +813,9 @@ namespace DiabasePrintingWizard
         private void AwpActions_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             this.nudModelID.Enabled = this.rbRotary.Checked && this.rotaryPrintingSettings == null;
-            if (this.rotaryPrintingSettings != null) {
-                this.nudModelID.Value = (decimal) rotaryPrintingSettings.InnerRadius;
+            if (this.rotaryPrintingSettings != null)
+            {
+                this.nudModelID.Value = (decimal)rotaryPrintingSettings.InnerRadius;
             }
             btnBack.Enabled = true;
             btnNext.Enabled = true;
@@ -1036,7 +1038,7 @@ namespace DiabasePrintingWizard
 
             postProcessingTask = null;
         }
-        
+
         private void BtnSave_Click(object sender, EventArgs e)
         {
             if (sfdGCode.ShowDialog() == DialogResult.OK)
