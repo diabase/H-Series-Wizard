@@ -209,14 +209,8 @@ namespace DiabasePrintingWizard
                             int? mCode = line.GetIValue('M');
                             if (mCode != null)
                             {
-                                // M106
-                                if (mCode == 106)
-                                {
-                                    // FIXME: Check machineInfo for non-thermostatic fans
-                                    writeLine = false;
-                                }
                                 // M104
-                                else if (mCode == 104)
+                                if (mCode == 104)
                                 {
                                     double? sParam = line.GetFValue('S');
                                     int? tParam = line.GetIValue('T');
@@ -745,6 +739,14 @@ namespace DiabasePrintingWizard
                             ensureUnhopAfterToolChange = false;
                         }
 
+                        // Prime tool before first extrusion
+                        if (primeTool && line.GetFValue('E').HasValue)
+                        {
+                            replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed.ToString(FrmMain.numberFormat)}", toolChangeRetractionSpeed / 60.0));
+                            toolPrimed[currentTool - 1] = true;
+                            primeTool = false;
+                        }
+
                         // Add next movement of the segment
                         replacementLines.Add(line);
 
@@ -757,13 +759,6 @@ namespace DiabasePrintingWizard
 
                             // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
                             ensureUnhopAfterToolChange = true;
-                        }
-                        else if (primeTool)
-                        {
-                            // Prime tool after the following G0/G1 code
-                            replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed.ToString(FrmMain.numberFormat)}", toolChangeRetractionSpeed / 60.0));
-                            toolPrimed[currentTool - 1] = true;
-                            primeTool = false;
                         }
                     }
                 }
