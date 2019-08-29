@@ -492,6 +492,93 @@ namespace DiabasePrintingWizard
                 activeRule = null;
             }
 
+
+            InsertPreheatingSequences(ref iteration);
+
+            FixToolChangeRetractionAndPriming();
+        }
+
+        private void FixToolChangeRetractionAndPriming()
+        {
+            // Fix toolchange retraction/priming
+            for (int layerNumber = 1; layerNumber < layers.Count; layerNumber++)
+            {
+                GCodeLayer layer = layers[layerNumber];
+                for (int segmentNumber = 0; segmentNumber < layer.Segments.Count; segmentNumber++)
+                {
+                    GCodeSegment segment = layer.Segments[segmentNumber];
+                    for (int lineIndex = 0; lineIndex < segment.Lines.Count; lineIndex++)
+                    {
+                        GCodeLine line = segment.Lines[lineIndex];
+                        // Look for toolchange
+                        if (!line.Content.StartsWith("M98 P\"tprime", StringComparison.InvariantCulture))
+                        {
+                            continue;
+                        }
+
+                        // Search for retraction prior to toolchange
+                        // It will be located at the end of the previous segment
+                        var previousSegment = GetPreviousSegment(layers, layerNumber, segmentNumber);
+                        if (previousSegment != null)
+                        {
+                            var lookbehindLimit = Math.Max(previousSegment.Lines.Count - 5, 0);
+                            for (var reverse = previousSegment.Lines.Count - 1; reverse >= lookbehindLimit; reverse--)
+                            {
+                                if (!previousSegment.Lines[reverse].Content.StartsWith("G1 E-", StringComparison.InvariantCulture))
+                                {
+                                    continue;
+                                }
+                                var eVal = previousSegment.Lines[reverse].GetFValue('E');
+                                if (Math.Abs(eVal.Value) != toolChangeRetractionDistance)
+                                {
+                                    previousSegment.Lines.RemoveAt(reverse);
+                                    previousSegment.Lines.Insert(reverse, new GCodeLine($"G1 E-{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed.ToString(FrmMain.numberFormat)}", toolChangeRetractionSpeed / 60.0));
+                                }
+                                break;
+                            }
+                        }
+
+                        // Search for priming post toolchange
+                        var lookaheadLimit = Math.Min(lineIndex + 5, segment.Lines.Count - 1);
+                        for (var forward = lineIndex + 1; forward <= lookaheadLimit; forward++)
+                        {
+                            if (!segment.Lines[forward].Content.StartsWith("G1 E", StringComparison.InvariantCulture))
+                            {
+                                continue;
+                            }
+                            var eVal = segment.Lines[forward].GetFValue('E');
+                            if (eVal.Value != toolChangeRetractionDistance)
+                            {
+                                segment.Lines.RemoveAt(forward);
+                                segment.Lines.Insert(forward, new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed.ToString(FrmMain.numberFormat)}", toolChangeRetractionSpeed / 60.0));
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private GCodeSegment GetPreviousSegment(List<GCodeLayer> layers, int layerNumber, int segmentNumber)
+        {
+            // Previous segment in same layer
+            if (segmentNumber > 0)
+            {
+                return layers[layerNumber].Segments[segmentNumber - 1];
+            }
+
+            // Check if there is a previous layer with segments
+            if (layerNumber > 0 && layers[layerNumber - 1].Segments.Count > 0)
+            {
+                return layers[layerNumber - 1].Segments[layers[layerNumber - 1].Segments.Count - 1];
+            }
+
+            // No previous segment available
+            return null;
+        }
+
+        private void InsertPreheatingSequences(ref int iteration)
+        {
             int nextTool = -1;
             Dictionary<int, double> preheatCounters = new Dictionary<int, double>();   // Tool number vs. Elapsed time
 
