@@ -50,11 +50,6 @@
             this.cbIslandCombining = new System.Windows.Forms.CheckBox();
             this.gbRules = new System.Windows.Forms.GroupBox();
             this.dgvCustomActions = new System.Windows.Forms.DataGridView();
-            this.dgcTool = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dgcLayer = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dgcRegion = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dgcSpeedFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcExtrusionFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.awpTopSide = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.gbTopFiles = new System.Windows.Forms.GroupBox();
             this.btnTopBrowseSubstractive = new System.Windows.Forms.Button();
@@ -157,6 +152,11 @@
             this.ofdGCode = new System.Windows.Forms.OpenFileDialog();
             this.sfdGCode = new System.Windows.Forms.SaveFileDialog();
             this.sfdFactory = new System.Windows.Forms.SaveFileDialog();
+            this.dgcTool = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dgcLayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcRegion = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dgcSpeedFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcExtrusionFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.awContent.SuspendLayout();
             this.awpWelcome.SuspendLayout();
             this.gbType.SuspendLayout();
@@ -206,8 +206,8 @@
             this.awContent.ButtonLayout = AdvancedWizardControl.Enums.ButtonLayoutKind.Default;
             this.awContent.ButtonsVisible = false;
             this.awContent.CancelButtonText = "&Cancel";
-            this.awContent.Controls.Add(this.awpWelcome);
             this.awContent.Controls.Add(this.awpActions);
+            this.awContent.Controls.Add(this.awpWelcome);
             this.awContent.Controls.Add(this.awpTopSide);
             this.awContent.Controls.Add(this.awpBottomSide);
             this.awContent.Controls.Add(this.awpMachineProperties);
@@ -262,7 +262,6 @@
             // 
             // lblVersion
             // 
-            this.lblVersion.AutoSize = false;
             this.lblVersion.Location = new System.Drawing.Point(471, 106);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(100, 13);
@@ -396,7 +395,7 @@
             // 
             // lblDescription
             // 
-            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDescription.AutoSize = true;
             this.lblDescription.Location = new System.Drawing.Point(11, 110);
@@ -504,62 +503,6 @@
             this.dgvCustomActions.Name = "dgvCustomActions";
             this.dgvCustomActions.Size = new System.Drawing.Size(554, 139);
             this.dgvCustomActions.TabIndex = 2;
-            // 
-            // dgcTool
-            // 
-            this.dgcTool.DataPropertyName = "Tool";
-            this.dgcTool.HeaderText = "Tool";
-            this.dgcTool.Items.AddRange(new object[] {
-            "Any",
-            "Tool 1",
-            "Tool 2",
-            "Tool 3",
-            "Tool 4",
-            "Tool 5"});
-            this.dgcTool.Name = "dgcTool";
-            this.dgcTool.Width = 65;
-            // 
-            // dgcLayer
-            // 
-            this.dgcLayer.DataPropertyName = "Layer";
-            this.dgcLayer.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.dgcLayer.HeaderText = "Layer";
-            this.dgcLayer.Items.AddRange(new object[] {
-            "Any"});
-            this.dgcLayer.Name = "dgcLayer";
-            this.dgcLayer.Width = 65;
-            // 
-            // dgcRegion
-            // 
-            this.dgcRegion.DataPropertyName = "Region";
-            this.dgcRegion.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.dgcRegion.HeaderText = "Print Region";
-            this.dgcRegion.Items.AddRange(new object[] {
-            "Any",
-            "Skirt",
-            "Inner Perimeter",
-            "Outer Perimeter",
-            "Solid Layer",
-            "Infill",
-            "Internal Single Extrusion",
-            "Bridge",
-            "Material Intersection"});
-            this.dgcRegion.Name = "dgcRegion";
-            this.dgcRegion.Width = 125;
-            // 
-            // dgcSpeedFactor
-            // 
-            this.dgcSpeedFactor.DataPropertyName = "SpeedFactor";
-            this.dgcSpeedFactor.HeaderText = "Speed Factor (%)";
-            this.dgcSpeedFactor.Name = "dgcSpeedFactor";
-            this.dgcSpeedFactor.Width = 115;
-            // 
-            // dgcExtrusionFactor
-            // 
-            this.dgcExtrusionFactor.DataPropertyName = "ExtrusionFactor";
-            this.dgcExtrusionFactor.HeaderText = "Extrusion Factor (%)";
-            this.dgcExtrusionFactor.Name = "dgcExtrusionFactor";
-            this.dgcExtrusionFactor.Width = 130;
             // 
             // awpTopSide
             // 
@@ -1136,7 +1079,7 @@
             // 
             // nudPreheat3
             // 
-            this.nudPreheat3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudPreheat3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat3.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat3.Margin = new System.Windows.Forms.Padding(2);
@@ -1193,7 +1136,7 @@
             // 
             // nudTemp3
             // 
-            this.nudTemp3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudTemp3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp3.DecimalPlaces = 1;
             this.nudTemp3.Location = new System.Drawing.Point(7, 49);
@@ -1261,7 +1204,7 @@
             // 
             // nudPreheat5
             // 
-            this.nudPreheat5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudPreheat5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat5.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat5.Margin = new System.Windows.Forms.Padding(2);
@@ -1318,7 +1261,7 @@
             // 
             // nudTemp5
             // 
-            this.nudTemp5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudTemp5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp5.DecimalPlaces = 1;
             this.nudTemp5.Location = new System.Drawing.Point(7, 49);
@@ -1386,7 +1329,7 @@
             // 
             // nudPreheat4
             // 
-            this.nudPreheat4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudPreheat4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat4.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat4.Margin = new System.Windows.Forms.Padding(2);
@@ -1443,7 +1386,7 @@
             // 
             // nudTemp4
             // 
-            this.nudTemp4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudTemp4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp4.DecimalPlaces = 1;
             this.nudTemp4.Location = new System.Drawing.Point(7, 49);
@@ -1511,7 +1454,7 @@
             // 
             // nudPreheat1
             // 
-            this.nudPreheat1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudPreheat1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat1.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat1.Margin = new System.Windows.Forms.Padding(2);
@@ -1568,7 +1511,7 @@
             // 
             // nudTemp1
             // 
-            this.nudTemp1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudTemp1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp1.DecimalPlaces = 1;
             this.nudTemp1.Location = new System.Drawing.Point(7, 49);
@@ -1636,7 +1579,7 @@
             // 
             // nudPreheat2
             // 
-            this.nudPreheat2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudPreheat2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPreheat2.Location = new System.Drawing.Point(7, 97);
             this.nudPreheat2.Margin = new System.Windows.Forms.Padding(2);
@@ -1693,7 +1636,7 @@
             // 
             // nudTemp2
             // 
-            this.nudTemp2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.nudTemp2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTemp2.DecimalPlaces = 1;
             this.nudTemp2.Location = new System.Drawing.Point(7, 49);
@@ -1927,6 +1870,61 @@
             this.sfdFactory.Filter = "Simplify3D Factory Files (*.factory)|*.factory|All Files (*.*)|*.*";
             this.sfdFactory.RestoreDirectory = true;
             // 
+            // dgcTool
+            // 
+            this.dgcTool.DataPropertyName = "Tool";
+            this.dgcTool.HeaderText = "Tool";
+            this.dgcTool.Items.AddRange(new object[] {
+            "Any",
+            "Tool 1",
+            "Tool 2",
+            "Tool 3",
+            "Tool 4",
+            "Tool 5"});
+            this.dgcTool.Name = "dgcTool";
+            this.dgcTool.Width = 65;
+            // 
+            // dgcLayer
+            // 
+            this.dgcLayer.DataPropertyName = "Layer";
+            this.dgcLayer.HeaderText = "Layer";
+            this.dgcLayer.Name = "dgcLayer";
+            this.dgcLayer.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgcLayer.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dgcLayer.Width = 65;
+            // 
+            // dgcRegion
+            // 
+            this.dgcRegion.DataPropertyName = "Region";
+            this.dgcRegion.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+            this.dgcRegion.HeaderText = "Print Region";
+            this.dgcRegion.Items.AddRange(new object[] {
+            "Any",
+            "Skirt",
+            "Inner Perimeter",
+            "Outer Perimeter",
+            "Solid Layer",
+            "Infill",
+            "Internal Single Extrusion",
+            "Bridge",
+            "Material Intersection"});
+            this.dgcRegion.Name = "dgcRegion";
+            this.dgcRegion.Width = 125;
+            // 
+            // dgcSpeedFactor
+            // 
+            this.dgcSpeedFactor.DataPropertyName = "SpeedFactor";
+            this.dgcSpeedFactor.HeaderText = "Speed Factor (%)";
+            this.dgcSpeedFactor.Name = "dgcSpeedFactor";
+            this.dgcSpeedFactor.Width = 115;
+            // 
+            // dgcExtrusionFactor
+            // 
+            this.dgcExtrusionFactor.DataPropertyName = "ExtrusionFactor";
+            this.dgcExtrusionFactor.HeaderText = "Extrusion Factor (%)";
+            this.dgcExtrusionFactor.Name = "dgcExtrusionFactor";
+            this.dgcExtrusionFactor.Width = 130;
+            // 
             // FrmMain
             // 
             this.AcceptButton = this.btnNext;
@@ -2129,15 +2127,15 @@
         private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.GroupBox gbRules;
         private System.Windows.Forms.DataGridView dgvCustomActions;
-        private System.Windows.Forms.DataGridViewComboBoxColumn dgcTool;
-        private System.Windows.Forms.DataGridViewComboBoxColumn dgcLayer;
-        private System.Windows.Forms.DataGridViewComboBoxColumn dgcRegion;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgcSpeedFactor;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgcExtrusionFactor;
         private System.Windows.Forms.GroupBox gbIDRotaryPrinting;
         private System.Windows.Forms.GroupBox gbIslandCombining;
         private System.Windows.Forms.CheckBox cbIslandCombining;
         private System.Windows.Forms.NumericUpDown nudModelID;
+        private System.Windows.Forms.DataGridViewComboBoxColumn dgcTool;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgcLayer;
+        private System.Windows.Forms.DataGridViewComboBoxColumn dgcRegion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgcSpeedFactor;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgcExtrusionFactor;
     }
 }
 
