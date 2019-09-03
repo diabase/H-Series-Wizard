@@ -104,7 +104,7 @@ namespace DiabasePrintingWizard
             sw.WriteLine(";");
             sw.WriteLine("; -- " + info + " --");
             sw.WriteLine("; Source File: " + stream.Name);
-            sw.WriteLine("; Post-processed with Diabase Printing Wizard " + FrmMain.version);
+
             sw.Flush();
         }
     }
