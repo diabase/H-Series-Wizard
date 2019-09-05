@@ -19,6 +19,7 @@ namespace PostProcess
                 if (!File.Exists(filename))
                 {
                     Console.WriteLine("Error: File not found");
+                    return;
                 }
                 else
                 {
@@ -34,6 +35,7 @@ namespace PostProcess
                         pipeClient.Close();
 
                         Console.WriteLine("Done!");
+                        return;
                     }
                     catch (Exception e)
                     {
@@ -41,6 +43,16 @@ namespace PostProcess
                         Console.WriteLine(e);
                     }
                 }
+
+                // Try to start the Wizard in this case
+                System.Diagnostics.Process wizard = new System.Diagnostics.Process();
+                wizard.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DiabasePrintingWizard.exe");
+                wizard.StartInfo.Arguments = filename;
+                wizard.StartInfo.UseShellExecute = false;
+                wizard.StartInfo.RedirectStandardOutput = true;
+                wizard.Start();
+                string output = wizard.StandardOutput.ReadToEnd(); //The output result
+                wizard.WaitForExit();
             }
         }
     }

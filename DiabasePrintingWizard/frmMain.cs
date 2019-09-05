@@ -37,7 +37,7 @@ namespace DiabasePrintingWizard
 
         private BindingList<OverrideRule> overrideRules = new BindingList<OverrideRule>();
 
-        public FrmMain()
+        public FrmMain(string filename)
         {
             numberFormat.NumberGroupSeparator = "";
             InitializeComponent();
@@ -62,6 +62,10 @@ namespace DiabasePrintingWizard
             if (Properties.Settings.Default.Storage != "")
             {
                 Settings = JsonConvert.DeserializeObject<SettingsContainer>(Properties.Settings.Default.Storage);
+            }
+
+            if (filename != null) {
+                txtTopFileAdditive.Text = filename;
             }
         }
 
