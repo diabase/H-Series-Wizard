@@ -16,6 +16,8 @@ namespace DiabasePrintingWizard
 
         private static readonly double OneeightyOverPI = 180 / Math.PI;
 
+        private static readonly string ToolChangeMarker = " ; tool change";
+
         private FileStream input;
         private SettingsContainer settings;
         private readonly IList<OverrideRule> rules;
@@ -123,12 +125,12 @@ namespace DiabasePrintingWizard
                             if (lineBuffer.Contains("toolChangeRetractionDistance"))
                             {
                                 double? value = line.GetFValue(',', true);
-                                if (value != null) { toolChangeRetractionDistance = value.Value; }
+                                if (value.HasValue) { toolChangeRetractionDistance = value.Value; }
                             }
                             if (lineBuffer.Contains("toolChangeRetractionSpeed"))
                             {
                                 double? value = line.GetFValue(',', true);
-                                if (value != null) { toolChangeRetractionSpeed = value.Value; }
+                                if (value.HasValue) { toolChangeRetractionSpeed = value.Value; }
                             }
                         }
                         else if (layer.Number > 0)
@@ -149,7 +151,7 @@ namespace DiabasePrintingWizard
                     else
                     {
                         int? gCode = line.GetIValue('G');
-                        if (gCode != null)
+                        if (gCode.HasValue)
                         {
                             // G0 / G1
                             if (gCode == 0 || gCode == 1)
@@ -157,8 +159,8 @@ namespace DiabasePrintingWizard
                                 double? xParam = line.GetFValue('X');
                                 double? yParam = line.GetFValue('Y');
                                 double? zParam = line.GetFValue('Z');
-                                if (xParam != null) { lastPoint.X = xParam.Value; }
-                                if (yParam != null)
+                                if (xParam.HasValue) { lastPoint.X = xParam.Value; }
+                                if (yParam.HasValue)
                                 {
                                     if (rotaryPrinting)
                                     {
@@ -166,12 +168,12 @@ namespace DiabasePrintingWizard
                                     }
                                     lastPoint.Y = yParam.Value;
                                 }
-                                if (zParam != null) { lastPoint.Z = zParam.Value; }
+                                if (zParam.HasValue) { lastPoint.Z = zParam.Value; }
 
                                 if (numExtrusions < 2)
                                 {
                                     double? eParam = line.GetFValue('E');
-                                    if (eParam != null)
+                                    if (eParam.HasValue)
                                     {
                                         numExtrusions++;
                                         writeLine = false;
@@ -179,7 +181,7 @@ namespace DiabasePrintingWizard
                                 }
 
                                 double? fParam = line.GetFValue('F');
-                                if (fParam != null) { feedrate = fParam.Value / 60.0; }
+                                if (fParam.HasValue) { feedrate = fParam.Value / 60.0; }
 
                                 if (!isInterfacingSet && segment.Tool != -1 && xParam.HasValue && yParam.HasValue)
                                 {
@@ -192,8 +194,7 @@ namespace DiabasePrintingWizard
                             {
                                 int? pParam = line.GetIValue('P');
                                 double? sParam = line.GetFValue('S');
-                                if (pParam != null && pParam.Value > 0 && pParam.Value <= settings.Tools.Length &&
-                                    sParam != null)
+                                if (pParam.HasValue && pParam.Value > 0 && pParam.Value <= settings.Tools.Length && sParam.HasValue)
                                 {
                                     // G10 P... S...
                                     settings.Tools[pParam.Value - 1].ActiveTemperature = (decimal)sParam.Value;
@@ -207,15 +208,14 @@ namespace DiabasePrintingWizard
                         else
                         {
                             int? mCode = line.GetIValue('M');
-                            if (mCode != null)
+                            if (mCode.HasValue)
                             {
                                 // M104
                                 if (mCode == 104)
                                 {
                                     double? sParam = line.GetFValue('S');
                                     int? tParam = line.GetIValue('T');
-                                    if (sParam != null &&
-                                        tParam != null && tParam.Value > 0 && tParam.Value <= settings.Tools.Length)
+                                    if (sParam.HasValue && tParam.HasValue && tParam.Value > 0 && tParam.Value <= settings.Tools.Length)
                                     {
                                         ToolSettings toolSettings = settings.Tools[tParam.Value - 1];
                                         if (toolSettings.Type == ToolType.Nozzle)
@@ -238,7 +238,7 @@ namespace DiabasePrintingWizard
                             {
                                 // T-Code
                                 int? tCode = line.GetIValue('T');
-                                if (tCode != null)
+                                if (tCode.HasValue)
                                 {
                                     if (tCode > 0 && tCode <= settings.Tools.Length)
                                     {
@@ -432,6 +432,7 @@ namespace DiabasePrintingWizard
             int iteration = 1;
             bool startWithLowestTool = true;
             int currentTool = -1;
+
             for (int layerIndex = 1; layerIndex < layers.Count; layerIndex++)
             {
                 GCodeLayer layer = layers[layerIndex];
@@ -466,7 +467,7 @@ namespace DiabasePrintingWizard
                     {
                         int toolNumber = segment.Tool;
                         List<GCodeLine> replacementLines = new List<GCodeLine>();
-                        Coordinate lastPosition = EnrichSegment(layer, toolNumber, ref currentTool, ref activeRule, replacementLines, ref currentZ, segment);
+                        Coordinate lastPosition = EnrichSegment(layer, segment, replacementLines, toolNumber, ref currentTool, ref activeRule, ref currentZ);
                         if (replacementLines.Count > 0)
                         {
                             replacementLayer.Segments.Add(
@@ -511,14 +512,14 @@ namespace DiabasePrintingWizard
                     {
                         GCodeLine line = segment.Lines[lineIndex];
                         // Look for toolchange
-                        if (!line.Content.StartsWith("M98 P\"tprime", StringComparison.InvariantCulture))
+                        if (!line.Content.EndsWith(ToolChangeMarker, StringComparison.InvariantCulture))
                         {
                             continue;
                         }
 
                         // Search for retraction prior to toolchange
                         // It will be located at the end of the previous segment
-                        var previousSegment = GetPreviousSegment(layers, layerNumber, segmentNumber);
+                        var previousSegment = GetPreviousSegment(layerNumber, segmentNumber);
                         if (previousSegment != null)
                         {
                             var lookbehindLimit = Math.Max(previousSegment.Lines.Count - 5, 0);
@@ -559,7 +560,7 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private GCodeSegment GetPreviousSegment(List<GCodeLayer> layers, int layerNumber, int segmentNumber)
+        private GCodeSegment GetPreviousSegment(int layerNumber, int segmentNumber)
         {
             // Previous segment in same layer
             if (segmentNumber > 0)
@@ -570,7 +571,7 @@ namespace DiabasePrintingWizard
             // Check if there is a previous layer with segments
             if (layerNumber > 0 && layers[layerNumber - 1].Segments.Count > 0)
             {
-                return layers[layerNumber - 1].Segments[layers[layerNumber - 1].Segments.Count - 1];
+                return layers[layerNumber - 1].Segments.Last();
             }
 
             // No previous segment available
@@ -579,10 +580,125 @@ namespace DiabasePrintingWizard
 
         private void InsertPreheatingSequences(ref int iteration)
         {
-            int nextTool = -1;
-            Dictionary<int, double> preheatCounters = new Dictionary<int, double>();   // Tool number vs. Elapsed time
+            var preheatCounters = new Dictionary<int, double>();   // Tool number vs. Elapsed time
+
+            // Start at last layer
+            for (var layerNumber = layers.Count - 1; layerNumber >= 1; layerNumber--) {
+                var layer = layers[layerNumber];
+
+                // Start at last segment in layer
+                for (var segmentNumber = layer.Segments.Count - 1; segmentNumber >= 0; segmentNumber--)
+                {
+                    var segment = layer.Segments[segmentNumber];
+                    var position = segment.LastPosition != null ? segment.LastPosition.Clone() : lastPoint.Clone();
+                    var previousPosition = position.Clone();
+
+                    // Start at last line in layer
+                    for (var lineNumber = segment.Lines.Count - 1; lineNumber >= 0; lineNumber--)
+                    {
+                        var line = segment.Lines[lineNumber];
+
+                        // We found a tool change
+                        if (line.Content.EndsWith(ToolChangeMarker, StringComparison.InvariantCulture))
+                        {
+                            // Take into account tool change times
+                            var tool = settings.Tools[segment.Tool - 1];
+
+                            // See if we need to use preheating for this tool
+                            if (tool.PreheatTime > 0.0m)
+                            {
+                                preheatCounters[segment.Tool] = (settings.Tools[segment.Tool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
+                            }
+                        }
+
+                        // Calculate time for moves only if we need to
+                        if (preheatCounters.Count > 0)
+                        {
+                            var timeSpent = 0.0;
+                            int? gCode = line.GetIValue('G');
+
+                            // G0 / G1
+                            if (gCode == 0 || gCode == 1)
+                            {
+                                var xParam = line.GetFValue('X');
+                                var yParam = line.GetFValue('Y');
+                                var zParam = line.GetFValue('Z');
+                                var eParam = line.GetFValue('E');
+                                if (xParam.HasValue) { previousPosition.X = xParam.Value; }
+                                if (yParam.HasValue) { previousPosition.Y = yParam.Value; }
+                                if (zParam.HasValue) { previousPosition.Z = zParam.Value; }
+
+                                var distance = Math.Sqrt(Math.Pow(position.X - previousPosition.X, 2) +
+                                                            Math.Pow(position.Y - previousPosition.Y, 2) +
+                                                            Math.Pow(position.Z - previousPosition.Z, 2) +
+                                                            (eParam.HasValue ? Math.Pow(eParam.Value, 2) : 0));
+                                if (line.Feedrate > 0.0)
+                                {
+                                    // TODO: Take into account accelerations here
+                                    timeSpent += distance / line.Feedrate;
+                                }
+
+                                position.AssignFrom(previousPosition);
+                            }
+                            // G4
+                            else if (gCode == 4)
+                            {
+                                var sParam = line.GetFValue('S');
+                                if (sParam.HasValue)
+                                {
+                                    timeSpent += sParam.Value;
+                                }
+                                else
+                                {
+                                    var pParam = line.GetIValue('P');
+                                    if (pParam.HasValue)
+                                    {
+                                        timeSpent += pParam.Value / 1000.0;
+                                    }
+                                }
+                            }
+                            // G10 P... R...
+                            else if (gCode == 10)
+                            {
+                                var pParam = line.GetIValue('P');
+                                var rParam = line.GetIValue('R');
+                                if (pParam.HasValue && rParam.HasValue && pParam > 0 && pParam <= settings.Tools.Length)
+                                {
+                                    if (preheatCounters.ContainsKey(pParam.Value))
+                                    {
+                                        // Remove this line again if we are still preheating
+                                        segment.Lines.RemoveAt(lineNumber);
+                                    }
+                                }
+                            }
+
+                            // Check if any of the tools we want to preheat has had enough time to do so yet
+                            foreach (var toolNumber in preheatCounters.Keys.ToList())
+                            {
+                                var tool = settings.Tools[toolNumber - 1];
+                                var totalTimeSpent = preheatCounters[toolNumber] + timeSpent;
+                                if (totalTimeSpent > (double)tool.PreheatTime)
+                                {
+                                    // We've been doing enough stuff to generate a good G10 code
+                                    segment.Lines.Insert(lineNumber, new GCodeLine($"G10 P{toolNumber} R{tool.ActiveTemperature.ToString(FrmMain.numberFormat)}"));
+                                    preheatCounters.Remove(toolNumber);
+                                }
+                                else
+                                {
+                                    // Need to do some more...
+                                    preheatCounters[toolNumber] = totalTimeSpent;
+                                }
+                            }
+                        }
+                    }
+                }
+                progress.Report(iteration++);
+            }
+
+            // -------------------------------------------------------------------------------------------------------
 
             // Add preheating sequences
+            /*
             for (int layerNumber = 1; layerNumber < layers.Count; layerNumber++)
             {
                 GCodeLayer layer = layers[layerNumber];
@@ -630,15 +746,14 @@ namespace DiabasePrintingWizard
                                 double? yParam = line.GetFValue('Y');
                                 double? zParam = line.GetFValue('Z');
                                 double? eParam = line.GetFValue('E');
-                                if (xParam != null) { previousPosition.X = xParam.Value; }
-                                if (yParam != null) { previousPosition.Y = yParam.Value; }
-                                if (zParam != null) { previousPosition.Z = zParam.Value; }
+                                if (xParam.HasValue) { previousPosition.X = xParam.Value; }
+                                if (yParam.HasValue) { previousPosition.Y = yParam.Value; }
+                                if (zParam.HasValue) { previousPosition.Z = zParam.Value; }
 
                                 double distance = Math.Sqrt(Math.Pow(position.X - previousPosition.X, 2) +
                                                             Math.Pow(position.Y - previousPosition.Y, 2) +
                                                             Math.Pow(position.Z - previousPosition.Z, 2) +
                                                             (eParam.HasValue ? Math.Pow(eParam.Value, 2) : 0));
-                                double feedrate = line.Feedrate;
                                 if (line.Feedrate > 0.0)
                                 {
                                     // TODO: Take into account accelerations here
@@ -651,14 +766,14 @@ namespace DiabasePrintingWizard
                             else if (gCode == 4)
                             {
                                 double? sParam = line.GetFValue('S');
-                                if (sParam != null)
+                                if (sParam.HasValue)
                                 {
                                     timeSpent += sParam.Value;
                                 }
                                 else
                                 {
                                     int? pParam = line.GetIValue('P');
-                                    if (pParam != null)
+                                    if (pParam.HasValue)
                                     {
                                         timeSpent += pParam.Value / 1000.0;
                                     }
@@ -669,7 +784,7 @@ namespace DiabasePrintingWizard
                             {
                                 int? pParam = line.GetIValue('P');
                                 int? rParam = line.GetIValue('R');
-                                if (pParam != null && rParam != null && pParam > 0 && pParam <= settings.Tools.Length)
+                                if (pParam.HasValue && rParam.HasValue && pParam > 0 && pParam <= settings.Tools.Length)
                                 {
                                     if (preheatCounters.ContainsKey(pParam.Value))
                                     {
@@ -733,6 +848,7 @@ namespace DiabasePrintingWizard
                 }
                 progress.Report(iteration++);
             }
+            */
 
             // Override first generated G10 codes if we could not preheat in time
             if (preheatCounters.Count > 0 && layers.Count > 0 && layers[0].Segments.Count > 0)
@@ -743,7 +859,7 @@ namespace DiabasePrintingWizard
                     if (gCode == 10)
                     {
                         int? pParam = line.GetIValue('P');
-                        if (pParam != null && preheatCounters.ContainsKey(pParam.Value))
+                        if (pParam.HasValue && preheatCounters.ContainsKey(pParam.Value))
                         {
                             ToolSettings tool = settings.Tools[pParam.Value - 1];
                             var activeTemp = tool.ActiveTemperature.ToString(FrmMain.numberFormat);
@@ -786,13 +902,13 @@ namespace DiabasePrintingWizard
                 // Filter to the requested tool
                 if (segment.Tool == toolNumber)
                 {
-                    lastPosition = EnrichSegment(layer, toolNumber, ref currentTool, ref activeRule, replacementLines, ref currentZ, segment);
+                    lastPosition = EnrichSegment(layer, segment, replacementLines, toolNumber, ref currentTool, ref activeRule, ref currentZ);
                 }
             }
             return (replacementLines.Count == 0) ? null : new GCodeSegment($"T{toolNumber}", toolNumber, null) { Lines = replacementLines, LastPosition = lastPosition };
         }
 
-        private Coordinate EnrichSegment(GCodeLayer layer, int toolNumber, ref int currentTool, ref OverrideRule activeRule, List<GCodeLine> replacementLines, ref double currentZ, GCodeSegment segment)
+        private Coordinate EnrichSegment(GCodeLayer layer, GCodeSegment segment, List<GCodeLine> replacementLines, int toolNumber, ref int currentTool, ref OverrideRule activeRule, ref double currentZ)
         {
             bool primeTool = false;
             bool ensureUnhopAfterToolChange = false;
@@ -902,16 +1018,11 @@ namespace DiabasePrintingWizard
             ToolSettings newTool = settings.Tools[newToolNumber - 1];
             if (newTool.AutoClean)
             {
-                //if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
-                //{
-                //    lines.Add(new GCodeLine($"T{newToolNumber} P0"));
-                //    lines.Add(new GCodeLine($"M116 P{newToolNumber}"));
-                //}
-                lines.Add(new GCodeLine($"M98 P\"tprime{newToolNumber}.g\""));
+                lines.Add(new GCodeLine($"M98 P\"tprime{newToolNumber}.g\"{ToolChangeMarker}"));
             }
             else
             {
-                lines.Add(new GCodeLine($"T{newToolNumber}"));
+                lines.Add(new GCodeLine($"T{newToolNumber}{ToolChangeMarker}"));
                 if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
                 {
                     lines.Add(new GCodeLine($"M116 P{newToolNumber}"));
