@@ -172,8 +172,7 @@ namespace DiabasePrintingWizard
 
                                 if (numExtrusions < 2)
                                 {
-                                    double? eParam = line.GetFValue('E');
-                                    if (eParam.HasValue)
+                                    if (line.GetFValue('E').HasValue)
                                     {
                                         numExtrusions++;
                                         writeLine = false;
