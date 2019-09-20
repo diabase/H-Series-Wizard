@@ -11,8 +11,8 @@ namespace DiabasePrintingWizard
     {
         private static readonly double DefaultFeedrate = 3000.0 / 60.0;         // see RRF in Configuration.h
 
-        private static readonly double ToolChangeDuration = 4.0;                // in s
-        private static readonly double ToolChangeDurationWithCleaning = 10.0;   // in s
+        private static readonly double ToolChangeDuration = 2.0;                // in s
+        private static readonly double ToolChangeDurationWithCleaning = 2.0;   // in s
 
         private static readonly double OneeightyOverPI = 180 / Math.PI;
 
