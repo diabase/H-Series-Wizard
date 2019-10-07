@@ -580,6 +580,7 @@ namespace DiabasePrintingWizard
         private void InsertPreheatingSequences(ref int iteration)
         {
             var preheatCounters = new Dictionary<int, double>();   // Tool number vs. Elapsed time
+            var position = lastPoint.Clone();
 
             // Start at last layer
             for (var layerNumber = layers.Count - 1; layerNumber >= 1; layerNumber--)
@@ -590,7 +591,6 @@ namespace DiabasePrintingWizard
                 for (var segmentNumber = layer.Segments.Count - 1; segmentNumber >= 0; segmentNumber--)
                 {
                     var segment = layer.Segments[segmentNumber];
-                    var position = segment.LastPosition != null ? segment.LastPosition.Clone() : lastPoint.Clone();
                     var previousPosition = position.Clone();
 
                     // Start at last line in layer
@@ -611,23 +611,24 @@ namespace DiabasePrintingWizard
                             }
                         }
 
-                        // Calculate time for moves only if we need to
-                        if (preheatCounters.Count > 0)
+                        var takingTime = preheatCounters.Count > 0;
+                        var timeSpent = 0.0;
+                        int? gCode = line.GetIValue('G');
+
+                        // G0 / G1
+                        if (gCode == 0 || gCode == 1)
                         {
-                            var timeSpent = 0.0;
-                            int? gCode = line.GetIValue('G');
+                            var xParam = line.GetFValue('X');
+                            var yParam = line.GetFValue('Y');
+                            var zParam = line.GetFValue('Z');
+                            var eParam = line.GetFValue('E');
+                            if (xParam.HasValue) { previousPosition.X = xParam.Value; }
+                            if (yParam.HasValue) { previousPosition.Y = yParam.Value; }
+                            if (zParam.HasValue) { previousPosition.Z = zParam.Value; }
 
-                            // G0 / G1
-                            if (gCode == 0 || gCode == 1)
+                            // Calculate time for moves only if we need to
+                            if (takingTime)
                             {
-                                var xParam = line.GetFValue('X');
-                                var yParam = line.GetFValue('Y');
-                                var zParam = line.GetFValue('Z');
-                                var eParam = line.GetFValue('E');
-                                if (xParam.HasValue) { previousPosition.X = xParam.Value; }
-                                if (yParam.HasValue) { previousPosition.Y = yParam.Value; }
-                                if (zParam.HasValue) { previousPosition.Z = zParam.Value; }
-
                                 var distance = Math.Sqrt(Math.Pow(position.X - previousPosition.X, 2) +
                                                             Math.Pow(position.Y - previousPosition.Y, 2) +
                                                             Math.Pow(position.Z - previousPosition.Z, 2) +
@@ -637,42 +638,45 @@ namespace DiabasePrintingWizard
                                     // TODO: Take into account accelerations here
                                     timeSpent += distance / line.Feedrate;
                                 }
+                            }
 
-                                position.AssignFrom(previousPosition);
-                            }
-                            // G4
-                            else if (gCode == 4)
+                            position.AssignFrom(previousPosition);
+                        }
+                        // G4
+                        else if (gCode == 4 && takingTime)
+                        {
+                            var sParam = line.GetFValue('S');
+                            if (sParam.HasValue)
                             {
-                                var sParam = line.GetFValue('S');
-                                if (sParam.HasValue)
-                                {
-                                    timeSpent += sParam.Value;
-                                }
-                                else
-                                {
-                                    var pParam = line.GetIValue('P');
-                                    if (pParam.HasValue)
-                                    {
-                                        timeSpent += pParam.Value / 1000.0;
-                                    }
-                                }
+                                timeSpent += sParam.Value;
                             }
-                            // G10 P... R...
-                            else if (gCode == 10)
+                            else
                             {
                                 var pParam = line.GetIValue('P');
-                                var rParam = line.GetIValue('R');
-                                if (pParam.HasValue && rParam.HasValue && pParam > 0 && pParam <= settings.Tools.Length)
+                                if (pParam.HasValue)
                                 {
-                                    if (preheatCounters.ContainsKey(pParam.Value))
-                                    {
-                                        // Remove this line again if we are still preheating
-                                        segment.Lines.RemoveAt(lineNumber);
-                                    }
+                                    timeSpent += pParam.Value / 1000.0;
                                 }
                             }
+                        }
+                        // G10 P... R...
+                        else if (gCode == 10 && takingTime)
+                        {
+                            var pParam = line.GetIValue('P');
+                            var rParam = line.GetIValue('R');
+                            if (pParam.HasValue && rParam.HasValue && pParam > 0 && pParam <= settings.Tools.Length)
+                            {
+                                if (preheatCounters.ContainsKey(pParam.Value))
+                                {
+                                    // Remove this line again if we are still preheating
+                                    segment.Lines.RemoveAt(lineNumber);
+                                }
+                            }
+                        }
 
-                            // Check if any of the tools we want to preheat has had enough time to do so yet
+                        // Check if any of the tools we want to preheat has had enough time to do so yet
+                        if (takingTime)
+                        {
                             foreach (var toolNumber in preheatCounters.Keys.ToList())
                             {
                                 var tool = settings.Tools[toolNumber - 1];
