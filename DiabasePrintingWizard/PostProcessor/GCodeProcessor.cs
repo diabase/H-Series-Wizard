@@ -802,8 +802,11 @@ namespace DiabasePrintingWizard
                         if (toolNumber != currentTool)
                         {
                             // Reset any speed overrides so tool change is not slowed down
-                            replacementLines.Add(new GCodeLine("M220 S100"));
-                            activeRule = null;
+                            if (activeRule != null)
+                            {
+                                replacementLines.Add(new GCodeLine("M220 S100"));
+                                activeRule = null;
+                            }
 
                             AddToolChange(replacementLines, currentTool, toolNumber);
                             currentTool = toolNumber;
