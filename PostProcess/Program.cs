@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipes;
 
 namespace PostProcess
 {
@@ -16,31 +15,23 @@ namespace PostProcess
             else
             {
                 string filename = args[0].Replace('/', '\\');
-                if (!File.Exists(filename))
+                if (!IPCHelper.FileExists(filename))
                 {
                     Console.WriteLine("Error: File not found");
+                    return;
                 }
-                else
+                else if (IPCHelper.SendToPipe(filename))
                 {
-                    Console.Write("Trying to pass on file ");
-                    Console.WriteLine(filename);
-
-                    NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "Diabase.PostProcessor", PipeDirection.Out);
-                    try
-                    {
-                        pipeClient.Connect(100);
-                        StreamString ss = new StreamString(pipeClient);
-                        ss.WriteString(filename);
-                        pipeClient.Close();
-
-                        Console.WriteLine("Done!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Write("Error: ");
-                        Console.WriteLine(e);
-                    }
+                    return;
                 }
+
+                // Try to start the Wizard in this case
+                System.Diagnostics.Process wizard = new System.Diagnostics.Process();
+                wizard.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DiabasePrintingWizard.exe");
+                wizard.StartInfo.Arguments = filename;
+                wizard.StartInfo.UseShellExecute = false;
+                wizard.StartInfo.RedirectStandardOutput = true;
+                wizard.Start();
             }
         }
     }

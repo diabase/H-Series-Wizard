@@ -16,7 +16,7 @@ namespace DiabasePrintingWizard
 {
     public partial class FrmMain : Form
     {
-        public static readonly string version = "v1.0.2";
+        public static readonly string version = "v1.0.3";
         public static readonly NumberFormatInfo numberFormat = CultureInfo.CreateSpecificCulture("en-US").NumberFormat;
 
         private Duet.Observer observer;
@@ -37,7 +37,7 @@ namespace DiabasePrintingWizard
 
         private BindingList<OverrideRule> overrideRules = new BindingList<OverrideRule>();
 
-        public FrmMain()
+        public FrmMain(string filename)
         {
             numberFormat.NumberGroupSeparator = "";
             InitializeComponent();
@@ -63,6 +63,10 @@ namespace DiabasePrintingWizard
             {
                 Settings = JsonConvert.DeserializeObject<SettingsContainer>(Properties.Settings.Default.Storage);
             }
+
+            if (filename != null) {
+                txtTopFileAdditive.Text = filename;
+            }
         }
 
         private void FrmMain_Deactivate(object sender, EventArgs e)
@@ -86,7 +90,7 @@ namespace DiabasePrintingWizard
                 DialogResult result = MessageBox.Show("You have neither uploaded nor saved your post-processed G-Code file yet. Would you like to save it before you exit?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
-                    btnSave.PerformClick();
+                    btnSaveAs.PerformClick();
                     if (!outFileSaved)
                     {
                         e.Cancel = true;
@@ -1081,7 +1085,8 @@ namespace DiabasePrintingWizard
                 btnCancel.Text = "Exit";
                 btnUpload.Visible = true;
                 btnUploadPrint.Visible = true;
-                btnSave.Visible = true;
+                btnSaveAs.Visible = true;
+                btnSaveOverwrite.Visible = true;
                 outFileSaved = false;
                 SystemSounds.Beep.Play();
             }
@@ -1104,6 +1109,19 @@ namespace DiabasePrintingWizard
                 {
                     MessageBox.Show("Error: Failed to copy output file to selected file path!\r\n\r\n" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+        private void btnSaveOverwrite_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                File.Copy(outFilePath, txtTopFileAdditive.Text, true);
+                outFileSaved = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: Failed to copy output file to selected file path!\r\n\r\n" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1226,5 +1244,6 @@ namespace DiabasePrintingWizard
             DoUpload(SelectedMachine.IPAddress);
         }
         #endregion
+
     }
 }

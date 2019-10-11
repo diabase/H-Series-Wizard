@@ -30,6 +30,16 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.awContent = new AdvancedWizardControl.Wizard.AdvancedWizard();
+            this.awpProgress = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
+            this.btnSaveOverwrite = new System.Windows.Forms.Button();
+            this.btnUploadPrint = new System.Windows.Forms.Button();
+            this.btnUpload = new System.Windows.Forms.Button();
+            this.btnSaveAs = new System.Windows.Forms.Button();
+            this.pnlProgress = new System.Windows.Forms.Panel();
+            this.lblProgress = new System.Windows.Forms.Label();
+            this.pbTotal = new System.Windows.Forms.ProgressBar();
+            this.pbStep = new System.Windows.Forms.ProgressBar();
+            this.lblPleaseStandBy = new System.Windows.Forms.Label();
             this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.lblVersion = new System.Windows.Forms.Label();
             this.gbType = new System.Windows.Forms.GroupBox();
@@ -50,6 +60,11 @@
             this.cbIslandCombining = new System.Windows.Forms.CheckBox();
             this.gbRules = new System.Windows.Forms.GroupBox();
             this.dgvCustomActions = new System.Windows.Forms.DataGridView();
+            this.dgcTool = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dgcLayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcRegion = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dgcSpeedFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcExtrusionFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.awpTopSide = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.gbTopFiles = new System.Windows.Forms.GroupBox();
             this.btnTopBrowseSubstractive = new System.Windows.Forms.Button();
@@ -134,15 +149,6 @@
             this.chkAutoClean2 = new System.Windows.Forms.CheckBox();
             this.lblTemp2 = new System.Windows.Forms.Label();
             this.nudTemp2 = new System.Windows.Forms.NumericUpDown();
-            this.awpProgress = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
-            this.btnUploadPrint = new System.Windows.Forms.Button();
-            this.btnUpload = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.pnlProgress = new System.Windows.Forms.Panel();
-            this.lblProgress = new System.Windows.Forms.Label();
-            this.pbTotal = new System.Windows.Forms.ProgressBar();
-            this.pbStep = new System.Windows.Forms.ProgressBar();
-            this.lblPleaseStandBy = new System.Windows.Forms.Label();
             this.btnNext = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -152,12 +158,9 @@
             this.ofdGCode = new System.Windows.Forms.OpenFileDialog();
             this.sfdGCode = new System.Windows.Forms.SaveFileDialog();
             this.sfdFactory = new System.Windows.Forms.SaveFileDialog();
-            this.dgcTool = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dgcLayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcRegion = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dgcSpeedFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcExtrusionFactor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.awContent.SuspendLayout();
+            this.awpProgress.SuspendLayout();
+            this.pnlProgress.SuspendLayout();
             this.awpWelcome.SuspendLayout();
             this.gbType.SuspendLayout();
             this.gbMachine.SuspendLayout();
@@ -193,8 +196,6 @@
             this.gbTool2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPreheat2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTemp2)).BeginInit();
-            this.awpProgress.SuspendLayout();
-            this.pnlProgress.SuspendLayout();
             this.pnlButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBanner)).BeginInit();
             this.SuspendLayout();
@@ -206,12 +207,12 @@
             this.awContent.ButtonLayout = AdvancedWizardControl.Enums.ButtonLayoutKind.Default;
             this.awContent.ButtonsVisible = false;
             this.awContent.CancelButtonText = "&Cancel";
-            this.awContent.Controls.Add(this.awpActions);
+            this.awContent.Controls.Add(this.awpProgress);
             this.awContent.Controls.Add(this.awpWelcome);
+            this.awContent.Controls.Add(this.awpActions);
             this.awContent.Controls.Add(this.awpTopSide);
             this.awContent.Controls.Add(this.awpBottomSide);
             this.awContent.Controls.Add(this.awpMachineProperties);
-            this.awContent.Controls.Add(this.awpProgress);
             this.awContent.CurrentPageIsFinishPage = false;
             this.awContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.awContent.FinishButton = true;
@@ -235,6 +236,141 @@
             this.awContent.WizardPages.Add(this.awpBottomSide);
             this.awContent.WizardPages.Add(this.awpActions);
             this.awContent.WizardPages.Add(this.awpProgress);
+            // 
+            // awpProgress
+            // 
+            this.awpProgress.Controls.Add(this.btnSaveOverwrite);
+            this.awpProgress.Controls.Add(this.btnUploadPrint);
+            this.awpProgress.Controls.Add(this.btnUpload);
+            this.awpProgress.Controls.Add(this.btnSaveAs);
+            this.awpProgress.Controls.Add(this.pnlProgress);
+            this.awpProgress.Controls.Add(this.lblPleaseStandBy);
+            this.awpProgress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.awpProgress.Header = true;
+            this.awpProgress.HeaderBackgroundColor = System.Drawing.Color.White;
+            this.awpProgress.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.awpProgress.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpProgress.HeaderImage")));
+            this.awpProgress.HeaderImageVisible = true;
+            this.awpProgress.HeaderTitle = "Welcome to Advanced Wizard";
+            this.awpProgress.Location = new System.Drawing.Point(0, 0);
+            this.awpProgress.Margin = new System.Windows.Forms.Padding(2);
+            this.awpProgress.Name = "awpProgress";
+            this.awpProgress.PreviousPage = 0;
+            this.awpProgress.Size = new System.Drawing.Size(586, 384);
+            this.awpProgress.SubTitle = "Your page description goes here";
+            this.awpProgress.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
+            this.awpProgress.TabIndex = 4;
+            this.awpProgress.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpProgress_PageShow);
+            // 
+            // btnSaveOverwrite
+            // 
+            this.btnSaveOverwrite.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveOverwrite.Image")));
+            this.btnSaveOverwrite.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnSaveOverwrite.Location = new System.Drawing.Point(427, 270);
+            this.btnSaveOverwrite.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSaveOverwrite.Name = "btnSaveOverwrite";
+            this.btnSaveOverwrite.Size = new System.Drawing.Size(106, 31);
+            this.btnSaveOverwrite.TabIndex = 8;
+            this.btnSaveOverwrite.Text = "Save";
+            this.btnSaveOverwrite.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnSaveOverwrite.UseVisualStyleBackColor = true;
+            this.btnSaveOverwrite.Visible = false;
+            this.btnSaveOverwrite.Click += new System.EventHandler(this.btnSaveOverwrite_Click);
+            // 
+            // btnUploadPrint
+            // 
+            this.btnUploadPrint.Image = ((System.Drawing.Image)(resources.GetObject("btnUploadPrint.Image")));
+            this.btnUploadPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnUploadPrint.Location = new System.Drawing.Point(182, 270);
+            this.btnUploadPrint.Margin = new System.Windows.Forms.Padding(2);
+            this.btnUploadPrint.Name = "btnUploadPrint";
+            this.btnUploadPrint.Size = new System.Drawing.Size(106, 31);
+            this.btnUploadPrint.TabIndex = 7;
+            this.btnUploadPrint.Text = "Upload && Print";
+            this.btnUploadPrint.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnUploadPrint.UseVisualStyleBackColor = true;
+            this.btnUploadPrint.Visible = false;
+            this.btnUploadPrint.Click += new System.EventHandler(this.BtnUploadPrint_Click);
+            // 
+            // btnUpload
+            // 
+            this.btnUpload.Image = global::DiabasePrintingWizard.Properties.Resources.UploadFile_16x;
+            this.btnUpload.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnUpload.Location = new System.Drawing.Point(62, 270);
+            this.btnUpload.Margin = new System.Windows.Forms.Padding(2);
+            this.btnUpload.Name = "btnUpload";
+            this.btnUpload.Size = new System.Drawing.Size(106, 31);
+            this.btnUpload.TabIndex = 6;
+            this.btnUpload.Text = "Upload";
+            this.btnUpload.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.Visible = false;
+            this.btnUpload.Click += new System.EventHandler(this.BtnUpload_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSaveAs.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
+            this.btnSaveAs.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnSaveAs.Location = new System.Drawing.Point(304, 270);
+            this.btnSaveAs.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSaveAs.Name = "btnSave";
+            this.btnSaveAs.Size = new System.Drawing.Size(106, 31);
+            this.btnSaveAs.TabIndex = 5;
+            this.btnSaveAs.Text = "Save as...";
+            this.btnSaveAs.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnSaveAs.UseVisualStyleBackColor = true;
+            this.btnSaveAs.Visible = false;
+            this.btnSaveAs.Click += new System.EventHandler(this.BtnSave_Click);
+            // 
+            // pnlProgress
+            // 
+            this.pnlProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlProgress.Controls.Add(this.lblProgress);
+            this.pnlProgress.Controls.Add(this.pbTotal);
+            this.pnlProgress.Controls.Add(this.pbStep);
+            this.pnlProgress.Location = new System.Drawing.Point(22, 148);
+            this.pnlProgress.Margin = new System.Windows.Forms.Padding(2);
+            this.pnlProgress.Name = "pnlProgress";
+            this.pnlProgress.Size = new System.Drawing.Size(543, 94);
+            this.pnlProgress.TabIndex = 4;
+            // 
+            // lblProgress
+            // 
+            this.lblProgress.AutoSize = true;
+            this.lblProgress.Location = new System.Drawing.Point(10, 11);
+            this.lblProgress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblProgress.Name = "lblProgress";
+            this.lblProgress.Size = new System.Drawing.Size(61, 13);
+            this.lblProgress.TabIndex = 5;
+            this.lblProgress.Text = "Initializing...";
+            // 
+            // pbTotal
+            // 
+            this.pbTotal.Location = new System.Drawing.Point(12, 60);
+            this.pbTotal.Margin = new System.Windows.Forms.Padding(2);
+            this.pbTotal.Name = "pbTotal";
+            this.pbTotal.Size = new System.Drawing.Size(514, 19);
+            this.pbTotal.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbTotal.TabIndex = 4;
+            // 
+            // pbStep
+            // 
+            this.pbStep.Location = new System.Drawing.Point(12, 31);
+            this.pbStep.Margin = new System.Windows.Forms.Padding(2);
+            this.pbStep.Name = "pbStep";
+            this.pbStep.Size = new System.Drawing.Size(514, 19);
+            this.pbStep.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbStep.TabIndex = 3;
+            // 
+            // lblPleaseStandBy
+            // 
+            this.lblPleaseStandBy.AutoSize = true;
+            this.lblPleaseStandBy.Location = new System.Drawing.Point(20, 120);
+            this.lblPleaseStandBy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPleaseStandBy.Name = "lblPleaseStandBy";
+            this.lblPleaseStandBy.Size = new System.Drawing.Size(303, 13);
+            this.lblPleaseStandBy.TabIndex = 3;
+            this.lblPleaseStandBy.Text = "Please stand by while your G-Code Files are being processed...";
             // 
             // awpWelcome
             // 
@@ -503,6 +639,61 @@
             this.dgvCustomActions.Name = "dgvCustomActions";
             this.dgvCustomActions.Size = new System.Drawing.Size(554, 139);
             this.dgvCustomActions.TabIndex = 2;
+            // 
+            // dgcTool
+            // 
+            this.dgcTool.DataPropertyName = "Tool";
+            this.dgcTool.HeaderText = "Tool";
+            this.dgcTool.Items.AddRange(new object[] {
+            "Any",
+            "Tool 1",
+            "Tool 2",
+            "Tool 3",
+            "Tool 4",
+            "Tool 5"});
+            this.dgcTool.Name = "dgcTool";
+            this.dgcTool.Width = 65;
+            // 
+            // dgcLayer
+            // 
+            this.dgcLayer.DataPropertyName = "Layer";
+            this.dgcLayer.HeaderText = "Layer";
+            this.dgcLayer.Name = "dgcLayer";
+            this.dgcLayer.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgcLayer.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dgcLayer.Width = 65;
+            // 
+            // dgcRegion
+            // 
+            this.dgcRegion.DataPropertyName = "Region";
+            this.dgcRegion.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+            this.dgcRegion.HeaderText = "Print Region";
+            this.dgcRegion.Items.AddRange(new object[] {
+            "Any",
+            "Skirt",
+            "Inner Perimeter",
+            "Outer Perimeter",
+            "Solid Layer",
+            "Infill",
+            "Internal Single Extrusion",
+            "Bridge",
+            "Material Intersection"});
+            this.dgcRegion.Name = "dgcRegion";
+            this.dgcRegion.Width = 125;
+            // 
+            // dgcSpeedFactor
+            // 
+            this.dgcSpeedFactor.DataPropertyName = "SpeedFactor";
+            this.dgcSpeedFactor.HeaderText = "Speed Factor (%)";
+            this.dgcSpeedFactor.Name = "dgcSpeedFactor";
+            this.dgcSpeedFactor.Width = 115;
+            // 
+            // dgcExtrusionFactor
+            // 
+            this.dgcExtrusionFactor.DataPropertyName = "ExtrusionFactor";
+            this.dgcExtrusionFactor.HeaderText = "Extrusion Factor (%)";
+            this.dgcExtrusionFactor.Name = "dgcExtrusionFactor";
+            this.dgcExtrusionFactor.Width = 130;
             // 
             // awpTopSide
             // 
@@ -1655,125 +1846,6 @@
             0,
             0});
             // 
-            // awpProgress
-            // 
-            this.awpProgress.Controls.Add(this.btnUploadPrint);
-            this.awpProgress.Controls.Add(this.btnUpload);
-            this.awpProgress.Controls.Add(this.btnSave);
-            this.awpProgress.Controls.Add(this.pnlProgress);
-            this.awpProgress.Controls.Add(this.lblPleaseStandBy);
-            this.awpProgress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.awpProgress.Header = true;
-            this.awpProgress.HeaderBackgroundColor = System.Drawing.Color.White;
-            this.awpProgress.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
-            this.awpProgress.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpProgress.HeaderImage")));
-            this.awpProgress.HeaderImageVisible = true;
-            this.awpProgress.HeaderTitle = "Welcome to Advanced Wizard";
-            this.awpProgress.Location = new System.Drawing.Point(0, 0);
-            this.awpProgress.Margin = new System.Windows.Forms.Padding(2);
-            this.awpProgress.Name = "awpProgress";
-            this.awpProgress.PreviousPage = 4;
-            this.awpProgress.Size = new System.Drawing.Size(586, 384);
-            this.awpProgress.SubTitle = "Your page description goes here";
-            this.awpProgress.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
-            this.awpProgress.TabIndex = 4;
-            this.awpProgress.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpProgress_PageShow);
-            // 
-            // btnUploadPrint
-            // 
-            this.btnUploadPrint.Image = ((System.Drawing.Image)(resources.GetObject("btnUploadPrint.Image")));
-            this.btnUploadPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnUploadPrint.Location = new System.Drawing.Point(240, 271);
-            this.btnUploadPrint.Margin = new System.Windows.Forms.Padding(2);
-            this.btnUploadPrint.Name = "btnUploadPrint";
-            this.btnUploadPrint.Size = new System.Drawing.Size(106, 31);
-            this.btnUploadPrint.TabIndex = 7;
-            this.btnUploadPrint.Text = "Upload && Print";
-            this.btnUploadPrint.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnUploadPrint.UseVisualStyleBackColor = true;
-            this.btnUploadPrint.Visible = false;
-            this.btnUploadPrint.Click += new System.EventHandler(this.BtnUploadPrint_Click);
-            // 
-            // btnUpload
-            // 
-            this.btnUpload.Image = global::DiabasePrintingWizard.Properties.Resources.UploadFile_16x;
-            this.btnUpload.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnUpload.Location = new System.Drawing.Point(130, 271);
-            this.btnUpload.Margin = new System.Windows.Forms.Padding(2);
-            this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(106, 31);
-            this.btnUpload.TabIndex = 6;
-            this.btnUpload.Text = "Upload";
-            this.btnUpload.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnUpload.UseVisualStyleBackColor = true;
-            this.btnUpload.Visible = false;
-            this.btnUpload.Click += new System.EventHandler(this.BtnUpload_Click);
-            // 
-            // btnSave
-            // 
-            this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
-            this.btnSave.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnSave.Location = new System.Drawing.Point(351, 271);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(106, 31);
-            this.btnSave.TabIndex = 5;
-            this.btnSave.Text = "Save Toolpath";
-            this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Visible = false;
-            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
-            // 
-            // pnlProgress
-            // 
-            this.pnlProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlProgress.Controls.Add(this.lblProgress);
-            this.pnlProgress.Controls.Add(this.pbTotal);
-            this.pnlProgress.Controls.Add(this.pbStep);
-            this.pnlProgress.Location = new System.Drawing.Point(22, 148);
-            this.pnlProgress.Margin = new System.Windows.Forms.Padding(2);
-            this.pnlProgress.Name = "pnlProgress";
-            this.pnlProgress.Size = new System.Drawing.Size(543, 94);
-            this.pnlProgress.TabIndex = 4;
-            // 
-            // lblProgress
-            // 
-            this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(10, 11);
-            this.lblProgress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(61, 13);
-            this.lblProgress.TabIndex = 5;
-            this.lblProgress.Text = "Initializing...";
-            // 
-            // pbTotal
-            // 
-            this.pbTotal.Location = new System.Drawing.Point(12, 60);
-            this.pbTotal.Margin = new System.Windows.Forms.Padding(2);
-            this.pbTotal.Name = "pbTotal";
-            this.pbTotal.Size = new System.Drawing.Size(514, 19);
-            this.pbTotal.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pbTotal.TabIndex = 4;
-            // 
-            // pbStep
-            // 
-            this.pbStep.Location = new System.Drawing.Point(12, 31);
-            this.pbStep.Margin = new System.Windows.Forms.Padding(2);
-            this.pbStep.Name = "pbStep";
-            this.pbStep.Size = new System.Drawing.Size(514, 19);
-            this.pbStep.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pbStep.TabIndex = 3;
-            // 
-            // lblPleaseStandBy
-            // 
-            this.lblPleaseStandBy.AutoSize = true;
-            this.lblPleaseStandBy.Location = new System.Drawing.Point(20, 120);
-            this.lblPleaseStandBy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblPleaseStandBy.Name = "lblPleaseStandBy";
-            this.lblPleaseStandBy.Size = new System.Drawing.Size(303, 13);
-            this.lblPleaseStandBy.TabIndex = 3;
-            this.lblPleaseStandBy.Text = "Please stand by while your G-Code Files are being processed...";
-            // 
             // btnNext
             // 
             this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -1870,61 +1942,6 @@
             this.sfdFactory.Filter = "Simplify3D Factory Files (*.factory)|*.factory|All Files (*.*)|*.*";
             this.sfdFactory.RestoreDirectory = true;
             // 
-            // dgcTool
-            // 
-            this.dgcTool.DataPropertyName = "Tool";
-            this.dgcTool.HeaderText = "Tool";
-            this.dgcTool.Items.AddRange(new object[] {
-            "Any",
-            "Tool 1",
-            "Tool 2",
-            "Tool 3",
-            "Tool 4",
-            "Tool 5"});
-            this.dgcTool.Name = "dgcTool";
-            this.dgcTool.Width = 65;
-            // 
-            // dgcLayer
-            // 
-            this.dgcLayer.DataPropertyName = "Layer";
-            this.dgcLayer.HeaderText = "Layer";
-            this.dgcLayer.Name = "dgcLayer";
-            this.dgcLayer.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgcLayer.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.dgcLayer.Width = 65;
-            // 
-            // dgcRegion
-            // 
-            this.dgcRegion.DataPropertyName = "Region";
-            this.dgcRegion.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.dgcRegion.HeaderText = "Print Region";
-            this.dgcRegion.Items.AddRange(new object[] {
-            "Any",
-            "Skirt",
-            "Inner Perimeter",
-            "Outer Perimeter",
-            "Solid Layer",
-            "Infill",
-            "Internal Single Extrusion",
-            "Bridge",
-            "Material Intersection"});
-            this.dgcRegion.Name = "dgcRegion";
-            this.dgcRegion.Width = 125;
-            // 
-            // dgcSpeedFactor
-            // 
-            this.dgcSpeedFactor.DataPropertyName = "SpeedFactor";
-            this.dgcSpeedFactor.HeaderText = "Speed Factor (%)";
-            this.dgcSpeedFactor.Name = "dgcSpeedFactor";
-            this.dgcSpeedFactor.Width = 115;
-            // 
-            // dgcExtrusionFactor
-            // 
-            this.dgcExtrusionFactor.DataPropertyName = "ExtrusionFactor";
-            this.dgcExtrusionFactor.HeaderText = "Extrusion Factor (%)";
-            this.dgcExtrusionFactor.Name = "dgcExtrusionFactor";
-            this.dgcExtrusionFactor.Width = 130;
-            // 
             // FrmMain
             // 
             this.AcceptButton = this.btnNext;
@@ -1946,6 +1963,10 @@
             this.Deactivate += new System.EventHandler(this.FrmMain_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             this.awContent.ResumeLayout(false);
+            this.awpProgress.ResumeLayout(false);
+            this.awpProgress.PerformLayout();
+            this.pnlProgress.ResumeLayout(false);
+            this.pnlProgress.PerformLayout();
             this.awpWelcome.ResumeLayout(false);
             this.awpWelcome.PerformLayout();
             this.gbType.ResumeLayout(false);
@@ -1996,10 +2017,6 @@
             this.gbTool2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPreheat2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTemp2)).EndInit();
-            this.awpProgress.ResumeLayout(false);
-            this.awpProgress.PerformLayout();
-            this.pnlProgress.ResumeLayout(false);
-            this.pnlProgress.PerformLayout();
             this.pnlButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbBanner)).EndInit();
             this.ResumeLayout(false);
@@ -2120,7 +2137,7 @@
         private System.Windows.Forms.Label lblPleaseStandBy;
         private System.Windows.Forms.Button btnUploadPrint;
         private System.Windows.Forms.Button btnUpload;
-        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnSaveAs;
         private System.Windows.Forms.SaveFileDialog sfdGCode;
         private System.Windows.Forms.SaveFileDialog sfdFactory;
         private AdvancedWizardControl.WizardPages.AdvancedWizardPage awpActions;
@@ -2136,6 +2153,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn dgcRegion;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcSpeedFactor;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcExtrusionFactor;
+        private System.Windows.Forms.Button btnSaveOverwrite;
     }
 }
 

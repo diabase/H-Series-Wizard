@@ -112,7 +112,6 @@
     <Compile Include="Duet\JSON.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Simplify3D.cs" />
-    <Compile Include="IPC\StreamString.cs" />
     <EmbeddedResource Include="frmJobName.resx">
       <DependentUpon>frmJobName.cs</DependentUpon>
     </EmbeddedResource>
@@ -175,6 +174,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\UploadFile_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PostProcess\PostProcess.csproj">
+      <Project>{7a5eb099-0fdc-4603-aa9b-6ef9e982e7d8}</Project>
+      <Name>PostProcess</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
