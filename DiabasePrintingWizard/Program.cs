@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.IO.Pipes;
 using System.Windows.Forms;
 
 namespace DiabasePrintingWizard
 {
+   
     static class Program
     {
         /// <summary>
@@ -19,32 +18,14 @@ namespace DiabasePrintingWizard
             if (args.Length == 1)
             {
                 filename = args[0].Replace('/', '\\');
-                if (!File.Exists(filename))
+                if (!PostProcess.IPCHelper.FileExists(filename))
                 {
                     filename = null;
                     Console.WriteLine("Error: File not found");
                 }
-                else
+                else if (PostProcess.IPCHelper.SendToPipe(filename))
                 {
-                    Console.Write("Trying to pass on file ");
-                    Console.WriteLine(filename);
-
-                    NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "Diabase.PostProcessor", PipeDirection.Out);
-                    try
-                    {
-                        pipeClient.Connect(100);
-                        StreamString ss = new StreamString(pipeClient);
-                        ss.WriteString(filename);
-                        pipeClient.Close();
-
-                        Console.WriteLine("Done!");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Write("Error: ");
-                        Console.WriteLine(e);
-                    }
+                    return;
                 }
             }
             Application.EnableVisualStyles();

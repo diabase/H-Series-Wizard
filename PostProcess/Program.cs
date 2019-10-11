@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipes;
 
 namespace PostProcess
 {
@@ -16,32 +15,14 @@ namespace PostProcess
             else
             {
                 string filename = args[0].Replace('/', '\\');
-                if (!File.Exists(filename))
+                if (!IPCHelper.FileExists(filename))
                 {
                     Console.WriteLine("Error: File not found");
                     return;
                 }
-                else
+                else if (IPCHelper.SendToPipe(filename))
                 {
-                    Console.Write("Trying to pass on file ");
-                    Console.WriteLine(filename);
-
-                    NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "Diabase.PostProcessor", PipeDirection.Out);
-                    try
-                    {
-                        pipeClient.Connect(100);
-                        StreamString ss = new StreamString(pipeClient);
-                        ss.WriteString(filename);
-                        pipeClient.Close();
-
-                        Console.WriteLine("Done!");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Write("Error: ");
-                        Console.WriteLine(e);
-                    }
+                    return;
                 }
 
                 // Try to start the Wizard in this case
@@ -51,8 +32,6 @@ namespace PostProcess
                 wizard.StartInfo.UseShellExecute = false;
                 wizard.StartInfo.RedirectStandardOutput = true;
                 wizard.Start();
-                string output = wizard.StandardOutput.ReadToEnd(); //The output result
-                wizard.WaitForExit();
             }
         }
     }
