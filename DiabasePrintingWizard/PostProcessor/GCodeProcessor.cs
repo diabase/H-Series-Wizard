@@ -635,8 +635,10 @@ namespace DiabasePrintingWizard
                                                             (eParam.HasValue ? Math.Pow(eParam.Value, 2) : 0));
                                 if (line.Feedrate > 0.0)
                                 {
+                                    var rule = GetRule(segment.Tool, layerNumber, segment);
+                                    var feedrate = line.Feedrate * (rule == null ? 1 : (rule.SpeedFactor / 100.0));
                                     // TODO: Take into account accelerations here
-                                    timeSpent += distance / line.Feedrate;
+                                    timeSpent += distance / feedrate;
                                 }
                             }
 
