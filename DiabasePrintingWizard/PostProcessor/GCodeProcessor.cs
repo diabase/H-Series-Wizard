@@ -607,6 +607,8 @@ namespace DiabasePrintingWizard
                             // See if we need to use preheating for this tool
                             if (tool.PreheatTime > 0.0m)
                             {
+								// Reset possibly existing preheating time to just the tool change time
+								// In case we were already waiting we will have to wait even longer.
                                 preheatCounters[segment.Tool] = (settings.Tools[segment.Tool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
                             }
                         }
