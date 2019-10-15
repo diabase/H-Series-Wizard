@@ -15,7 +15,7 @@ namespace DiabasePrintingWizard
         public static async Task CreateTask(FileStream topAdditiveFile, FileStream topSubstractiveFile,
             FileStream bottomAdditiveFile, FileStream bottomSubstractiveFile,
             FileStream outFile, SettingsContainer settings, IList<OverrideRule> rules, Duet.MachineInfo machine,
-            IProgress<string> textProgress, IProgress<int> progress, IProgress<int> maxProgress, IProgress<int>totalProgress)
+            IProgress<string> textProgress, IProgress<int> progress, IProgress<int> maxProgress, IProgress<int>totalProgress, bool debug)
         {
             Exception ex = null;
             try
@@ -53,7 +53,7 @@ namespace DiabasePrintingWizard
                 // Join files together
                 textProgress.Report("Combining results...");
                 WriteFileInfo(outFile, "Additive manufacturing on the top side", topAdditiveFile);
-                await topAdditiveGCode.WriteToFile(outFile);
+                await topAdditiveGCode.WriteToFile(outFile, debug);
                 IncreaseTotalProgress(totalProgress);
                 if (topSubstractiveFile != null)
                 {
@@ -65,7 +65,7 @@ namespace DiabasePrintingWizard
                 {
                     // TODO: Add code to turn around A-axis for two-sided prints?
                     WriteFileInfo(outFile, "Additive manufacturing on the bottom side", bottomAdditiveFile);
-                    await bottomAdditiveGCode.WriteToFile(outFile);
+                    await bottomAdditiveGCode.WriteToFile(outFile, debug);
                     IncreaseTotalProgress(totalProgress);
                 }
                 if (bottomSubstractiveFile != null)

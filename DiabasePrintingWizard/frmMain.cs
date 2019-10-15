@@ -27,6 +27,7 @@ namespace DiabasePrintingWizard
 
         private string outFilePath;
         private bool outFileSaved = true;
+        private bool debug;
         private Task postProcessingTask;
 
         private Duet.MachineInfo SelectedMachine
@@ -37,8 +38,9 @@ namespace DiabasePrintingWizard
 
         private BindingList<OverrideRule> overrideRules = new BindingList<OverrideRule>();
 
-        public FrmMain(string filename)
+        public FrmMain(string filename, bool debug)
         {
+            this.debug = debug;
             numberFormat.NumberGroupSeparator = "";
             InitializeComponent();
             lblVersion.Text = version;
@@ -993,7 +995,7 @@ namespace DiabasePrintingWizard
                 postProcessingTask = PostProcessor.CreateTask(topAdditiveFile, topSubstractiveFile,
                     bottomAdditiveFile, bottomSubstractiveFile,
                     outFile, currentSettings, overrideRules, machineInfo,
-                    textProgress, progress, maxProgress, totalProgress);
+                    textProgress, progress, maxProgress, totalProgress, debug);
                 try
                 {
                     await postProcessingTask;

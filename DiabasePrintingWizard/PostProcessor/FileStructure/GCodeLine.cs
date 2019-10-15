@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 
 namespace DiabasePrintingWizard
 {
@@ -8,11 +9,34 @@ namespace DiabasePrintingWizard
 
         public double Feedrate { get; set; }        // in mm/s
 
+        public double? Distance { get; set; }
+
+        public double? Duration { get; set; }
+
         public GCodeLine(string content) => Content = content;
         public GCodeLine(string content, double feedrate)
         {
             Content = content;
             Feedrate = feedrate;
+        }
+
+        public string DebugLine()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(Content);
+            if (Distance.HasValue || Duration.HasValue)
+            {
+                sb.Append("; ");
+                if (Duration.HasValue)
+                {
+                    sb.Append($"Duration: {Duration.Value.ToString("F3", FrmMain.numberFormat)}{(Distance.HasValue ? ", " : "")}");
+                }
+                if (Distance.HasValue)
+                {
+                    sb.Append($"Distance: {Distance.Value.ToString("F3", FrmMain.numberFormat)}");
+                }
+            }
+            return sb.ToString();
         }
 
         public bool UpdateFValue(char chr, double newValue)
