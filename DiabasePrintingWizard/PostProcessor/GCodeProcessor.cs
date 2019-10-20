@@ -685,8 +685,8 @@ namespace DiabasePrintingWizard
                             // See if we need to use preheating for this tool
                             if (tool.PreheatTime > 0.0m)
                             {
-								// Reset possibly existing preheating time to just the tool change time
-								// In case we were already waiting we will have to wait even longer.
+                                // Reset possibly existing preheating time to just the tool change time
+                                // In case we were already waiting we will have to wait even longer.
                                 preheatCounters[segment.Tool] = (settings.Tools[segment.Tool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
                             }
                         }
@@ -787,62 +787,58 @@ namespace DiabasePrintingWizard
             bool ensureUnhopAfterToolChange = false;
             foreach (GCodeLine line in segment.Lines)
             {
-                // We have to check StartsWith in case there is any other code that has G as a parameter
-                if (line.Content.StartsWith("G", StringComparison.InvariantCulture))
+
+                // Get GCode of current line
+                int? gCode = line.GetIValue('G');
+
+                // Movement
+                if (gCode == 0 || gCode == 1)
                 {
-
-                    // Get GCode of current line
-                    int? gCode = line.GetIValue('G');
-
-                    // Movement
-                    if (gCode == 0 || gCode == 1)
+                    // Keep track of the current Z position
+                    double? zPosition = line.GetFValue('Z');
+                    if (zPosition.HasValue)
                     {
-                        // Keep track of the current Z position
-                        double? zPosition = line.GetFValue('Z');
-                        if (zPosition.HasValue)
-                        {
-                            currentZ = zPosition.Value;
+                        currentZ = zPosition.Value;
 
-                            // Since we have a Z height in this line we don't have to insert an artificial one
-                            ensureUnhopAfterToolChange = false;
+                        // Since we have a Z height in this line we don't have to insert an artificial one
+                        ensureUnhopAfterToolChange = false;
+                    }
+
+                    // Make sure to un-hop before the first extrusion if required
+                    if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || ensureUnhopAfterToolChange))
+                    {
+                        replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
+                        currentZ = layer.ZHeight;
+                        ensureUnhopAfterToolChange = false;
+                    }
+
+                    // Prime tool before first extrusion
+                    if (primeTool && line.GetFValue('E').HasValue)
+                    {
+                        replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed.ToString(FrmMain.numberFormat)}", toolChangeRetractionSpeed / 60.0));
+                        toolPrimed[currentTool - 1] = true;
+                        primeTool = false;
+                    }
+
+                    // Add next movement of the segment
+                    replacementLines.Add(line);
+
+                    // Insert potential tool changes after first G0/G1 code
+                    if (toolNumber != currentTool)
+                    {
+                        // Reset any speed overrides so tool change is not slowed down
+                        if (activeRule != null)
+                        {
+                            replacementLines.Add(new GCodeLine("M220 S100"));
+                            activeRule = null;
                         }
 
-                        // Make sure to un-hop before the first extrusion if required
-                        if (!double.IsNaN(layer.ZHeight) && line.GetFValue('E').HasValue && (currentZ != layer.ZHeight || ensureUnhopAfterToolChange))
-                        {
-                            replacementLines.Add(new GCodeLine($"G1 Z{layer.ZHeight.ToString("F3", FrmMain.numberFormat)} F{(line.Feedrate * 60.0).ToString("F0", FrmMain.numberFormat)}"));
-                            currentZ = layer.ZHeight;
-                            ensureUnhopAfterToolChange = false;
-                        }
+                        AddToolChange(replacementLines, currentTool, toolNumber);
+                        currentTool = toolNumber;
+                        primeTool = !toolPrimed[currentTool - 1];
 
-                        // Prime tool before first extrusion
-                        if (primeTool && line.GetFValue('E').HasValue)
-                        {
-                            replacementLines.Add(new GCodeLine($"G1 E{toolChangeRetractionDistance.ToString("F2", FrmMain.numberFormat)} F{toolChangeRetractionSpeed.ToString(FrmMain.numberFormat)}", toolChangeRetractionSpeed / 60.0));
-                            toolPrimed[currentTool - 1] = true;
-                            primeTool = false;
-                        }
-
-                        // Add next movement of the segment
-                        replacementLines.Add(line);
-
-                        // Insert potential tool changes after first G0/G1 code
-                        if (toolNumber != currentTool)
-                        {
-                            // Reset any speed overrides so tool change is not slowed down
-                            if (activeRule != null)
-                            {
-                                replacementLines.Add(new GCodeLine("M220 S100"));
-                                activeRule = null;
-                            }
-
-                            AddToolChange(replacementLines, currentTool, toolNumber);
-                            currentTool = toolNumber;
-                            primeTool = !toolPrimed[currentTool - 1];
-
-                            // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
-                            ensureUnhopAfterToolChange = true;
-                        }
+                        // Make sure we go to the height of the current layer after tool change but only before the first extrusion (see above)
+                        ensureUnhopAfterToolChange = true;
                     }
                 }
                 // Always add it if is no movement
