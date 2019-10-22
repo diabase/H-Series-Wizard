@@ -13,24 +13,32 @@ namespace DiabasePrintingWizard
         static void Main(string[] args)
         {
             string filename = null;
+            bool debug = false;
 
             // If we have an argument expect it to be the filename
             if (args.Length == 1)
             {
-                filename = args[0].Replace('/', '\\');
-                if (!PostProcess.IPCHelper.FileExists(filename))
+                if (args[0] == "/debug")
                 {
-                    filename = null;
-                    Console.WriteLine("Error: File not found");
+                    debug = true;
                 }
-                else if (PostProcess.IPCHelper.SendToPipe(filename))
+                else
                 {
-                    return;
+                    filename = args[0].Replace('/', '\\');
+                    if (!PostProcess.IPCHelper.FileExists(filename))
+                    {
+                        filename = null;
+                        Console.WriteLine("Error: File not found");
+                    }
+                    else if (PostProcess.IPCHelper.SendToPipe(filename))
+                    {
+                        return;
+                    }
                 }
             }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMain(filename));
+            Application.Run(new FrmMain(filename, debug));
         }
     }
 }
