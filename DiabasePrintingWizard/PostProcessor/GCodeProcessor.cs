@@ -687,7 +687,7 @@ namespace DiabasePrintingWizard
                             {
                                 // Reset possibly existing preheating time to just the tool change time
                                 // In case we were already waiting we will have to wait even longer.
-                                preheatCounters[segment.Tool] = (settings.Tools[segment.Tool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
+                                preheatCounters[segment.Tool] = line.Content.StartsWith("M98 P\"tprime", StringComparison.InvariantCulture) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
                             }
                         }
 
@@ -892,13 +892,18 @@ namespace DiabasePrintingWizard
             }
 
             ToolSettings newTool = settings.Tools[newToolNumber - 1];
-            if (newTool.AutoClean)
+            if (newTool.Cleaning == CleaningMode.Always
+                || (newTool.Cleaning == CleaningMode.Interval && newTool.IntervalCounter == newTool.Interval)
+                || (newTool.Cleaning == CleaningMode.Once && !newTool.CleanOnceDone))
             {
                 lines.Add(new GCodeLine($"M98 P\"tprime{newToolNumber}.g\"{ToolChangeMarker}"));
+                newTool.IntervalCounter = 0;
+                newTool.CleanOnceDone = true;
             }
             else
             {
                 lines.Add(new GCodeLine($"T{newToolNumber}{ToolChangeMarker}"));
+                ++newTool.IntervalCounter;
                 if (oldToolNumber == -1 || newTool.PreheatTime <= 0m)
                 {
                     lines.Add(new GCodeLine($"M116 P{newToolNumber}"));
