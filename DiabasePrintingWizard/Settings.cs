@@ -29,7 +29,7 @@
 
         public decimal Interval { get; set; }
 
-        public decimal IntervalCounter { get; set; }
+        public decimal ToolChangeCounter { get; set; }
 
         public bool CleanOnceDone { get; set; } = false;
     }
