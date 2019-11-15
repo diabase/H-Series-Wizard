@@ -52,5 +52,7 @@
         public RotaryPrintingSettings RotaryPrinting { get; set; }
 
         public bool IslandCombining { get; set; } = true;
+
+        public bool SkipHoming { get; set; } = false;
     }
 }

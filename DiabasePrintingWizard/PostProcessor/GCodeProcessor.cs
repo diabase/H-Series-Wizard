@@ -203,11 +203,25 @@ namespace DiabasePrintingWizard
                             }
                             else if (gCode == 28)
                             {
-                                lastPoint = homingPosition.Clone();
+                                if (settings.SkipHoming)
+                                {
+                                    writeLine = false;
+                                }
+                                else
+                                {
+                                    lastPoint = homingPosition.Clone();
+                                }
                             }
                             else if (gCode == 32)
                             {
-                                lastPoint = afterProbingPosition.Clone();
+                                if (settings.SkipHoming)
+                                {
+                                    writeLine = false;
+                                }
+                                else
+                                {
+                                    lastPoint = afterProbingPosition.Clone();
+                                }
                             }
                         }
                         else

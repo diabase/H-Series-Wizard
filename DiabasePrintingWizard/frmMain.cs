@@ -181,7 +181,9 @@ namespace DiabasePrintingWizard
                 },
                 UseOwnSettings = chkTopUseOwnSettings.Checked,
                 GenerateSpecialSupport = chkTopGenerateSupport.Checked,
-                RotaryPrinting = rotaryPrintingSettings
+                RotaryPrinting = rotaryPrintingSettings,
+                IslandCombining = cbIslandCombining.Checked,
+                SkipHoming = cboSkipHoming.Checked,
             };
 
             set
@@ -1013,7 +1015,6 @@ namespace DiabasePrintingWizard
             Progress<int> maxProgress = new Progress<int>(SetMaxProgress);
             Progress<int> totalProgress = new Progress<int>(SetTotalProgress);
             SettingsContainer currentSettings = Settings;
-            currentSettings.IslandCombining = this.cbIslandCombining.Checked;
             Duet.MachineInfo machineInfo = SelectedMachine;
             WriteSettings(outFile, currentSettings, machineInfo, overrideRules);
             Task.Run(async () =>
@@ -1050,6 +1051,7 @@ namespace DiabasePrintingWizard
                 sw.WriteLine($";    Inner radius: {currentSettings.RotaryPrinting.InnerRadius.ToString("F2", numberFormat)}mm");
             }
             sw.WriteLine($";    Island combining: {currentSettings.IslandCombining}");
+            sw.WriteLine($";    Skip homing: {currentSettings.SkipHoming}");
             sw.WriteLine(";");
 
             // Tool settings
