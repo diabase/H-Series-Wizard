@@ -203,7 +203,25 @@ namespace DiabasePrintingWizard
                             }
                             else if (gCode == 28)
                             {
-                                lastPoint = homingPosition.Clone();
+                                if (settings.SkipHoming)
+                                {
+                                    writeLine = false;
+                                }
+                                else
+                                {
+                                    lastPoint = homingPosition.Clone();
+                                }
+                            }
+                            else if (gCode == 32)
+                            {
+                                if (settings.SkipHoming)
+                                {
+                                    writeLine = false;
+                                }
+                                else
+                                {
+                                    lastPoint = afterProbingPosition.Clone();
+                                }
                             }
                         }
                         else
@@ -687,7 +705,7 @@ namespace DiabasePrintingWizard
                             {
                                 // Reset possibly existing preheating time to just the tool change time
                                 // In case we were already waiting we will have to wait even longer.
-                                preheatCounters[segment.Tool] = (settings.Tools[segment.Tool - 1].AutoClean) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
+                                preheatCounters[segment.Tool] = line.Content.StartsWith("M98 P\"tprime", StringComparison.InvariantCulture) ? ToolChangeDurationWithCleaning : ToolChangeDuration;
                             }
                         }
 
@@ -892,9 +910,12 @@ namespace DiabasePrintingWizard
             }
 
             ToolSettings newTool = settings.Tools[newToolNumber - 1];
-            if (newTool.AutoClean)
+            if (newTool.Cleaning == CleaningMode.Always
+                || (newTool.Cleaning == CleaningMode.Interval && (newTool.ToolChangeCounter % newTool.Interval) == 0)
+                || (newTool.Cleaning == CleaningMode.Once && !newTool.CleanOnceDone))
             {
                 lines.Add(new GCodeLine($"M98 P\"tprime{newToolNumber}.g\"{ToolChangeMarker}"));
+                newTool.CleanOnceDone = true;
             }
             else
             {
@@ -904,6 +925,7 @@ namespace DiabasePrintingWizard
                     lines.Add(new GCodeLine($"M116 P{newToolNumber}"));
                 }
             }
+            ++newTool.ToolChangeCounter;
         }
 
         public async Task WriteToFile(FileStream stream, bool debug)

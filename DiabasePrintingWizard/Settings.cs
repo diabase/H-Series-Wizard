@@ -7,6 +7,14 @@
         Spindle
     }
 
+    enum CleaningMode
+    {
+        Off = 0,
+        Once,
+        Interval,
+        Always
+    }
+
     class ToolSettings
     {
         public ToolType Type { get; set; }
@@ -17,7 +25,13 @@
 
         public decimal StandbyTemperature { get; set; }
 
-        public bool AutoClean { get; set; }
+        public CleaningMode Cleaning { get; set; }
+
+        public decimal Interval { get; set; }
+
+        public decimal ToolChangeCounter { get; set; }
+
+        public bool CleanOnceDone { get; set; } = false;
     }
 
     public class RotaryPrintingSettings
@@ -38,5 +52,7 @@
         public RotaryPrintingSettings RotaryPrinting { get; set; }
 
         public bool IslandCombining { get; set; } = true;
+
+        public bool SkipHoming { get; set; } = false;
     }
 }
