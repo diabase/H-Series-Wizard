@@ -55,7 +55,7 @@ namespace DiabasePrintingWizard
             }
 
             // Initialize mDNS discoverer
-            observer = new Duet.Observer(chkConfigureManually, lstMachine, boards);
+            observer = new Duet.Observer(chkSearchDeviceOnNetwork, lstMachine, boards);
 
             // Initialize IPC subsystem
             InitIPC();
@@ -135,7 +135,7 @@ namespace DiabasePrintingWizard
         {
             get => new SettingsContainer
             {
-                ConfigureManually = chkConfigureManually.Checked,
+                ConfigureManually = !chkSearchDeviceOnNetwork.Checked,
                 Tools = new ToolSettings[]
                 {
                     new ToolSettings
@@ -188,7 +188,7 @@ namespace DiabasePrintingWizard
 
             set
             {
-                chkConfigureManually.Checked = value.ConfigureManually;
+                chkSearchDeviceOnNetwork.Checked = !value.ConfigureManually;
                 cboTool1.SelectedIndex = (int)value.Tools[0].Type;
                 nudPreheat1.Value = value.Tools[0].PreheatTime;
                 nudTemp1.Value = value.Tools[0].StandbyTemperature;
@@ -282,7 +282,7 @@ namespace DiabasePrintingWizard
             if ((awContent.CurrentPage == awpTopSide && !rbTwoSided.Checked) ||
                 (awContent.CurrentPage == awpBottomSide))
             {
-                awContent.GoToPage(awpActions);
+                awContent.GoToPage(awpMachineProperties);
             }
             else if (awContent.CurrentPage == awpActions)
             {
@@ -313,7 +313,7 @@ namespace DiabasePrintingWizard
         private void AwpWelcome_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnBack.Enabled = false;
-            btnNext.Enabled = chkConfigureManually.Checked || lstMachine.SelectedIndex != -1;
+            btnNext.Enabled = !chkSearchDeviceOnNetwork.Checked || lstMachine.SelectedIndex != -1;
         }
 
         private void LstMachine_SelectedIndexChanged(object sender, EventArgs e)
@@ -335,11 +335,11 @@ namespace DiabasePrintingWizard
             btnNext.Enabled = IsToolSelected();
 
             // Allow tool selection only in manual mode
-            cboTool1.Enabled = chkConfigureManually.Checked;
-            cboTool2.Enabled = chkConfigureManually.Checked;
-            cboTool3.Enabled = chkConfigureManually.Checked;
-            cboTool4.Enabled = chkConfigureManually.Checked;
-            cboTool5.Enabled = chkConfigureManually.Checked;
+            cboTool1.Enabled = !chkSearchDeviceOnNetwork.Checked;
+            cboTool2.Enabled = !chkSearchDeviceOnNetwork.Checked;
+            cboTool3.Enabled = !chkSearchDeviceOnNetwork.Checked;
+            cboTool4.Enabled = !chkSearchDeviceOnNetwork.Checked;
+            cboTool5.Enabled = !chkSearchDeviceOnNetwork.Checked;
 
             // Set allowed tool options
             if (rbAdditiveSubstractive.Checked)
@@ -366,7 +366,7 @@ namespace DiabasePrintingWizard
             }
             
             // Attempt auto-configuration of the selected machine
-            if (chkConfigureManually.Checked)
+            if (!chkSearchDeviceOnNetwork.Checked)
             {
                 // Select some values for the tool options
                 if (cboTool1.SelectedIndex == -1) { cboTool1.SelectedIndex = 0; }
@@ -409,7 +409,7 @@ namespace DiabasePrintingWizard
 
         private void ChkConfigureManually_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkConfigureManually.Checked)
+            if (!chkSearchDeviceOnNetwork.Checked)
             {
                 btnNext.Enabled = true;
                 lstMachine.Enabled = false;
@@ -449,6 +449,45 @@ namespace DiabasePrintingWizard
         {
             gbTool5.Enabled = cboTool5.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
+        }
+        private void cboCleaning1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning1) == CleaningMode.Interval;
+            lblXChanges11.Enabled = enable;
+            nudXChanges1.Enabled = enable;
+            lblXChanges12.Enabled = enable;
+        }
+
+        private void cboCleaning2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning2) == CleaningMode.Interval;
+            lblXChanges21.Enabled = enable;
+            nudXChanges2.Enabled = enable;
+            lblXChanges22.Enabled = enable;
+        }
+
+        private void cboCleaning3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning3) == CleaningMode.Interval;
+            lblXChanges31.Enabled = enable;
+            nudXChanges3.Enabled = enable;
+            lblXChanges32.Enabled = enable;
+        }
+
+        private void cboCleaning4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning4) == CleaningMode.Interval;
+            lblXChanges41.Enabled = enable;
+            nudXChanges4.Enabled = enable;
+            lblXChanges42.Enabled = enable;
+        }
+
+        private void cboCleaning5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning5) == CleaningMode.Interval;
+            lblXChanges51.Enabled = enable;
+            nudXChanges5.Enabled = enable;
+            lblXChanges52.Enabled = enable;
         }
         #endregion
 
@@ -889,8 +928,8 @@ namespace DiabasePrintingWizard
         #region Progress page
         private void AwpProgress_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
-            btnUpload.Enabled = !chkConfigureManually.Checked;
-            btnUploadPrint.Enabled = !chkConfigureManually.Checked;
+            btnUpload.Enabled = chkSearchDeviceOnNetwork.Checked;
+            btnUploadPrint.Enabled = chkSearchDeviceOnNetwork.Checked;
             btnBack.Enabled = false;
             btnNext.Enabled = false;
             btnCancel.Enabled = false;
@@ -1288,44 +1327,5 @@ namespace DiabasePrintingWizard
             }
         }
         
-        private void cboCleaning1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning1) == CleaningMode.Interval;
-            lblXChanges11.Enabled = enable;
-            nudXChanges1.Enabled = enable;
-            lblXChanges12.Enabled = enable;
-        }
-
-        private void cboCleaning2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning2) == CleaningMode.Interval;
-            lblXChanges21.Enabled = enable;
-            nudXChanges2.Enabled = enable;
-            lblXChanges22.Enabled = enable;
-        }
-
-        private void cboCleaning3_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning3) == CleaningMode.Interval;
-            lblXChanges31.Enabled = enable;
-            nudXChanges3.Enabled = enable;
-            lblXChanges32.Enabled = enable;
-        }
-
-        private void cboCleaning4_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning4) == CleaningMode.Interval;
-            lblXChanges41.Enabled = enable;
-            nudXChanges4.Enabled = enable;
-            lblXChanges42.Enabled = enable;
-        }
-
-        private void cboCleaning5_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning5) == CleaningMode.Interval;
-            lblXChanges51.Enabled = enable;
-            nudXChanges5.Enabled = enable;
-            lblXChanges52.Enabled = enable;
-        }
     }
 }

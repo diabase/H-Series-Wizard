@@ -40,13 +40,13 @@ namespace DiabasePrintingWizard.Duet
             if (!list.Enabled)
             {
                 list.Items.Clear();
-                list.Enabled = !manualConfig.Checked;
+                list.Enabled = manualConfig.Checked;
             }
 
             list.Items.Add(info.Name);
             boardList.Add(info);
 
-            if (list.SelectedIndex == -1 && !manualConfig.Checked)
+            if (list.SelectedIndex == -1 && manualConfig.Checked)
             {
                 list.SelectedIndex = 0;
             }
