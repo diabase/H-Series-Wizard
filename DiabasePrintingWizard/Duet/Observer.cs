@@ -77,7 +77,7 @@ namespace DiabasePrintingWizard.Duet
         {
 #if !DEBUG
             // Request oem.json from the Duet
-            OemInfo info = await OemInfo.Get(value.IPAddress);
+            OemInfo info = await OemInfo.Get(address);
             if (info.Vendor == "diabase")
 #endif
             {
