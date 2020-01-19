@@ -1068,7 +1068,8 @@ namespace DiabasePrintingWizard
                 {
                     try
                     {
-                        await PostProcessor.CreateTask(
+                        
+                        postProcessingTask = PostProcessor.CreateTask(
                             topAdditiveFile,
                             topSubstractiveFile,
                             bottomAdditiveFile,
@@ -1082,6 +1083,7 @@ namespace DiabasePrintingWizard
                             maxProgress,
                             totalProgress,
                             debug);
+                        await postProcessingTask;
                     }
                     catch
                     {
