@@ -43,7 +43,14 @@ namespace DiabasePrintingWizard.Duet
                 list.Enabled = manualConfig.Checked;
             }
 
-            list.Items.Add(info.Name);
+            if (list.Items.Count > 0)
+            {
+                list.Items.Insert(list.Items.Count - 1, info.Name);
+            }
+            else
+            {
+                list.Items.Add(info.Name);
+            }
             boardList.Add(info);
 
             if (list.SelectedIndex == -1 && manualConfig.Checked)
@@ -60,43 +67,45 @@ namespace DiabasePrintingWizard.Duet
                 {
                     if (property.TryGetValue("product", out var product) && product.StartsWith("Duet"))
                     {
-                        Task.Run(async () =>
-                        {
-#if !DEBUG
-                            // Request oem.json from the Duet
-                            OemInfo info = await OemInfo.Get(value.IPAddress);
-                            if (info.Vendor == "diabase")
-#endif
-                            {
-                                // This is a Diabase machine. Check the tool configuration
-                                ExtendedStatusResponse statusResponse = await ExtendedStatusResponse.Get(value.IPAddress);
-                                ConfigResponse configResponse = await ConfigResponse.Get(value.IPAddress);
-                                
-                                MachineInfo boardInfo = new MachineInfo
-                                {
-                                    IPAddress = value.IPAddress,
-                                    Name = statusResponse.Name,
-                                    Axes = statusResponse.Axes,
-                                    Accelerations = configResponse.Accelerations,
-                                    MinFeedrates = configResponse.MinFeedrates,
-                                    MaxFeedrates = configResponse.MaxFeedrates
-                                };
-                                foreach(var tool in statusResponse.Tools)
-                                {
-                                    boardInfo.Tools.Add(new MachineInfo.Tool
-                                    {
-                                        Number = tool.Number,
-                                        NumDrives = tool.Drives.Count,
-                                        NumHeaters = tool.Heaters.Count,
-                                        HasSpindle = statusResponse.Spindles.Any(spindle => spindle.Tool == tool.Number)
-                                    });
-                                }
-
-                                list.BeginInvoke(new ItemAddDelegate(AddItem), boardInfo);
-                            }
-                        });
+                        CheckMachine(value.IPAddress, (boardInfo) => list.BeginInvoke(new ItemAddDelegate(AddItem), boardInfo));
                     }
                 }
+            }
+        }
+
+        public static async Task CheckMachine(string address, Action<MachineInfo> callback)
+        {
+#if !DEBUG
+            // Request oem.json from the Duet
+            OemInfo info = await OemInfo.Get(value.IPAddress);
+            if (info.Vendor == "diabase")
+#endif
+            {
+                // This is a Diabase machine. Check the tool configuration
+                ExtendedStatusResponse statusResponse = await ExtendedStatusResponse.Get(address);
+                ConfigResponse configResponse = await ConfigResponse.Get(address);
+
+                MachineInfo boardInfo = new MachineInfo
+                {
+                    IPAddress = address,
+                    Name = statusResponse.Name,
+                    Axes = statusResponse.Axes,
+                    Accelerations = configResponse.Accelerations,
+                    MinFeedrates = configResponse.MinFeedrates,
+                    MaxFeedrates = configResponse.MaxFeedrates
+                };
+                foreach (var tool in statusResponse.Tools)
+                {
+                    boardInfo.Tools.Add(new MachineInfo.Tool
+                    {
+                        Number = tool.Number,
+                        NumDrives = tool.Drives.Count,
+                        NumHeaters = tool.Heaters.Count,
+                        HasSpindle = statusResponse.Spindles.Any(spindle => spindle.Tool == tool.Number)
+                    });
+                }
+
+                callback(boardInfo);
             }
         }
     }

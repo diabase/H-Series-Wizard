@@ -1085,13 +1085,11 @@ namespace DiabasePrintingWizard
                             totalProgress,
                             debug);
                         await postProcessingTask;
-                        MessageBox.Show("Processing completed", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch
                     {
                         // error handling is done in the callback
                     }
-                    MessageBox.Show("Invoking callback next", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Invoke((Action)PostProcessingComplete);
                 }
             });
@@ -1155,7 +1153,6 @@ namespace DiabasePrintingWizard
 
         private void PostProcessingComplete()
         {
-            MessageBox.Show("In callback now", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             lblPleaseStandBy.Visible = false;
             UseWaitCursor = false;
             if (postProcessingTask.IsFaulted)
@@ -1359,41 +1356,7 @@ namespace DiabasePrintingWizard
         {
             var address = txtNetworkAddress.Text;
             btnNext.Enabled = false;
-            Task.Run(async () =>
-            {
-#if !DEBUG
-                // Request oem.json from the Duet
-                OemInfo info = await OemInfo.Get(address);
-                if (info.Vendor == "diabase")
-#endif
-                {
-                    // This is a Diabase machine. Check the tool configuration
-                    ExtendedStatusResponse statusResponse = await ExtendedStatusResponse.Get(address);
-                    ConfigResponse configResponse = await ConfigResponse.Get(address);
-
-                    MachineInfo boardInfo = new MachineInfo
-                    {
-                        IPAddress = address,
-                        Name = statusResponse.Name,
-                        Axes = statusResponse.Axes,
-                        Accelerations = configResponse.Accelerations,
-                        MinFeedrates = configResponse.MinFeedrates,
-                        MaxFeedrates = configResponse.MaxFeedrates
-                    };
-                    foreach (var tool in statusResponse.Tools)
-                    {
-                        boardInfo.Tools.Add(new MachineInfo.Tool
-                        {
-                            Number = tool.Number,
-                            NumDrives = tool.Drives.Count,
-                            NumHeaters = tool.Heaters.Count,
-                            HasSpindle = statusResponse.Spindles.Any(spindle => spindle.Tool == tool.Number)
-                        });
-                    }
-
-                    Invoke((Action)EnableBtnNext);
-                }
-            });
+            Observer.CheckMachine(address, (_) => EnableBtnNext());
         }
 
         private void txtNetworkAddress_TextChanged(object sender, EventArgs e)
