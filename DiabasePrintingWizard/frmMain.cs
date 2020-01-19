@@ -947,7 +947,7 @@ namespace DiabasePrintingWizard
             // Open top additive file
             try
             {
-                topAdditiveFile = new FileStream(txtTopFileAdditive.Text, FileMode.Open);
+                topAdditiveFile = new FileStream(txtTopFileAdditive.Text, FileMode.Open, FileAccess.Read);
                 pbTotal.Maximum = PostProcessor.StepsPerAdditiveFile;
             }
             catch (Exception e)
@@ -963,7 +963,7 @@ namespace DiabasePrintingWizard
 
                 try
                 {
-                    topSubstractiveFile = new FileStream(txtTopFileSubstractive.Text, FileMode.Open);
+                    topSubstractiveFile = new FileStream(txtTopFileSubstractive.Text, FileMode.Open, FileAccess.Read);
                     pbTotal.Maximum += PostProcessor.StepsPerSubstractiveFile;
                 }
                 catch (Exception e)
@@ -981,7 +981,7 @@ namespace DiabasePrintingWizard
                 // Open bottom additive file
                 try
                 {
-                    bottomAdditiveFile = new FileStream(txtBottomFileAdditive.Text, FileMode.Open);
+                    bottomAdditiveFile = new FileStream(txtBottomFileAdditive.Text, FileMode.Open, FileAccess.Read);
                     pbTotal.Maximum += PostProcessor.StepsPerAdditiveFile;
                 }
                 catch (Exception e)
@@ -997,7 +997,7 @@ namespace DiabasePrintingWizard
                 {
                     try
                     {
-                        bottomSubstractiveFile = new FileStream(txtBottomFileSubstractive.Text, FileMode.Open);
+                        bottomSubstractiveFile = new FileStream(txtBottomFileSubstractive.Text, FileMode.Open, FileAccess.Read);
                         pbTotal.Maximum += PostProcessor.StepsPerSubstractiveFile;
                     }
                     catch (Exception e)
@@ -1059,19 +1059,36 @@ namespace DiabasePrintingWizard
             Task.Run(async () =>
             {
                 await Task.Delay(250);
-                postProcessingTask = PostProcessor.CreateTask(topAdditiveFile, topSubstractiveFile,
-                    bottomAdditiveFile, bottomSubstractiveFile,
-                    outFile, currentSettings, overrideRules, machineInfo,
-                    textProgress, progress, maxProgress, totalProgress, debug);
-                try
+
+                using (outFile)
+                using (topAdditiveFile)
+                using (topSubstractiveFile)
+                using (bottomAdditiveFile)
+                using (bottomSubstractiveFile)
                 {
-                    await postProcessingTask;
+                    try
+                    {
+                        await PostProcessor.CreateTask(
+                            topAdditiveFile,
+                            topSubstractiveFile,
+                            bottomAdditiveFile,
+                            bottomSubstractiveFile,
+                            outFile,
+                            currentSettings,
+                            overrideRules,
+                            machineInfo,
+                            textProgress,
+                            progress,
+                            maxProgress,
+                            totalProgress,
+                            debug);
+                    }
+                    catch
+                    {
+                        // error handling is done in the callback
+                    }
+                    Invoke((Action)PostProcessingComplete);
                 }
-                catch
-                {
-                    // error handling is done in the callback
-                }
-                Invoke((Action)PostProcessingComplete);
             });
         }
 
