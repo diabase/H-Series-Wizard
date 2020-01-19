@@ -1356,7 +1356,7 @@ namespace DiabasePrintingWizard
         {
             var address = txtNetworkAddress.Text;
             btnNext.Enabled = false;
-            Observer.CheckMachine(address, (_) => EnableBtnNext());
+           _ = Observer.CheckMachine(address, (_) => EnableBtnNext());
         }
 
         private void txtNetworkAddress_TextChanged(object sender, EventArgs e)

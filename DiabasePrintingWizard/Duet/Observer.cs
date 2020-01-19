@@ -67,7 +67,7 @@ namespace DiabasePrintingWizard.Duet
                 {
                     if (property.TryGetValue("product", out var product) && product.StartsWith("Duet"))
                     {
-                        CheckMachine(value.IPAddress, (boardInfo) => list.BeginInvoke(new ItemAddDelegate(AddItem), boardInfo));
+                        _ = CheckMachine(value.IPAddress, (boardInfo) => list.BeginInvoke(new ItemAddDelegate(AddItem), boardInfo));
                     }
                 }
             }
