@@ -30,11 +30,15 @@ namespace DiabasePrintingWizard
         private bool outFileSaved = true;
         private bool debug;
         private Task postProcessingTask;
+        private MachineInfo userEnteredMachine;
 
         private Duet.MachineInfo SelectedMachine
         {
-            get => (lstMachine.SelectedIndex == -1) ?
-                Duet.MachineInfo.DefaultMachineInfo : boards[lstMachine.SelectedIndex];
+            get => (lstMachine.Enabled && lstMachine.SelectedIndex > -1)
+                ? boards[lstMachine.SelectedIndex]
+                : userEnteredMachine != null
+                    ? userEnteredMachine
+                    : Duet.MachineInfo.DefaultMachineInfo;
         }
 
         private BindingList<OverrideRule> overrideRules = new BindingList<OverrideRule>();
@@ -69,7 +73,8 @@ namespace DiabasePrintingWizard
                 Settings = JsonConvert.DeserializeObject<SettingsContainer>(Properties.Settings.Default.Storage);
             }
 
-            if (filename != null) {
+            if (filename != null)
+            {
                 txtTopFileAdditive.Text = filename;
             }
         }
@@ -137,6 +142,7 @@ namespace DiabasePrintingWizard
             get => new SettingsContainer
             {
                 ConfigureManually = !chkSearchDeviceOnNetwork.Checked,
+                NetworkAddress = txtNetworkAddress.Text,
                 Tools = new ToolSettings[]
                 {
                     new ToolSettings
@@ -190,6 +196,7 @@ namespace DiabasePrintingWizard
             set
             {
                 chkSearchDeviceOnNetwork.Checked = !value.ConfigureManually;
+                txtNetworkAddress.Text = value.NetworkAddress;
                 cboTool1.SelectedIndex = (int)value.Tools[0].Type;
                 nudPreheat1.Value = value.Tools[0].PreheatTime;
                 nudTemp1.Value = value.Tools[0].StandbyTemperature;
@@ -317,6 +324,25 @@ namespace DiabasePrintingWizard
             btnNext.Enabled = !chkSearchDeviceOnNetwork.Checked || lstMachine.SelectedIndex != -1;
         }
 
+        private void SetBoard(MachineInfo board)
+        {
+            userEnteredMachine = board;
+            btnNext.Enabled = true;
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            var address = txtNetworkAddress.Text;
+            btnNext.Enabled = false;
+            userEnteredMachine = null;
+            _ = Observer.CheckMachine(address, (board) => SetBoard(board));
+        }
+
+        private void txtNetworkAddress_TextChanged(object sender, EventArgs e)
+        {
+            btnNext.Enabled = txtNetworkAddress.Text.Length == 0;
+        }
+
         private void LstMachine_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = lstMachine.SelectedIndex != -1;
@@ -365,7 +391,7 @@ namespace DiabasePrintingWizard
                     cboTool5.Items.RemoveAt(2);
                 }
             }
-            
+
             // Attempt auto-configuration of the selected machine
             if (!chkSearchDeviceOnNetwork.Checked)
             {
@@ -1069,7 +1095,6 @@ namespace DiabasePrintingWizard
                 {
                     try
                     {
-                        
                         postProcessingTask = PostProcessor.CreateTask(
                             topAdditiveFile,
                             topSubstractiveFile,
@@ -1101,7 +1126,21 @@ namespace DiabasePrintingWizard
 
             // General settings
             sw.WriteLine(";  General Settings");
-            sw.WriteLine($";    Configure manually: {currentSettings.ConfigureManually}");
+            var machine = SelectedMachine;
+            string machineSelection;
+            if (machine == Duet.MachineInfo.DefaultMachineInfo)
+            {
+                machineSelection = "configured manually";
+            }
+            else if (machine == userEnteredMachine)
+            {
+                machineSelection = "manually entered address";
+            }
+            else
+            {
+                machineSelection = "selected from auto-detect list";
+            }
+            sw.WriteLine($";    Machine selection: {machineSelection}");
             sw.WriteLine($";    Use own settings: {currentSettings.UseOwnSettings}");
             sw.WriteLine($";    Generate special support: {currentSettings.GenerateSpecialSupport}");
             if (currentSettings.RotaryPrinting != null)
@@ -1118,7 +1157,7 @@ namespace DiabasePrintingWizard
             for (var i = 0; i < currentSettings.Tools.Length; i++)
             {
                 var ts = currentSettings.Tools[i];
-                sw.WriteLine($";    Tool {i+1}");
+                sw.WriteLine($";    Tool {i + 1}");
                 sw.WriteLine($";      Type: {ts.Type}");
                 sw.WriteLine($";      Preheat time: {ts.PreheatTime}");
                 sw.WriteLine($";      Active temperature: {ts.ActiveTemperature}");
@@ -1347,21 +1386,5 @@ namespace DiabasePrintingWizard
             }
         }
 
-        private void EnableBtnNext()
-        {
-            btnNext.Enabled = true;
-        }
-
-        private void btnConnect_Click(object sender, EventArgs e)
-        {
-            var address = txtNetworkAddress.Text;
-            btnNext.Enabled = false;
-           _ = Observer.CheckMachine(address, (_) => EnableBtnNext());
-        }
-
-        private void txtNetworkAddress_TextChanged(object sender, EventArgs e)
-        {
-            btnNext.Enabled = txtNetworkAddress.Text.Length == 0;
-        }
     }
 }
