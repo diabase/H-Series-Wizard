@@ -1115,6 +1115,7 @@ namespace DiabasePrintingWizard
                     {
                         // error handling is done in the callback
                     }
+                    await Task.Delay(250);
                     Invoke((Action)PostProcessingComplete);
                 }
             });
