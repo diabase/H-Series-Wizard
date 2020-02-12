@@ -36,11 +36,12 @@
             this.rbAdditiveSubstractive = new System.Windows.Forms.RadioButton();
             this.rbAdditive = new System.Windows.Forms.RadioButton();
             this.gbMachine = new System.Windows.Forms.GroupBox();
+            this.rbSearchNetwork = new System.Windows.Forms.RadioButton();
+            this.rbNetworkAddress = new System.Windows.Forms.RadioButton();
+            this.rbConfigureManually = new System.Windows.Forms.RadioButton();
             this.btnConnect = new System.Windows.Forms.Button();
             this.txtNetworkAddress = new System.Windows.Forms.TextBox();
-            this.lblNetworkAddress = new System.Windows.Forms.Label();
             this.lstMachine = new System.Windows.Forms.ListBox();
-            this.chkSearchDeviceOnNetwork = new System.Windows.Forms.CheckBox();
             this.gbGeometry = new System.Windows.Forms.GroupBox();
             this.rbRotary = new System.Windows.Forms.RadioButton();
             this.rbTwoSided = new System.Windows.Forms.RadioButton();
@@ -306,11 +307,11 @@
             // 
             this.gbType.Controls.Add(this.rbAdditiveSubstractive);
             this.gbType.Controls.Add(this.rbAdditive);
-            this.gbType.Location = new System.Drawing.Point(465, 178);
+            this.gbType.Location = new System.Drawing.Point(465, 160);
             this.gbType.Margin = new System.Windows.Forms.Padding(7, 2, 7, 2);
             this.gbType.Name = "gbType";
             this.gbType.Padding = new System.Windows.Forms.Padding(2);
-            this.gbType.Size = new System.Drawing.Size(232, 173);
+            this.gbType.Size = new System.Drawing.Size(232, 208);
             this.gbType.TabIndex = 29;
             this.gbType.TabStop = false;
             this.gbType.Text = "Manufacturing Type";
@@ -341,23 +342,59 @@
             // 
             // gbMachine
             // 
+            this.gbMachine.Controls.Add(this.rbSearchNetwork);
+            this.gbMachine.Controls.Add(this.rbNetworkAddress);
+            this.gbMachine.Controls.Add(this.rbConfigureManually);
             this.gbMachine.Controls.Add(this.btnConnect);
             this.gbMachine.Controls.Add(this.txtNetworkAddress);
-            this.gbMachine.Controls.Add(this.lblNetworkAddress);
             this.gbMachine.Controls.Add(this.lstMachine);
-            this.gbMachine.Controls.Add(this.chkSearchDeviceOnNetwork);
-            this.gbMachine.Location = new System.Drawing.Point(11, 178);
+            this.gbMachine.Location = new System.Drawing.Point(11, 160);
             this.gbMachine.Margin = new System.Windows.Forms.Padding(2);
             this.gbMachine.Name = "gbMachine";
             this.gbMachine.Padding = new System.Windows.Forms.Padding(7, 5, 7, 7);
-            this.gbMachine.Size = new System.Drawing.Size(286, 173);
+            this.gbMachine.Size = new System.Drawing.Size(286, 208);
             this.gbMachine.TabIndex = 26;
             this.gbMachine.TabStop = false;
             this.gbMachine.Text = "Machine";
             // 
+            // rbSearchNetwork
+            // 
+            this.rbSearchNetwork.AutoSize = true;
+            this.rbSearchNetwork.Location = new System.Drawing.Point(10, 87);
+            this.rbSearchNetwork.Name = "rbSearchNetwork";
+            this.rbSearchNetwork.Size = new System.Drawing.Size(180, 17);
+            this.rbSearchNetwork.TabIndex = 32;
+            this.rbSearchNetwork.Text = "Search device on network (beta)";
+            this.rbSearchNetwork.UseVisualStyleBackColor = true;
+            this.rbSearchNetwork.CheckedChanged += new System.EventHandler(this.rbSearchNetwork_CheckedChanged);
+            // 
+            // rbNetworkAddress
+            // 
+            this.rbNetworkAddress.AutoSize = true;
+            this.rbNetworkAddress.Location = new System.Drawing.Point(10, 39);
+            this.rbNetworkAddress.Name = "rbNetworkAddress";
+            this.rbNetworkAddress.Size = new System.Drawing.Size(131, 17);
+            this.rbNetworkAddress.TabIndex = 31;
+            this.rbNetworkAddress.Text = "Enter network address";
+            this.rbNetworkAddress.UseVisualStyleBackColor = true;
+            this.rbNetworkAddress.CheckedChanged += new System.EventHandler(this.rbNetworkAddress_CheckedChanged);
+            // 
+            // rbConfigureManually
+            // 
+            this.rbConfigureManually.AutoSize = true;
+            this.rbConfigureManually.Checked = true;
+            this.rbConfigureManually.Location = new System.Drawing.Point(10, 16);
+            this.rbConfigureManually.Name = "rbConfigureManually";
+            this.rbConfigureManually.Size = new System.Drawing.Size(114, 17);
+            this.rbConfigureManually.TabIndex = 30;
+            this.rbConfigureManually.TabStop = true;
+            this.rbConfigureManually.Text = "Configure manually";
+            this.rbConfigureManually.UseVisualStyleBackColor = true;
+            this.rbConfigureManually.CheckedChanged += new System.EventHandler(this.rbConfigureManually_CheckedChanged);
+            // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(211, 37);
+            this.btnConnect.Location = new System.Drawing.Point(211, 60);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(61, 23);
             this.btnConnect.TabIndex = 29;
@@ -367,20 +404,11 @@
             // 
             // txtNetworkAddress
             // 
-            this.txtNetworkAddress.Location = new System.Drawing.Point(9, 38);
+            this.txtNetworkAddress.Location = new System.Drawing.Point(26, 62);
             this.txtNetworkAddress.Name = "txtNetworkAddress";
-            this.txtNetworkAddress.Size = new System.Drawing.Size(199, 20);
+            this.txtNetworkAddress.Size = new System.Drawing.Size(179, 20);
             this.txtNetworkAddress.TabIndex = 28;
             this.txtNetworkAddress.TextChanged += new System.EventHandler(this.txtNetworkAddress_TextChanged);
-            // 
-            // lblNetworkAddress
-            // 
-            this.lblNetworkAddress.AutoSize = true;
-            this.lblNetworkAddress.Location = new System.Drawing.Point(9, 21);
-            this.lblNetworkAddress.Name = "lblNetworkAddress";
-            this.lblNetworkAddress.Size = new System.Drawing.Size(87, 13);
-            this.lblNetworkAddress.TabIndex = 27;
-            this.lblNetworkAddress.Text = "Network address";
             // 
             // lstMachine
             // 
@@ -388,36 +416,23 @@
             this.lstMachine.FormattingEnabled = true;
             this.lstMachine.Items.AddRange(new object[] {
             "Searching..."});
-            this.lstMachine.Location = new System.Drawing.Point(9, 97);
+            this.lstMachine.Location = new System.Drawing.Point(26, 110);
             this.lstMachine.Margin = new System.Windows.Forms.Padding(2);
             this.lstMachine.Name = "lstMachine";
-            this.lstMachine.Size = new System.Drawing.Size(201, 69);
+            this.lstMachine.Size = new System.Drawing.Size(160, 69);
             this.lstMachine.TabIndex = 25;
             this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.LstMachine_SelectedIndexChanged);
-            // 
-            // chkSearchDeviceOnNetwork
-            // 
-            this.chkSearchDeviceOnNetwork.AutoSize = true;
-            this.chkSearchDeviceOnNetwork.Location = new System.Drawing.Point(9, 76);
-            this.chkSearchDeviceOnNetwork.Margin = new System.Windows.Forms.Padding(2);
-            this.chkSearchDeviceOnNetwork.Name = "chkSearchDeviceOnNetwork";
-            this.chkSearchDeviceOnNetwork.Size = new System.Drawing.Size(181, 17);
-            this.chkSearchDeviceOnNetwork.TabIndex = 26;
-            this.chkSearchDeviceOnNetwork.Text = "Search device on network (beta)";
-            this.chkSearchDeviceOnNetwork.UseMnemonic = false;
-            this.chkSearchDeviceOnNetwork.UseVisualStyleBackColor = true;
-            this.chkSearchDeviceOnNetwork.CheckedChanged += new System.EventHandler(this.ChkConfigureManually_CheckedChanged);
             // 
             // gbGeometry
             // 
             this.gbGeometry.Controls.Add(this.rbRotary);
             this.gbGeometry.Controls.Add(this.rbTwoSided);
             this.gbGeometry.Controls.Add(this.rbOneSided);
-            this.gbGeometry.Location = new System.Drawing.Point(304, 178);
+            this.gbGeometry.Location = new System.Drawing.Point(304, 160);
             this.gbGeometry.Margin = new System.Windows.Forms.Padding(2);
             this.gbGeometry.Name = "gbGeometry";
             this.gbGeometry.Padding = new System.Windows.Forms.Padding(2);
-            this.gbGeometry.Size = new System.Drawing.Size(152, 173);
+            this.gbGeometry.Size = new System.Drawing.Size(152, 208);
             this.gbGeometry.TabIndex = 28;
             this.gbGeometry.TabStop = false;
             this.gbGeometry.Text = "Geometry";
@@ -2364,7 +2379,6 @@
         private System.Windows.Forms.OpenFileDialog ofdInputs;
         private System.Windows.Forms.GroupBox gbMachine;
         private System.Windows.Forms.ListBox lstMachine;
-        private System.Windows.Forms.CheckBox chkSearchDeviceOnNetwork;
         private System.Windows.Forms.GroupBox gbGeometry;
         private System.Windows.Forms.RadioButton rbRotary;
         private System.Windows.Forms.RadioButton rbTwoSided;
@@ -2463,8 +2477,10 @@
         private System.Windows.Forms.Label lblUnitID;
         private System.Windows.Forms.CheckBox cboSkipHoming;
         private System.Windows.Forms.TextBox txtNetworkAddress;
-        private System.Windows.Forms.Label lblNetworkAddress;
         private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.RadioButton rbSearchNetwork;
+        private System.Windows.Forms.RadioButton rbNetworkAddress;
+        private System.Windows.Forms.RadioButton rbConfigureManually;
     }
 }
 

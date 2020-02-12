@@ -34,9 +34,9 @@ namespace DiabasePrintingWizard
 
         private Duet.MachineInfo SelectedMachine
         {
-            get => (lstMachine.Enabled && lstMachine.SelectedIndex > -1)
+            get => (rbSearchNetwork.Checked && lstMachine.SelectedIndex > -1)
                 ? boards[lstMachine.SelectedIndex]
-                : userEnteredMachine != null
+                : (rbNetworkAddress.Checked && userEnteredMachine != null)
                     ? userEnteredMachine
                     : Duet.MachineInfo.DefaultMachineInfo;
         }
@@ -60,7 +60,7 @@ namespace DiabasePrintingWizard
             }
 
             // Initialize mDNS discoverer
-            observer = new Duet.Observer(chkSearchDeviceOnNetwork, lstMachine, boards);
+            observer = new Duet.Observer(rbSearchNetwork, lstMachine, boards);
 
             // Initialize IPC subsystem
             InitIPC();
@@ -141,7 +141,9 @@ namespace DiabasePrintingWizard
         {
             get => new SettingsContainer
             {
-                ConfigureManually = !chkSearchDeviceOnNetwork.Checked,
+                ConfigureManually = rbConfigureManually.Checked,
+                EnterNetworkAddress = rbNetworkAddress.Checked,
+                SearchNetwork = rbSearchNetwork.Checked,
                 NetworkAddress = txtNetworkAddress.Text,
                 Tools = new ToolSettings[]
                 {
@@ -195,7 +197,9 @@ namespace DiabasePrintingWizard
 
             set
             {
-                chkSearchDeviceOnNetwork.Checked = !value.ConfigureManually;
+                rbConfigureManually.Checked = value.ConfigureManually;
+                rbNetworkAddress.Checked = value.EnterNetworkAddress;
+                rbSearchNetwork.Checked = value.SearchNetwork;
                 txtNetworkAddress.Text = value.NetworkAddress;
                 cboTool1.SelectedIndex = (int)value.Tools[0].Type;
                 nudPreheat1.Value = value.Tools[0].PreheatTime;
@@ -307,6 +311,7 @@ namespace DiabasePrintingWizard
                 awContent.ClickNext();
             }
         }
+        #endregion
 
         private int GetToolSelection(int toolNumber)
         {
@@ -317,17 +322,19 @@ namespace DiabasePrintingWizard
             return 0;                       // Not present
         }
 
+        #region Welcome Page
         // Welcome page
         private void AwpWelcome_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnBack.Enabled = false;
-            btnNext.Enabled = !chkSearchDeviceOnNetwork.Checked || lstMachine.SelectedIndex != -1;
+            btnNext.Enabled = this.rbConfigureManually.Checked || this.SelectedMachine != Duet.MachineInfo.DefaultMachineInfo;
         }
 
-        private void SetBoard(MachineInfo board)
+        private void SetUserEnteredBoard(MachineInfo board)
         {
             userEnteredMachine = board;
             btnNext.Enabled = true;
+            btnConnect.Enabled = false;
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -335,17 +342,41 @@ namespace DiabasePrintingWizard
             var address = txtNetworkAddress.Text;
             btnNext.Enabled = false;
             userEnteredMachine = null;
-            _ = Observer.CheckMachine(address, (board) => SetBoard(board));
+            _ = Observer.CheckMachine(address, (board) => SetUserEnteredBoard(board));
         }
 
         private void txtNetworkAddress_TextChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = txtNetworkAddress.Text.Length == 0;
+            btnConnect.Enabled = true;
         }
 
         private void LstMachine_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = lstMachine.SelectedIndex != -1;
+        }
+
+        private void SetMachineSelectionEnabled()
+        {
+            this.txtNetworkAddress.Enabled = this.rbNetworkAddress.Checked;
+            this.btnConnect.Enabled = this.rbNetworkAddress.Checked;
+            this.lstMachine.Enabled = this.rbSearchNetwork.Checked;
+            btnNext.Enabled = this.rbConfigureManually.Checked || this.SelectedMachine != Duet.MachineInfo.DefaultMachineInfo;
+        }
+
+        private void rbConfigureManually_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SetMachineSelectionEnabled();
+        }
+
+        private void rbNetworkAddress_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SetMachineSelectionEnabled();
+        }
+
+        private void rbSearchNetwork_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SetMachineSelectionEnabled();
         }
         #endregion
 
@@ -362,11 +393,11 @@ namespace DiabasePrintingWizard
             btnNext.Enabled = IsToolSelected();
 
             // Allow tool selection only in manual mode
-            cboTool1.Enabled = !chkSearchDeviceOnNetwork.Checked;
-            cboTool2.Enabled = !chkSearchDeviceOnNetwork.Checked;
-            cboTool3.Enabled = !chkSearchDeviceOnNetwork.Checked;
-            cboTool4.Enabled = !chkSearchDeviceOnNetwork.Checked;
-            cboTool5.Enabled = !chkSearchDeviceOnNetwork.Checked;
+            cboTool1.Enabled = rbConfigureManually.Checked;
+            cboTool2.Enabled = rbConfigureManually.Checked;
+            cboTool3.Enabled = rbConfigureManually.Checked;
+            cboTool4.Enabled = rbConfigureManually.Checked;
+            cboTool5.Enabled = rbConfigureManually.Checked;
 
             // Set allowed tool options
             if (rbAdditiveSubstractive.Checked)
@@ -393,7 +424,7 @@ namespace DiabasePrintingWizard
             }
 
             // Attempt auto-configuration of the selected machine
-            if (!chkSearchDeviceOnNetwork.Checked)
+            if (rbConfigureManually.Checked)
             {
                 // Select some values for the tool options
                 if (cboTool1.SelectedIndex == -1) { cboTool1.SelectedIndex = 0; }
@@ -433,21 +464,7 @@ namespace DiabasePrintingWizard
                 cboTool5.SelectedIndex = GetToolSelection(5);
             }
         }
-
-        private void ChkConfigureManually_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!chkSearchDeviceOnNetwork.Checked)
-            {
-                btnNext.Enabled = true;
-                lstMachine.Enabled = false;
-            }
-            else
-            {
-                lstMachine.Enabled = true;
-                btnNext.Enabled = lstMachine.SelectedIndex != -1;
-            }
-        }
-
+        
         private void CboTool1_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool1.Enabled = cboTool1.SelectedIndex == 1;
@@ -955,8 +972,8 @@ namespace DiabasePrintingWizard
         #region Progress page
         private void AwpProgress_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
-            btnUpload.Enabled = chkSearchDeviceOnNetwork.Checked;
-            btnUploadPrint.Enabled = chkSearchDeviceOnNetwork.Checked;
+            btnUpload.Enabled = !this.rbConfigureManually.Checked;
+            btnUploadPrint.Enabled = !this.rbConfigureManually.Checked;
             btnBack.Enabled = false;
             btnNext.Enabled = false;
             btnCancel.Enabled = false;
@@ -1386,6 +1403,5 @@ namespace DiabasePrintingWizard
                 return CleaningMode.Off;
             }
         }
-
     }
 }

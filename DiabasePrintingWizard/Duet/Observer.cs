@@ -9,15 +9,15 @@ namespace DiabasePrintingWizard.Duet
 {
     public class Observer : IObserver<IZeroconfHost>
     {
-        private CheckBox manualConfig;
+        private RadioButton searchNetwork;
         private ListBox list;
         private List<MachineInfo> boardList;
 
         private readonly string HttpService = "_http._tcp.local.";
 
-        public Observer(CheckBox manualSetup, ListBox listToFill, List<MachineInfo> boards)
+        public Observer(RadioButton searchNetwork, ListBox listToFill, List<MachineInfo> boards)
         {
-            manualConfig = manualSetup;
+            this.searchNetwork = searchNetwork;
             list = listToFill;
             boardList = boards;
 
@@ -40,7 +40,7 @@ namespace DiabasePrintingWizard.Duet
             if (!list.Enabled)
             {
                 list.Items.Clear();
-                list.Enabled = manualConfig.Checked;
+                list.Enabled = searchNetwork.Checked;
             }
 
             if (list.Items.Count > 0)
@@ -53,7 +53,7 @@ namespace DiabasePrintingWizard.Duet
             }
             boardList.Add(info);
 
-            if (list.SelectedIndex == -1 && manualConfig.Checked)
+            if (list.SelectedIndex == -1 && searchNetwork.Checked)
             {
                 list.SelectedIndex = 0;
             }
