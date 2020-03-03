@@ -15,7 +15,7 @@ namespace DiabasePrintingWizard
         public static async Task CreateTask(FileStream topAdditiveFile, FileStream topSubstractiveFile,
             FileStream bottomAdditiveFile, FileStream bottomSubstractiveFile,
             FileStream outFile, SettingsContainer settings, IList<OverrideRule> rules, Duet.MachineInfo machine,
-            IProgress<string> textProgress, IProgress<int> progress, IProgress<int> maxProgress, IProgress<int>totalProgress, bool debug)
+            IProgress<string> textProgress, IProgress<int> progress, IProgress<int> maxProgress, IProgress<int>totalProgress, bool debug, Duet.MachineInfo userEnteredMachine)
         {
             Exception ex = null;
             try
@@ -52,6 +52,7 @@ namespace DiabasePrintingWizard
 
                 // Join files together
                 textProgress.Report("Combining results...");
+                WriteSettings(outFile, settings, machine, userEnteredMachine, rules);
                 WriteFileInfo(outFile, "Additive manufacturing on the top side", topAdditiveFile);
                 await topAdditiveGCode.WriteToFile(outFile, debug);
                 IncreaseTotalProgress(totalProgress);
@@ -87,6 +88,70 @@ namespace DiabasePrintingWizard
             }
         }
 
+
+        private static void WriteSettings(FileStream outFile, SettingsContainer currentSettings, Duet.MachineInfo machine, Duet.MachineInfo userEnteredMachine, IList<OverrideRule> overrideRules)
+        {
+            StreamWriter sw = new StreamWriter(outFile);
+
+            // General settings
+            sw.WriteLine(";  General Settings");
+            string machineSelection;
+            if (machine == Duet.MachineInfo.DefaultMachineInfo)
+            {
+                machineSelection = "configured manually";
+            }
+            else if (machine == userEnteredMachine)
+            {
+                machineSelection = "manually entered address";
+            }
+            else
+            {
+                machineSelection = "selected from auto-detect list";
+            }
+            sw.WriteLine($";    Machine selection: {machineSelection}");
+            sw.WriteLine($";    Use own settings: {currentSettings.UseOwnSettings}");
+            sw.WriteLine($";    Generate special support: {currentSettings.GenerateSpecialSupport}");
+            if (currentSettings.RotaryPrinting != null)
+            {
+                sw.WriteLine($";    Rotary printing: true");
+                sw.WriteLine($";    Inner radius: {currentSettings.RotaryPrinting.InnerRadius.ToString("F2", FrmMain.numberFormat)}mm");
+            }
+            sw.WriteLine($";    Island combining: {currentSettings.IslandCombining}");
+            sw.WriteLine($";    Skip homing: {currentSettings.SkipHoming}");
+            sw.WriteLine(";");
+
+            // Tool settings
+            sw.WriteLine(";  Tool Settings");
+            for (var i = 0; i < currentSettings.Tools.Length; i++)
+            {
+                var ts = currentSettings.Tools[i];
+                sw.WriteLine($";    Tool {i + 1}");
+                sw.WriteLine($";      Type: {ts.Type}");
+                sw.WriteLine($";      Preheat time: {ts.PreheatTime}");
+                sw.WriteLine($";      Active temperature: {ts.ActiveTemperature}");
+                sw.WriteLine($";      Standby temperature: {ts.StandbyTemperature}");
+                sw.WriteLine($";      Cleaning: {ts.Cleaning.ToString()}{((ts.Cleaning == CleaningMode.Interval) ? $" every {ts.Interval} change(s)" : "")}");
+                sw.WriteLine(";");
+
+            }
+
+            // Override rules
+            if (overrideRules.Count > 0)
+            {
+                sw.WriteLine(";  Override rules");
+                foreach (OverrideRule or in overrideRules)
+                {
+                    sw.WriteLine($";    Tool: {or.Tool}");
+                    sw.WriteLine($";    Layer: {or.Layer}");
+                    sw.WriteLine($";    Region: {or.Region}");
+                    sw.WriteLine($";    Speed factor: {or.SpeedFactor.ToString("F1", FrmMain.numberFormat)}");
+                    sw.WriteLine($";    Extrusion factor: {or.ExtrusionFactor.ToString("F1", FrmMain.numberFormat)}");
+                    sw.WriteLine(";");
+                }
+            }
+
+            sw.Flush();
+        }
         private static void IncreaseTotalProgress(IProgress<int> progress)
         {
             progress.Report(++totalProgressValue);

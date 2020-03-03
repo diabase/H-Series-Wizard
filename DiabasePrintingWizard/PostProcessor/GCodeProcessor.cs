@@ -83,6 +83,7 @@ namespace DiabasePrintingWizard
                 bool isInterfacingSet = true;
                 GCodeLayer layer = new GCodeLayer(0, 0.0), lastLayer = null;
                 GCodeSegment segment = new GCodeSegment("Initialization", -1, null);
+                GCodeSegment initSegment = segment;
                 layer.Segments.Add(segment);
 
                 HashSet<int> usedTools = new HashSet<int>();
@@ -242,11 +243,11 @@ namespace DiabasePrintingWizard
                                             if (toolSettings.ActiveTemperature <= 0m)
                                             {
                                                 toolSettings.ActiveTemperature = (decimal)sParam.Value;
-                                                segment.AddLine($"G10 P{tParam} R{toolSettings.StandbyTemperature.ToString(FrmMain.numberFormat)} S{toolSettings.ActiveTemperature.ToString(FrmMain.numberFormat)}");
+                                                initSegment.AddLine($"G10 P{tParam} R{toolSettings.StandbyTemperature.ToString(FrmMain.numberFormat)} S{toolSettings.ActiveTemperature.ToString(FrmMain.numberFormat)}");
                                             }
                                             else
                                             {
-                                                segment.AddLine($"G10 P{tParam} S{sParam.Value.ToString(FrmMain.numberFormat)}");
+                                                initSegment.AddLine($"G10 P{tParam} S{sParam.Value.ToString(FrmMain.numberFormat)}");
                                             }
                                         }
                                         writeLine = false;

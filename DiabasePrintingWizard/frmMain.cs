@@ -17,7 +17,7 @@ namespace DiabasePrintingWizard
 {
     public partial class FrmMain : Form
     {
-        public static readonly string version = "v1.0.6-dev";
+        public static readonly string version = "v1.0.7-dev";
         public static readonly NumberFormatInfo numberFormat = CultureInfo.CreateSpecificCulture("en-US").NumberFormat;
 
         private Duet.Observer observer;
@@ -1098,8 +1098,7 @@ namespace DiabasePrintingWizard
             Progress<int> maxProgress = new Progress<int>(SetMaxProgress);
             Progress<int> totalProgress = new Progress<int>(SetTotalProgress);
             SettingsContainer currentSettings = Settings;
-            Duet.MachineInfo machineInfo = SelectedMachine;
-            WriteSettings(outFile, currentSettings, machineInfo, overrideRules);
+            MachineInfo machineInfo = SelectedMachine;
             Task.Run(async () =>
             {
                 await Task.Delay(250);
@@ -1125,7 +1124,8 @@ namespace DiabasePrintingWizard
                             progress,
                             maxProgress,
                             totalProgress,
-                            debug);
+                            debug,
+                            userEnteredMachine);
                         await postProcessingTask;
                     }
                     catch
@@ -1136,71 +1136,6 @@ namespace DiabasePrintingWizard
                     Invoke((Action)PostProcessingComplete);
                 }
             });
-        }
-
-        private void WriteSettings(FileStream outFile, SettingsContainer currentSettings, Duet.MachineInfo machineInfo, BindingList<OverrideRule> overrideRules)
-        {
-            StreamWriter sw = new StreamWriter(outFile);
-
-            // General settings
-            sw.WriteLine(";  General Settings");
-            var machine = SelectedMachine;
-            string machineSelection;
-            if (machine == Duet.MachineInfo.DefaultMachineInfo)
-            {
-                machineSelection = "configured manually";
-            }
-            else if (machine == userEnteredMachine)
-            {
-                machineSelection = "manually entered address";
-            }
-            else
-            {
-                machineSelection = "selected from auto-detect list";
-            }
-            sw.WriteLine($";    Machine selection: {machineSelection}");
-            sw.WriteLine($";    Use own settings: {currentSettings.UseOwnSettings}");
-            sw.WriteLine($";    Generate special support: {currentSettings.GenerateSpecialSupport}");
-            if (currentSettings.RotaryPrinting != null)
-            {
-                sw.WriteLine($";    Rotary printing: true");
-                sw.WriteLine($";    Inner radius: {currentSettings.RotaryPrinting.InnerRadius.ToString("F2", numberFormat)}mm");
-            }
-            sw.WriteLine($";    Island combining: {currentSettings.IslandCombining}");
-            sw.WriteLine($";    Skip homing: {currentSettings.SkipHoming}");
-            sw.WriteLine(";");
-
-            // Tool settings
-            sw.WriteLine(";  Tool Settings");
-            for (var i = 0; i < currentSettings.Tools.Length; i++)
-            {
-                var ts = currentSettings.Tools[i];
-                sw.WriteLine($";    Tool {i + 1}");
-                sw.WriteLine($";      Type: {ts.Type}");
-                sw.WriteLine($";      Preheat time: {ts.PreheatTime}");
-                sw.WriteLine($";      Active temperature: {ts.ActiveTemperature}");
-                sw.WriteLine($";      Standby temperature: {ts.StandbyTemperature}");
-                sw.WriteLine($";      Cleaning: {ts.Cleaning.ToString()}{((ts.Cleaning == CleaningMode.Interval) ? $" every {ts.Interval} change(s)" : "")}");
-                sw.WriteLine(";");
-
-            }
-
-            // Override rules
-            if (overrideRules.Count > 0)
-            {
-                sw.WriteLine(";  Override rules");
-                foreach (OverrideRule or in overrideRules)
-                {
-                    sw.WriteLine($";    Tool: {or.Tool}");
-                    sw.WriteLine($";    Layer: {or.Layer}");
-                    sw.WriteLine($";    Region: {or.Region}");
-                    sw.WriteLine($";    Speed factor: {or.SpeedFactor.ToString("F1", numberFormat)}");
-                    sw.WriteLine($";    Extrusion factor: {or.ExtrusionFactor.ToString("F1", numberFormat)}");
-                    sw.WriteLine(";");
-                }
-            }
-
-            sw.Flush();
         }
 
         private void SetTextProgress(string value) => lblProgress.Text = value;
