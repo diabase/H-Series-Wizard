@@ -43,6 +43,12 @@
     {
         public bool ConfigureManually { get; set; }
 
+        public bool EnterNetworkAddress { get; set; }
+
+        public bool SearchNetwork { get; set; }
+
+        public string NetworkAddress { get; set; }
+
         public ToolSettings[] Tools { get; set; }
 
         public bool UseOwnSettings { get; set; }

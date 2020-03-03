@@ -81,12 +81,6 @@ namespace DiabasePrintingWizard
                 ex = e;
             }
 
-            topAdditiveFile.Close();
-            topSubstractiveFile?.Close();
-            bottomAdditiveFile?.Close();
-            bottomSubstractiveFile?.Close();
-            outFile.Close();
-
             if (ex != null)
             {
                 throw new AggregateException(ex);

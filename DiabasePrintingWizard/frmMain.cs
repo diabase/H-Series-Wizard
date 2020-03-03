@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DiabasePrintingWizard.Duet;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +17,7 @@ namespace DiabasePrintingWizard
 {
     public partial class FrmMain : Form
     {
-        public static readonly string version = "v1.0.5";
+        public static readonly string version = "v1.0.6";
         public static readonly NumberFormatInfo numberFormat = CultureInfo.CreateSpecificCulture("en-US").NumberFormat;
 
         private Duet.Observer observer;
@@ -29,11 +30,15 @@ namespace DiabasePrintingWizard
         private bool outFileSaved = true;
         private bool debug;
         private Task postProcessingTask;
+        private MachineInfo userEnteredMachine;
 
         private Duet.MachineInfo SelectedMachine
         {
-            get => (lstMachine.SelectedIndex == -1) ?
-                Duet.MachineInfo.DefaultMachineInfo : boards[lstMachine.SelectedIndex];
+            get => (rbSearchNetwork.Checked && lstMachine.SelectedIndex > -1)
+                ? boards[lstMachine.SelectedIndex]
+                : (rbNetworkAddress.Checked && userEnteredMachine != null)
+                    ? userEnteredMachine
+                    : Duet.MachineInfo.DefaultMachineInfo;
         }
 
         private BindingList<OverrideRule> overrideRules = new BindingList<OverrideRule>();
@@ -55,7 +60,7 @@ namespace DiabasePrintingWizard
             }
 
             // Initialize mDNS discoverer
-            observer = new Duet.Observer(chkConfigureManually, lstMachine, boards);
+            observer = new Duet.Observer(rbSearchNetwork, lstMachine, boards);
 
             // Initialize IPC subsystem
             InitIPC();
@@ -68,7 +73,8 @@ namespace DiabasePrintingWizard
                 Settings = JsonConvert.DeserializeObject<SettingsContainer>(Properties.Settings.Default.Storage);
             }
 
-            if (filename != null) {
+            if (filename != null)
+            {
                 txtTopFileAdditive.Text = filename;
             }
         }
@@ -135,7 +141,10 @@ namespace DiabasePrintingWizard
         {
             get => new SettingsContainer
             {
-                ConfigureManually = chkConfigureManually.Checked,
+                ConfigureManually = rbConfigureManually.Checked,
+                EnterNetworkAddress = rbNetworkAddress.Checked,
+                SearchNetwork = rbSearchNetwork.Checked,
+                NetworkAddress = txtNetworkAddress.Text,
                 Tools = new ToolSettings[]
                 {
                     new ToolSettings
@@ -188,7 +197,10 @@ namespace DiabasePrintingWizard
 
             set
             {
-                chkConfigureManually.Checked = value.ConfigureManually;
+                rbConfigureManually.Checked = value.ConfigureManually;
+                rbNetworkAddress.Checked = value.EnterNetworkAddress;
+                rbSearchNetwork.Checked = value.SearchNetwork;
+                txtNetworkAddress.Text = value.NetworkAddress;
                 cboTool1.SelectedIndex = (int)value.Tools[0].Type;
                 nudPreheat1.Value = value.Tools[0].PreheatTime;
                 nudTemp1.Value = value.Tools[0].StandbyTemperature;
@@ -282,7 +294,7 @@ namespace DiabasePrintingWizard
             if ((awContent.CurrentPage == awpTopSide && !rbTwoSided.Checked) ||
                 (awContent.CurrentPage == awpBottomSide))
             {
-                awContent.GoToPage(awpActions);
+                awContent.GoToPage(awpMachineProperties);
             }
             else if (awContent.CurrentPage == awpActions)
             {
@@ -299,6 +311,7 @@ namespace DiabasePrintingWizard
                 awContent.ClickNext();
             }
         }
+        #endregion
 
         private int GetToolSelection(int toolNumber)
         {
@@ -309,16 +322,61 @@ namespace DiabasePrintingWizard
             return 0;                       // Not present
         }
 
+        #region Welcome Page
         // Welcome page
         private void AwpWelcome_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
             btnBack.Enabled = false;
-            btnNext.Enabled = chkConfigureManually.Checked || lstMachine.SelectedIndex != -1;
+            btnNext.Enabled = this.rbConfigureManually.Checked || this.SelectedMachine != Duet.MachineInfo.DefaultMachineInfo;
+        }
+
+        private void SetUserEnteredBoard(MachineInfo board)
+        {
+            userEnteredMachine = board;
+            btnNext.Enabled = true;
+            btnConnect.Enabled = false;
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            var address = txtNetworkAddress.Text;
+            btnNext.Enabled = false;
+            userEnteredMachine = null;
+            _ = Observer.CheckMachine(address, (board) => SetUserEnteredBoard(board));
+        }
+
+        private void txtNetworkAddress_TextChanged(object sender, EventArgs e)
+        {
+            btnNext.Enabled = txtNetworkAddress.Text.Length == 0;
+            btnConnect.Enabled = true;
         }
 
         private void LstMachine_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnNext.Enabled = lstMachine.SelectedIndex != -1;
+        }
+
+        private void SetMachineSelectionEnabled()
+        {
+            this.txtNetworkAddress.Enabled = this.rbNetworkAddress.Checked;
+            this.btnConnect.Enabled = this.rbNetworkAddress.Checked;
+            this.lstMachine.Enabled = this.rbSearchNetwork.Checked;
+            btnNext.Enabled = this.rbConfigureManually.Checked || this.SelectedMachine != Duet.MachineInfo.DefaultMachineInfo;
+        }
+
+        private void rbConfigureManually_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SetMachineSelectionEnabled();
+        }
+
+        private void rbNetworkAddress_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SetMachineSelectionEnabled();
+        }
+
+        private void rbSearchNetwork_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SetMachineSelectionEnabled();
         }
         #endregion
 
@@ -335,11 +393,11 @@ namespace DiabasePrintingWizard
             btnNext.Enabled = IsToolSelected();
 
             // Allow tool selection only in manual mode
-            cboTool1.Enabled = chkConfigureManually.Checked;
-            cboTool2.Enabled = chkConfigureManually.Checked;
-            cboTool3.Enabled = chkConfigureManually.Checked;
-            cboTool4.Enabled = chkConfigureManually.Checked;
-            cboTool5.Enabled = chkConfigureManually.Checked;
+            cboTool1.Enabled = rbConfigureManually.Checked;
+            cboTool2.Enabled = rbConfigureManually.Checked;
+            cboTool3.Enabled = rbConfigureManually.Checked;
+            cboTool4.Enabled = rbConfigureManually.Checked;
+            cboTool5.Enabled = rbConfigureManually.Checked;
 
             // Set allowed tool options
             if (rbAdditiveSubstractive.Checked)
@@ -364,9 +422,9 @@ namespace DiabasePrintingWizard
                     cboTool5.Items.RemoveAt(2);
                 }
             }
-            
+
             // Attempt auto-configuration of the selected machine
-            if (chkConfigureManually.Checked)
+            if (rbConfigureManually.Checked)
             {
                 // Select some values for the tool options
                 if (cboTool1.SelectedIndex == -1) { cboTool1.SelectedIndex = 0; }
@@ -406,21 +464,7 @@ namespace DiabasePrintingWizard
                 cboTool5.SelectedIndex = GetToolSelection(5);
             }
         }
-
-        private void ChkConfigureManually_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkConfigureManually.Checked)
-            {
-                btnNext.Enabled = true;
-                lstMachine.Enabled = false;
-            }
-            else
-            {
-                lstMachine.Enabled = true;
-                btnNext.Enabled = lstMachine.SelectedIndex != -1;
-            }
-        }
-
+        
         private void CboTool1_SelectedIndexChanged(object sender, EventArgs e)
         {
             gbTool1.Enabled = cboTool1.SelectedIndex == 1;
@@ -449,6 +493,45 @@ namespace DiabasePrintingWizard
         {
             gbTool5.Enabled = cboTool5.SelectedIndex == 1;
             btnNext.Enabled = IsToolSelected();
+        }
+        private void cboCleaning1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning1) == CleaningMode.Interval;
+            lblXChanges11.Enabled = enable;
+            nudXChanges1.Enabled = enable;
+            lblXChanges12.Enabled = enable;
+        }
+
+        private void cboCleaning2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning2) == CleaningMode.Interval;
+            lblXChanges21.Enabled = enable;
+            nudXChanges2.Enabled = enable;
+            lblXChanges22.Enabled = enable;
+        }
+
+        private void cboCleaning3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning3) == CleaningMode.Interval;
+            lblXChanges31.Enabled = enable;
+            nudXChanges3.Enabled = enable;
+            lblXChanges32.Enabled = enable;
+        }
+
+        private void cboCleaning4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning4) == CleaningMode.Interval;
+            lblXChanges41.Enabled = enable;
+            nudXChanges4.Enabled = enable;
+            lblXChanges42.Enabled = enable;
+        }
+
+        private void cboCleaning5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var enable = GetCleaningMode(cboCleaning5) == CleaningMode.Interval;
+            lblXChanges51.Enabled = enable;
+            nudXChanges5.Enabled = enable;
+            lblXChanges52.Enabled = enable;
         }
         #endregion
 
@@ -889,8 +972,8 @@ namespace DiabasePrintingWizard
         #region Progress page
         private void AwpProgress_PageShow(object sender, AdvancedWizardControl.EventArguments.WizardPageEventArgs e)
         {
-            btnUpload.Enabled = !chkConfigureManually.Checked;
-            btnUploadPrint.Enabled = !chkConfigureManually.Checked;
+            btnUpload.Enabled = !this.rbConfigureManually.Checked;
+            btnUploadPrint.Enabled = !this.rbConfigureManually.Checked;
             btnBack.Enabled = false;
             btnNext.Enabled = false;
             btnCancel.Enabled = false;
@@ -908,7 +991,7 @@ namespace DiabasePrintingWizard
             // Open top additive file
             try
             {
-                topAdditiveFile = new FileStream(txtTopFileAdditive.Text, FileMode.Open);
+                topAdditiveFile = new FileStream(txtTopFileAdditive.Text, FileMode.Open, FileAccess.Read);
                 pbTotal.Maximum = PostProcessor.StepsPerAdditiveFile;
             }
             catch (Exception e)
@@ -924,7 +1007,7 @@ namespace DiabasePrintingWizard
 
                 try
                 {
-                    topSubstractiveFile = new FileStream(txtTopFileSubstractive.Text, FileMode.Open);
+                    topSubstractiveFile = new FileStream(txtTopFileSubstractive.Text, FileMode.Open, FileAccess.Read);
                     pbTotal.Maximum += PostProcessor.StepsPerSubstractiveFile;
                 }
                 catch (Exception e)
@@ -942,7 +1025,7 @@ namespace DiabasePrintingWizard
                 // Open bottom additive file
                 try
                 {
-                    bottomAdditiveFile = new FileStream(txtBottomFileAdditive.Text, FileMode.Open);
+                    bottomAdditiveFile = new FileStream(txtBottomFileAdditive.Text, FileMode.Open, FileAccess.Read);
                     pbTotal.Maximum += PostProcessor.StepsPerAdditiveFile;
                 }
                 catch (Exception e)
@@ -958,7 +1041,7 @@ namespace DiabasePrintingWizard
                 {
                     try
                     {
-                        bottomSubstractiveFile = new FileStream(txtBottomFileSubstractive.Text, FileMode.Open);
+                        bottomSubstractiveFile = new FileStream(txtBottomFileSubstractive.Text, FileMode.Open, FileAccess.Read);
                         pbTotal.Maximum += PostProcessor.StepsPerSubstractiveFile;
                     }
                     catch (Exception e)
@@ -1020,19 +1103,38 @@ namespace DiabasePrintingWizard
             Task.Run(async () =>
             {
                 await Task.Delay(250);
-                postProcessingTask = PostProcessor.CreateTask(topAdditiveFile, topSubstractiveFile,
-                    bottomAdditiveFile, bottomSubstractiveFile,
-                    outFile, currentSettings, overrideRules, machineInfo,
-                    textProgress, progress, maxProgress, totalProgress, debug);
-                try
+
+                using (outFile)
+                using (topAdditiveFile)
+                using (topSubstractiveFile)
+                using (bottomAdditiveFile)
+                using (bottomSubstractiveFile)
                 {
-                    await postProcessingTask;
+                    try
+                    {
+                        postProcessingTask = PostProcessor.CreateTask(
+                            topAdditiveFile,
+                            topSubstractiveFile,
+                            bottomAdditiveFile,
+                            bottomSubstractiveFile,
+                            outFile,
+                            currentSettings,
+                            overrideRules,
+                            machineInfo,
+                            textProgress,
+                            progress,
+                            maxProgress,
+                            totalProgress,
+                            debug);
+                        await postProcessingTask;
+                    }
+                    catch
+                    {
+                        // error handling is done in the callback
+                    }
+                    await Task.Delay(250);
+                    Invoke((Action)PostProcessingComplete);
                 }
-                catch
-                {
-                    // error handling is done in the callback
-                }
-                Invoke((Action)PostProcessingComplete);
             });
         }
 
@@ -1042,7 +1144,21 @@ namespace DiabasePrintingWizard
 
             // General settings
             sw.WriteLine(";  General Settings");
-            sw.WriteLine($";    Configure manually: {currentSettings.ConfigureManually}");
+            var machine = SelectedMachine;
+            string machineSelection;
+            if (machine == Duet.MachineInfo.DefaultMachineInfo)
+            {
+                machineSelection = "configured manually";
+            }
+            else if (machine == userEnteredMachine)
+            {
+                machineSelection = "manually entered address";
+            }
+            else
+            {
+                machineSelection = "selected from auto-detect list";
+            }
+            sw.WriteLine($";    Machine selection: {machineSelection}");
             sw.WriteLine($";    Use own settings: {currentSettings.UseOwnSettings}");
             sw.WriteLine($";    Generate special support: {currentSettings.GenerateSpecialSupport}");
             if (currentSettings.RotaryPrinting != null)
@@ -1059,7 +1175,7 @@ namespace DiabasePrintingWizard
             for (var i = 0; i < currentSettings.Tools.Length; i++)
             {
                 var ts = currentSettings.Tools[i];
-                sw.WriteLine($";    Tool {i+1}");
+                sw.WriteLine($";    Tool {i + 1}");
                 sw.WriteLine($";      Type: {ts.Type}");
                 sw.WriteLine($";      Preheat time: {ts.PreheatTime}");
                 sw.WriteLine($";      Active temperature: {ts.ActiveTemperature}");
@@ -1286,46 +1402,6 @@ namespace DiabasePrintingWizard
             {
                 return CleaningMode.Off;
             }
-        }
-        
-        private void cboCleaning1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning1) == CleaningMode.Interval;
-            lblXChanges11.Enabled = enable;
-            nudXChanges1.Enabled = enable;
-            lblXChanges12.Enabled = enable;
-        }
-
-        private void cboCleaning2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning2) == CleaningMode.Interval;
-            lblXChanges21.Enabled = enable;
-            nudXChanges2.Enabled = enable;
-            lblXChanges22.Enabled = enable;
-        }
-
-        private void cboCleaning3_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning3) == CleaningMode.Interval;
-            lblXChanges31.Enabled = enable;
-            nudXChanges3.Enabled = enable;
-            lblXChanges32.Enabled = enable;
-        }
-
-        private void cboCleaning4_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning4) == CleaningMode.Interval;
-            lblXChanges41.Enabled = enable;
-            nudXChanges4.Enabled = enable;
-            lblXChanges42.Enabled = enable;
-        }
-
-        private void cboCleaning5_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var enable = GetCleaningMode(cboCleaning5) == CleaningMode.Interval;
-            lblXChanges51.Enabled = enable;
-            nudXChanges5.Enabled = enable;
-            lblXChanges52.Enabled = enable;
         }
     }
 }

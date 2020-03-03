@@ -30,24 +30,23 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.awContent = new AdvancedWizardControl.Wizard.AdvancedWizard();
-            this.awpTopSide = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
-            this.gbTopFiles = new System.Windows.Forms.GroupBox();
-            this.btnTopBrowseSubstractive = new System.Windows.Forms.Button();
-            this.btnTopBrowseAdditive = new System.Windows.Forms.Button();
-            this.txtTopFileSubstractive = new System.Windows.Forms.TextBox();
-            this.lblTopFileSubstractive = new System.Windows.Forms.Label();
-            this.txtTopFileAdditive = new System.Windows.Forms.TextBox();
-            this.lblTopFileAdditive = new System.Windows.Forms.Label();
-            this.gbTopSlicing = new System.Windows.Forms.GroupBox();
-            this.chkTopGenerateSupport = new System.Windows.Forms.CheckBox();
-            this.btnTopSlice = new System.Windows.Forms.Button();
-            this.tlpTopFileButtons = new System.Windows.Forms.TableLayoutPanel();
-            this.btnTopRemoveFiles = new System.Windows.Forms.Button();
-            this.btnTopAddFiles = new System.Windows.Forms.Button();
-            this.lstTopInputFiles = new System.Windows.Forms.ListBox();
-            this.chkTopUseOwnSettings = new System.Windows.Forms.CheckBox();
-            this.chkTopUnwrap = new System.Windows.Forms.CheckBox();
-            this.lblTopInputFiles = new System.Windows.Forms.Label();
+            this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
+            this.lblVersion = new System.Windows.Forms.Label();
+            this.gbType = new System.Windows.Forms.GroupBox();
+            this.rbAdditiveSubstractive = new System.Windows.Forms.RadioButton();
+            this.rbAdditive = new System.Windows.Forms.RadioButton();
+            this.gbMachine = new System.Windows.Forms.GroupBox();
+            this.rbSearchNetwork = new System.Windows.Forms.RadioButton();
+            this.rbNetworkAddress = new System.Windows.Forms.RadioButton();
+            this.rbConfigureManually = new System.Windows.Forms.RadioButton();
+            this.btnConnect = new System.Windows.Forms.Button();
+            this.txtNetworkAddress = new System.Windows.Forms.TextBox();
+            this.lstMachine = new System.Windows.Forms.ListBox();
+            this.gbGeometry = new System.Windows.Forms.GroupBox();
+            this.rbRotary = new System.Windows.Forms.RadioButton();
+            this.rbTwoSided = new System.Windows.Forms.RadioButton();
+            this.rbOneSided = new System.Windows.Forms.RadioButton();
+            this.lblDescription = new System.Windows.Forms.Label();
             this.awpBottomSide = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.gbBottomFiles = new System.Windows.Forms.GroupBox();
             this.btnBottomBrowseSubstractive = new System.Windows.Forms.Button();
@@ -66,23 +65,30 @@
             this.chkBottomUseOwnSettings = new System.Windows.Forms.CheckBox();
             this.chkBottomUnwrap = new System.Windows.Forms.CheckBox();
             this.lblBottomFiles = new System.Windows.Forms.Label();
-            this.awpWelcome = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
-            this.lblVersion = new System.Windows.Forms.Label();
-            this.gbType = new System.Windows.Forms.GroupBox();
-            this.rbAdditiveSubstractive = new System.Windows.Forms.RadioButton();
-            this.rbAdditive = new System.Windows.Forms.RadioButton();
-            this.gbMachine = new System.Windows.Forms.GroupBox();
-            this.lstMachine = new System.Windows.Forms.ListBox();
-            this.chkConfigureManually = new System.Windows.Forms.CheckBox();
-            this.gbGeometry = new System.Windows.Forms.GroupBox();
-            this.rbRotary = new System.Windows.Forms.RadioButton();
-            this.rbTwoSided = new System.Windows.Forms.RadioButton();
-            this.rbOneSided = new System.Windows.Forms.RadioButton();
-            this.lblDescription = new System.Windows.Forms.Label();
+            this.awpTopSide = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
+            this.gbTopFiles = new System.Windows.Forms.GroupBox();
+            this.btnTopBrowseSubstractive = new System.Windows.Forms.Button();
+            this.btnTopBrowseAdditive = new System.Windows.Forms.Button();
+            this.txtTopFileSubstractive = new System.Windows.Forms.TextBox();
+            this.lblTopFileSubstractive = new System.Windows.Forms.Label();
+            this.txtTopFileAdditive = new System.Windows.Forms.TextBox();
+            this.lblTopFileAdditive = new System.Windows.Forms.Label();
+            this.gbTopSlicing = new System.Windows.Forms.GroupBox();
+            this.chkTopGenerateSupport = new System.Windows.Forms.CheckBox();
+            this.btnTopSlice = new System.Windows.Forms.Button();
+            this.tlpTopFileButtons = new System.Windows.Forms.TableLayoutPanel();
+            this.btnTopRemoveFiles = new System.Windows.Forms.Button();
+            this.btnTopAddFiles = new System.Windows.Forms.Button();
+            this.lstTopInputFiles = new System.Windows.Forms.ListBox();
+            this.chkTopUseOwnSettings = new System.Windows.Forms.CheckBox();
+            this.chkTopUnwrap = new System.Windows.Forms.CheckBox();
+            this.lblTopInputFiles = new System.Windows.Forms.Label();
             this.awpActions = new AdvancedWizardControl.WizardPages.AdvancedWizardPage();
             this.gbIDRotaryPrinting = new System.Windows.Forms.GroupBox();
+            this.lblUnitID = new System.Windows.Forms.Label();
             this.nudModelID = new System.Windows.Forms.NumericUpDown();
             this.gbAdditionalOptions = new System.Windows.Forms.GroupBox();
+            this.cboSkipHoming = new System.Windows.Forms.CheckBox();
             this.cbIslandCombining = new System.Windows.Forms.CheckBox();
             this.gbRules = new System.Windows.Forms.GroupBox();
             this.dgvCustomActions = new System.Windows.Forms.DataGridView();
@@ -179,21 +185,19 @@
             this.sfdGCode = new System.Windows.Forms.SaveFileDialog();
             this.sfdFactory = new System.Windows.Forms.SaveFileDialog();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.cboSkipHoming = new System.Windows.Forms.CheckBox();
-            this.lblUnitID = new System.Windows.Forms.Label();
             this.awContent.SuspendLayout();
-            this.awpTopSide.SuspendLayout();
-            this.gbTopFiles.SuspendLayout();
-            this.gbTopSlicing.SuspendLayout();
-            this.tlpTopFileButtons.SuspendLayout();
-            this.awpBottomSide.SuspendLayout();
-            this.gbBottomFiles.SuspendLayout();
-            this.gbBottomSlicing.SuspendLayout();
-            this.tlpBottomFileButtons.SuspendLayout();
             this.awpWelcome.SuspendLayout();
             this.gbType.SuspendLayout();
             this.gbMachine.SuspendLayout();
             this.gbGeometry.SuspendLayout();
+            this.awpBottomSide.SuspendLayout();
+            this.gbBottomFiles.SuspendLayout();
+            this.gbBottomSlicing.SuspendLayout();
+            this.tlpBottomFileButtons.SuspendLayout();
+            this.awpTopSide.SuspendLayout();
+            this.gbTopFiles.SuspendLayout();
+            this.gbTopSlicing.SuspendLayout();
+            this.tlpTopFileButtons.SuspendLayout();
             this.awpActions.SuspendLayout();
             this.gbIDRotaryPrinting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudModelID)).BeginInit();
@@ -232,13 +236,14 @@
             // 
             this.awContent.BackButtonEnabled = false;
             this.awContent.BackButtonText = "< Back";
+            this.awContent.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.awContent.ButtonLayout = AdvancedWizardControl.Enums.ButtonLayoutKind.Default;
             this.awContent.ButtonsVisible = false;
             this.awContent.CancelButtonText = "&Cancel";
-            this.awContent.Controls.Add(this.awpActions);
-            this.awContent.Controls.Add(this.awpTopSide);
-            this.awContent.Controls.Add(this.awpBottomSide);
             this.awContent.Controls.Add(this.awpWelcome);
+            this.awContent.Controls.Add(this.awpBottomSide);
+            this.awContent.Controls.Add(this.awpTopSide);
+            this.awContent.Controls.Add(this.awpActions);
             this.awContent.Controls.Add(this.awpProgress);
             this.awContent.Controls.Add(this.awpMachineProperties);
             this.awContent.CurrentPageIsFinishPage = false;
@@ -259,245 +264,226 @@
             this.awContent.TabIndex = 11;
             this.awContent.TouchScreen = true;
             this.awContent.WizardPages.Add(this.awpWelcome);
-            this.awContent.WizardPages.Add(this.awpMachineProperties);
             this.awContent.WizardPages.Add(this.awpTopSide);
             this.awContent.WizardPages.Add(this.awpBottomSide);
+            this.awContent.WizardPages.Add(this.awpMachineProperties);
             this.awContent.WizardPages.Add(this.awpActions);
             this.awContent.WizardPages.Add(this.awpProgress);
             // 
-            // awpTopSide
+            // awpWelcome
             // 
-            this.awpTopSide.Controls.Add(this.gbTopFiles);
-            this.awpTopSide.Controls.Add(this.gbTopSlicing);
-            this.awpTopSide.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.awpTopSide.Header = true;
-            this.awpTopSide.HeaderBackgroundColor = System.Drawing.Color.White;
-            this.awpTopSide.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
-            this.awpTopSide.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpTopSide.HeaderImage")));
-            this.awpTopSide.HeaderImageVisible = true;
-            this.awpTopSide.HeaderTitle = "Welcome to Advanced Wizard";
-            this.awpTopSide.Location = new System.Drawing.Point(0, 0);
-            this.awpTopSide.Margin = new System.Windows.Forms.Padding(2);
-            this.awpTopSide.Name = "awpTopSide";
-            this.awpTopSide.PreviousPage = 0;
-            this.awpTopSide.Size = new System.Drawing.Size(708, 427);
-            this.awpTopSide.SubTitle = "Your page description goes here";
-            this.awpTopSide.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
-            this.awpTopSide.TabIndex = 3;
-            this.awpTopSide.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpTopSide_PageShow);
+            this.awpWelcome.Controls.Add(this.lblVersion);
+            this.awpWelcome.Controls.Add(this.gbType);
+            this.awpWelcome.Controls.Add(this.gbMachine);
+            this.awpWelcome.Controls.Add(this.gbGeometry);
+            this.awpWelcome.Controls.Add(this.lblDescription);
+            this.awpWelcome.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.awpWelcome.Header = false;
+            this.awpWelcome.HeaderBackgroundColor = System.Drawing.Color.White;
+            this.awpWelcome.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.awpWelcome.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpWelcome.HeaderImage")));
+            this.awpWelcome.HeaderImageVisible = true;
+            this.awpWelcome.HeaderTitle = "Welcome to Advanced Wizard";
+            this.awpWelcome.Location = new System.Drawing.Point(0, 0);
+            this.awpWelcome.Margin = new System.Windows.Forms.Padding(2);
+            this.awpWelcome.Name = "awpWelcome";
+            this.awpWelcome.PreviousPage = 0;
+            this.awpWelcome.Size = new System.Drawing.Size(708, 427);
+            this.awpWelcome.SubTitle = "Your page description goes here";
+            this.awpWelcome.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
+            this.awpWelcome.TabIndex = 1;
+            this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpWelcome_PageShow);
             // 
-            // gbTopFiles
+            // lblVersion
             // 
-            this.gbTopFiles.Controls.Add(this.btnTopBrowseSubstractive);
-            this.gbTopFiles.Controls.Add(this.btnTopBrowseAdditive);
-            this.gbTopFiles.Controls.Add(this.txtTopFileSubstractive);
-            this.gbTopFiles.Controls.Add(this.lblTopFileSubstractive);
-            this.gbTopFiles.Controls.Add(this.txtTopFileAdditive);
-            this.gbTopFiles.Controls.Add(this.lblTopFileAdditive);
-            this.gbTopFiles.Location = new System.Drawing.Point(13, 258);
-            this.gbTopFiles.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
-            this.gbTopFiles.Name = "gbTopFiles";
-            this.gbTopFiles.Padding = new System.Windows.Forms.Padding(2);
-            this.gbTopFiles.Size = new System.Drawing.Size(684, 67);
-            this.gbTopFiles.TabIndex = 15;
-            this.gbTopFiles.TabStop = false;
-            this.gbTopFiles.Text = "Manufacturing Files for the Top Side";
+            this.lblVersion.Location = new System.Drawing.Point(597, 108);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(100, 13);
+            this.lblVersion.TabIndex = 30;
+            this.lblVersion.Text = "vDEV";
+            this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // btnTopBrowseSubstractive
+            // gbType
             // 
-            this.btnTopBrowseSubstractive.Location = new System.Drawing.Point(620, 37);
-            this.btnTopBrowseSubstractive.Margin = new System.Windows.Forms.Padding(2);
-            this.btnTopBrowseSubstractive.Name = "btnTopBrowseSubstractive";
-            this.btnTopBrowseSubstractive.Size = new System.Drawing.Size(32, 22);
-            this.btnTopBrowseSubstractive.TabIndex = 16;
-            this.btnTopBrowseSubstractive.Text = "...";
-            this.btnTopBrowseSubstractive.UseVisualStyleBackColor = true;
-            this.btnTopBrowseSubstractive.Click += new System.EventHandler(this.BtnTopBrowseSubstractive_Click);
+            this.gbType.Controls.Add(this.rbAdditiveSubstractive);
+            this.gbType.Controls.Add(this.rbAdditive);
+            this.gbType.Location = new System.Drawing.Point(465, 160);
+            this.gbType.Margin = new System.Windows.Forms.Padding(7, 2, 7, 2);
+            this.gbType.Name = "gbType";
+            this.gbType.Padding = new System.Windows.Forms.Padding(2);
+            this.gbType.Size = new System.Drawing.Size(232, 208);
+            this.gbType.TabIndex = 29;
+            this.gbType.TabStop = false;
+            this.gbType.Text = "Manufacturing Type";
             // 
-            // btnTopBrowseAdditive
+            // rbAdditiveSubstractive
             // 
-            this.btnTopBrowseAdditive.Location = new System.Drawing.Point(274, 37);
-            this.btnTopBrowseAdditive.Margin = new System.Windows.Forms.Padding(2);
-            this.btnTopBrowseAdditive.Name = "btnTopBrowseAdditive";
-            this.btnTopBrowseAdditive.Size = new System.Drawing.Size(32, 22);
-            this.btnTopBrowseAdditive.TabIndex = 15;
-            this.btnTopBrowseAdditive.Text = "...";
-            this.btnTopBrowseAdditive.UseVisualStyleBackColor = true;
-            this.btnTopBrowseAdditive.Click += new System.EventHandler(this.BtnTopBrowseAdditive_Click);
+            this.rbAdditiveSubstractive.AutoSize = true;
+            this.rbAdditiveSubstractive.Location = new System.Drawing.Point(17, 67);
+            this.rbAdditiveSubstractive.Margin = new System.Windows.Forms.Padding(2);
+            this.rbAdditiveSubstractive.Name = "rbAdditiveSubstractive";
+            this.rbAdditiveSubstractive.Size = new System.Drawing.Size(129, 30);
+            this.rbAdditiveSubstractive.TabIndex = 9;
+            this.rbAdditiveSubstractive.Text = "Additive + Subtractive\r\nManufacturing";
+            this.rbAdditiveSubstractive.UseVisualStyleBackColor = true;
             // 
-            // txtTopFileSubstractive
+            // rbAdditive
             // 
-            this.txtTopFileSubstractive.Location = new System.Drawing.Point(356, 38);
-            this.txtTopFileSubstractive.Margin = new System.Windows.Forms.Padding(2);
-            this.txtTopFileSubstractive.Name = "txtTopFileSubstractive";
-            this.txtTopFileSubstractive.Size = new System.Drawing.Size(260, 20);
-            this.txtTopFileSubstractive.TabIndex = 14;
-            this.txtTopFileSubstractive.TextChanged += new System.EventHandler(this.TxtTopGCodeFiles_TextChanged);
+            this.rbAdditive.AutoSize = true;
+            this.rbAdditive.Checked = true;
+            this.rbAdditive.Location = new System.Drawing.Point(17, 33);
+            this.rbAdditive.Margin = new System.Windows.Forms.Padding(2);
+            this.rbAdditive.Name = "rbAdditive";
+            this.rbAdditive.Size = new System.Drawing.Size(160, 17);
+            this.rbAdditive.TabIndex = 8;
+            this.rbAdditive.TabStop = true;
+            this.rbAdditive.Text = "Standard Print (additive only)";
+            this.rbAdditive.UseVisualStyleBackColor = true;
             // 
-            // lblTopFileSubstractive
+            // gbMachine
             // 
-            this.lblTopFileSubstractive.AutoSize = true;
-            this.lblTopFileSubstractive.Location = new System.Drawing.Point(354, 19);
-            this.lblTopFileSubstractive.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblTopFileSubstractive.Name = "lblTopFileSubstractive";
-            this.lblTopFileSubstractive.Size = new System.Drawing.Size(192, 13);
-            this.lblTopFileSubstractive.TabIndex = 13;
-            this.lblTopFileSubstractive.Text = "G-Code File for Subtractive Processing:";
+            this.gbMachine.Controls.Add(this.rbSearchNetwork);
+            this.gbMachine.Controls.Add(this.rbNetworkAddress);
+            this.gbMachine.Controls.Add(this.rbConfigureManually);
+            this.gbMachine.Controls.Add(this.btnConnect);
+            this.gbMachine.Controls.Add(this.txtNetworkAddress);
+            this.gbMachine.Controls.Add(this.lstMachine);
+            this.gbMachine.Location = new System.Drawing.Point(11, 160);
+            this.gbMachine.Margin = new System.Windows.Forms.Padding(2);
+            this.gbMachine.Name = "gbMachine";
+            this.gbMachine.Padding = new System.Windows.Forms.Padding(7, 5, 7, 7);
+            this.gbMachine.Size = new System.Drawing.Size(286, 208);
+            this.gbMachine.TabIndex = 26;
+            this.gbMachine.TabStop = false;
+            this.gbMachine.Text = "Machine";
             // 
-            // txtTopFileAdditive
+            // rbSearchNetwork
             // 
-            this.txtTopFileAdditive.Location = new System.Drawing.Point(10, 38);
-            this.txtTopFileAdditive.Margin = new System.Windows.Forms.Padding(2);
-            this.txtTopFileAdditive.Name = "txtTopFileAdditive";
-            this.txtTopFileAdditive.Size = new System.Drawing.Size(260, 20);
-            this.txtTopFileAdditive.TabIndex = 12;
-            this.txtTopFileAdditive.TextChanged += new System.EventHandler(this.TxtTopGCodeFiles_TextChanged);
+            this.rbSearchNetwork.AutoSize = true;
+            this.rbSearchNetwork.Location = new System.Drawing.Point(10, 87);
+            this.rbSearchNetwork.Name = "rbSearchNetwork";
+            this.rbSearchNetwork.Size = new System.Drawing.Size(180, 17);
+            this.rbSearchNetwork.TabIndex = 32;
+            this.rbSearchNetwork.Text = "Search device on network (beta)";
+            this.rbSearchNetwork.UseVisualStyleBackColor = true;
+            this.rbSearchNetwork.CheckedChanged += new System.EventHandler(this.rbSearchNetwork_CheckedChanged);
             // 
-            // lblTopFileAdditive
+            // rbNetworkAddress
             // 
-            this.lblTopFileAdditive.AutoSize = true;
-            this.lblTopFileAdditive.Location = new System.Drawing.Point(8, 19);
-            this.lblTopFileAdditive.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblTopFileAdditive.Name = "lblTopFileAdditive";
-            this.lblTopFileAdditive.Size = new System.Drawing.Size(176, 13);
-            this.lblTopFileAdditive.TabIndex = 11;
-            this.lblTopFileAdditive.Text = "G-Code File for Additive Processing:";
+            this.rbNetworkAddress.AutoSize = true;
+            this.rbNetworkAddress.Location = new System.Drawing.Point(10, 39);
+            this.rbNetworkAddress.Name = "rbNetworkAddress";
+            this.rbNetworkAddress.Size = new System.Drawing.Size(131, 17);
+            this.rbNetworkAddress.TabIndex = 31;
+            this.rbNetworkAddress.Text = "Enter network address";
+            this.rbNetworkAddress.UseVisualStyleBackColor = true;
+            this.rbNetworkAddress.CheckedChanged += new System.EventHandler(this.rbNetworkAddress_CheckedChanged);
             // 
-            // gbTopSlicing
+            // rbConfigureManually
             // 
-            this.gbTopSlicing.Controls.Add(this.chkTopGenerateSupport);
-            this.gbTopSlicing.Controls.Add(this.btnTopSlice);
-            this.gbTopSlicing.Controls.Add(this.tlpTopFileButtons);
-            this.gbTopSlicing.Controls.Add(this.lstTopInputFiles);
-            this.gbTopSlicing.Controls.Add(this.chkTopUseOwnSettings);
-            this.gbTopSlicing.Controls.Add(this.chkTopUnwrap);
-            this.gbTopSlicing.Controls.Add(this.lblTopInputFiles);
-            this.gbTopSlicing.Location = new System.Drawing.Point(13, 106);
-            this.gbTopSlicing.Margin = new System.Windows.Forms.Padding(2, 2, 4, 2);
-            this.gbTopSlicing.Name = "gbTopSlicing";
-            this.gbTopSlicing.Padding = new System.Windows.Forms.Padding(2);
-            this.gbTopSlicing.Size = new System.Drawing.Size(684, 142);
-            this.gbTopSlicing.TabIndex = 14;
-            this.gbTopSlicing.TabStop = false;
-            this.gbTopSlicing.Text = "Slicing for the Top Side (optional if you already have a G-Code File)";
+            this.rbConfigureManually.AutoSize = true;
+            this.rbConfigureManually.Checked = true;
+            this.rbConfigureManually.Location = new System.Drawing.Point(10, 16);
+            this.rbConfigureManually.Name = "rbConfigureManually";
+            this.rbConfigureManually.Size = new System.Drawing.Size(114, 17);
+            this.rbConfigureManually.TabIndex = 30;
+            this.rbConfigureManually.TabStop = true;
+            this.rbConfigureManually.Text = "Configure manually";
+            this.rbConfigureManually.UseVisualStyleBackColor = true;
+            this.rbConfigureManually.CheckedChanged += new System.EventHandler(this.rbConfigureManually_CheckedChanged);
             // 
-            // chkTopGenerateSupport
+            // btnConnect
             // 
-            this.chkTopGenerateSupport.AutoSize = true;
-            this.chkTopGenerateSupport.Enabled = false;
-            this.chkTopGenerateSupport.Location = new System.Drawing.Point(454, 77);
-            this.chkTopGenerateSupport.Margin = new System.Windows.Forms.Padding(2);
-            this.chkTopGenerateSupport.Name = "chkTopGenerateSupport";
-            this.chkTopGenerateSupport.Size = new System.Drawing.Size(148, 17);
-            this.chkTopGenerateSupport.TabIndex = 21;
-            this.chkTopGenerateSupport.Text = "Generate Special Support";
-            this.chkTopGenerateSupport.UseVisualStyleBackColor = true;
-            this.chkTopGenerateSupport.CheckedChanged += new System.EventHandler(this.ChkTopGenerateSupport_CheckedChanged);
+            this.btnConnect.Location = new System.Drawing.Point(211, 60);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(61, 23);
+            this.btnConnect.TabIndex = 29;
+            this.btnConnect.Text = "Connect";
+            this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
-            // btnTopSlice
+            // txtNetworkAddress
             // 
-            this.btnTopSlice.Enabled = false;
-            this.btnTopSlice.Image = ((System.Drawing.Image)(resources.GetObject("btnTopSlice.Image")));
-            this.btnTopSlice.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnTopSlice.Location = new System.Drawing.Point(454, 102);
-            this.btnTopSlice.Margin = new System.Windows.Forms.Padding(2);
-            this.btnTopSlice.Name = "btnTopSlice";
-            this.btnTopSlice.Size = new System.Drawing.Size(163, 32);
-            this.btnTopSlice.TabIndex = 20;
-            this.btnTopSlice.Text = "Process via Simplify3D®";
-            this.btnTopSlice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnTopSlice.UseVisualStyleBackColor = true;
-            this.btnTopSlice.Click += new System.EventHandler(this.BtnSlice_Click);
+            this.txtNetworkAddress.Location = new System.Drawing.Point(26, 62);
+            this.txtNetworkAddress.Name = "txtNetworkAddress";
+            this.txtNetworkAddress.Size = new System.Drawing.Size(179, 20);
+            this.txtNetworkAddress.TabIndex = 28;
+            this.txtNetworkAddress.TextChanged += new System.EventHandler(this.txtNetworkAddress_TextChanged);
             // 
-            // tlpTopFileButtons
+            // lstMachine
             // 
-            this.tlpTopFileButtons.ColumnCount = 2;
-            this.tlpTopFileButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33F));
-            this.tlpTopFileButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.34F));
-            this.tlpTopFileButtons.Controls.Add(this.btnTopRemoveFiles, 0, 0);
-            this.tlpTopFileButtons.Controls.Add(this.btnTopAddFiles, 0, 0);
-            this.tlpTopFileButtons.Location = new System.Drawing.Point(10, 108);
-            this.tlpTopFileButtons.Margin = new System.Windows.Forms.Padding(2);
-            this.tlpTopFileButtons.Name = "tlpTopFileButtons";
-            this.tlpTopFileButtons.RowCount = 1;
-            this.tlpTopFileButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpTopFileButtons.Size = new System.Drawing.Size(365, 26);
-            this.tlpTopFileButtons.TabIndex = 19;
+            this.lstMachine.Enabled = false;
+            this.lstMachine.FormattingEnabled = true;
+            this.lstMachine.Items.AddRange(new object[] {
+            "Searching..."});
+            this.lstMachine.Location = new System.Drawing.Point(26, 110);
+            this.lstMachine.Margin = new System.Windows.Forms.Padding(2);
+            this.lstMachine.Name = "lstMachine";
+            this.lstMachine.Size = new System.Drawing.Size(160, 69);
+            this.lstMachine.TabIndex = 25;
+            this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.LstMachine_SelectedIndexChanged);
             // 
-            // btnTopRemoveFiles
+            // gbGeometry
             // 
-            this.btnTopRemoveFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnTopRemoveFiles.Enabled = false;
-            this.btnTopRemoveFiles.Image = global::DiabasePrintingWizard.Properties.Resources.Remove_8x_16x;
-            this.btnTopRemoveFiles.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnTopRemoveFiles.Location = new System.Drawing.Point(184, 0);
-            this.btnTopRemoveFiles.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
-            this.btnTopRemoveFiles.Name = "btnTopRemoveFiles";
-            this.btnTopRemoveFiles.Size = new System.Drawing.Size(181, 26);
-            this.btnTopRemoveFiles.TabIndex = 19;
-            this.btnTopRemoveFiles.Text = "Remove File(s)";
-            this.btnTopRemoveFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnTopRemoveFiles.UseVisualStyleBackColor = true;
-            this.btnTopRemoveFiles.Click += new System.EventHandler(this.BtnTopRemoveFiles_Click);
+            this.gbGeometry.Controls.Add(this.rbRotary);
+            this.gbGeometry.Controls.Add(this.rbTwoSided);
+            this.gbGeometry.Controls.Add(this.rbOneSided);
+            this.gbGeometry.Location = new System.Drawing.Point(304, 160);
+            this.gbGeometry.Margin = new System.Windows.Forms.Padding(2);
+            this.gbGeometry.Name = "gbGeometry";
+            this.gbGeometry.Padding = new System.Windows.Forms.Padding(2);
+            this.gbGeometry.Size = new System.Drawing.Size(152, 208);
+            this.gbGeometry.TabIndex = 28;
+            this.gbGeometry.TabStop = false;
+            this.gbGeometry.Text = "Geometry";
             // 
-            // btnTopAddFiles
+            // rbRotary
             // 
-            this.btnTopAddFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnTopAddFiles.Image = global::DiabasePrintingWizard.Properties.Resources.Add_thin_10x_16x;
-            this.btnTopAddFiles.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnTopAddFiles.Location = new System.Drawing.Point(0, 0);
-            this.btnTopAddFiles.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.btnTopAddFiles.Name = "btnTopAddFiles";
-            this.btnTopAddFiles.Size = new System.Drawing.Size(180, 26);
-            this.btnTopAddFiles.TabIndex = 18;
-            this.btnTopAddFiles.Text = "Add File(s)";
-            this.btnTopAddFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnTopAddFiles.UseVisualStyleBackColor = true;
-            this.btnTopAddFiles.Click += new System.EventHandler(this.BtnTopAddFiles_Click);
+            this.rbRotary.AutoSize = true;
+            this.rbRotary.Location = new System.Drawing.Point(20, 84);
+            this.rbRotary.Margin = new System.Windows.Forms.Padding(2);
+            this.rbRotary.Name = "rbRotary";
+            this.rbRotary.Size = new System.Drawing.Size(56, 17);
+            this.rbRotary.TabIndex = 2;
+            this.rbRotary.Text = "Rotary";
+            this.rbRotary.UseVisualStyleBackColor = true;
             // 
-            // lstTopInputFiles
+            // rbTwoSided
             // 
-            this.lstTopInputFiles.FormattingEnabled = true;
-            this.lstTopInputFiles.Location = new System.Drawing.Point(10, 35);
-            this.lstTopInputFiles.Margin = new System.Windows.Forms.Padding(7, 2, 7, 2);
-            this.lstTopInputFiles.Name = "lstTopInputFiles";
-            this.lstTopInputFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.lstTopInputFiles.Size = new System.Drawing.Size(424, 69);
-            this.lstTopInputFiles.TabIndex = 16;
+            this.rbTwoSided.AutoSize = true;
+            this.rbTwoSided.Location = new System.Drawing.Point(20, 56);
+            this.rbTwoSided.Margin = new System.Windows.Forms.Padding(2);
+            this.rbTwoSided.Name = "rbTwoSided";
+            this.rbTwoSided.Size = new System.Drawing.Size(76, 17);
+            this.rbTwoSided.TabIndex = 1;
+            this.rbTwoSided.Text = "Two-Sided";
+            this.rbTwoSided.UseVisualStyleBackColor = true;
             // 
-            // chkTopUseOwnSettings
+            // rbOneSided
             // 
-            this.chkTopUseOwnSettings.AutoSize = true;
-            this.chkTopUseOwnSettings.Location = new System.Drawing.Point(454, 35);
-            this.chkTopUseOwnSettings.Margin = new System.Windows.Forms.Padding(2);
-            this.chkTopUseOwnSettings.Name = "chkTopUseOwnSettings";
-            this.chkTopUseOwnSettings.Size = new System.Drawing.Size(167, 17);
-            this.chkTopUseOwnSettings.TabIndex = 15;
-            this.chkTopUseOwnSettings.Text = "Use own Simplify3D® settings";
-            this.chkTopUseOwnSettings.UseVisualStyleBackColor = true;
-            this.chkTopUseOwnSettings.CheckedChanged += new System.EventHandler(this.ChkTopUseOwnSettings_CheckedChanged);
+            this.rbOneSided.AutoSize = true;
+            this.rbOneSided.Checked = true;
+            this.rbOneSided.Location = new System.Drawing.Point(20, 27);
+            this.rbOneSided.Margin = new System.Windows.Forms.Padding(2);
+            this.rbOneSided.Name = "rbOneSided";
+            this.rbOneSided.Size = new System.Drawing.Size(75, 17);
+            this.rbOneSided.TabIndex = 0;
+            this.rbOneSided.TabStop = true;
+            this.rbOneSided.Text = "One-Sided";
+            this.rbOneSided.UseVisualStyleBackColor = true;
             // 
-            // chkTopUnwrap
+            // lblDescription
             // 
-            this.chkTopUnwrap.AutoSize = true;
-            this.chkTopUnwrap.Location = new System.Drawing.Point(454, 57);
-            this.chkTopUnwrap.Margin = new System.Windows.Forms.Padding(2);
-            this.chkTopUnwrap.Name = "chkTopUnwrap";
-            this.chkTopUnwrap.Size = new System.Drawing.Size(110, 17);
-            this.chkTopUnwrap.TabIndex = 14;
-            this.chkTopUnwrap.Text = "Unwrap STL Files";
-            this.chkTopUnwrap.UseVisualStyleBackColor = true;
-            this.chkTopUnwrap.CheckedChanged += new System.EventHandler(this.ChkTopUnwrap_CheckedChanged);
-            // 
-            // lblTopInputFiles
-            // 
-            this.lblTopInputFiles.AutoSize = true;
-            this.lblTopInputFiles.Location = new System.Drawing.Point(8, 19);
-            this.lblTopInputFiles.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblTopInputFiles.Name = "lblTopInputFiles";
-            this.lblTopInputFiles.Size = new System.Drawing.Size(89, 13);
-            this.lblTopInputFiles.TabIndex = 11;
-            this.lblTopInputFiles.Text = "List of Input Files:";
+            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDescription.AutoSize = true;
+            this.lblDescription.Location = new System.Drawing.Point(11, 110);
+            this.lblDescription.Margin = new System.Windows.Forms.Padding(0);
+            this.lblDescription.Name = "lblDescription";
+            this.lblDescription.Size = new System.Drawing.Size(450, 39);
+            this.lblDescription.TabIndex = 14;
+            this.lblDescription.Text = "Welcome to the Diabase toolpath generation wizard!\r\n\r\nPlease follow these instruc" +
+    "tions to generate a new toolpath for a working piece of your choice.";
             // 
             // awpBottomSide
             // 
@@ -528,7 +514,7 @@
             this.gbBottomFiles.Controls.Add(this.lblBottomFileSubstractive);
             this.gbBottomFiles.Controls.Add(this.txtBottomFileAdditive);
             this.gbBottomFiles.Controls.Add(this.lblBottomFileAdditive);
-            this.gbBottomFiles.Location = new System.Drawing.Point(13, 258);
+            this.gbBottomFiles.Location = new System.Drawing.Point(13, 107);
             this.gbBottomFiles.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.gbBottomFiles.Name = "gbBottomFiles";
             this.gbBottomFiles.Padding = new System.Windows.Forms.Padding(2);
@@ -606,7 +592,7 @@
             this.gbBottomSlicing.Controls.Add(this.chkBottomUseOwnSettings);
             this.gbBottomSlicing.Controls.Add(this.chkBottomUnwrap);
             this.gbBottomSlicing.Controls.Add(this.lblBottomFiles);
-            this.gbBottomSlicing.Location = new System.Drawing.Point(13, 106);
+            this.gbBottomSlicing.Location = new System.Drawing.Point(13, 190);
             this.gbBottomSlicing.Margin = new System.Windows.Forms.Padding(2, 2, 4, 2);
             this.gbBottomSlicing.Name = "gbBottomSlicing";
             this.gbBottomSlicing.Padding = new System.Windows.Forms.Padding(2);
@@ -733,175 +719,239 @@
             this.lblBottomFiles.TabIndex = 11;
             this.lblBottomFiles.Text = "List of Input Files:";
             // 
-            // awpWelcome
+            // awpTopSide
             // 
-            this.awpWelcome.Controls.Add(this.lblVersion);
-            this.awpWelcome.Controls.Add(this.gbType);
-            this.awpWelcome.Controls.Add(this.gbMachine);
-            this.awpWelcome.Controls.Add(this.gbGeometry);
-            this.awpWelcome.Controls.Add(this.lblDescription);
-            this.awpWelcome.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.awpWelcome.Header = false;
-            this.awpWelcome.HeaderBackgroundColor = System.Drawing.Color.White;
-            this.awpWelcome.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
-            this.awpWelcome.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpWelcome.HeaderImage")));
-            this.awpWelcome.HeaderImageVisible = true;
-            this.awpWelcome.HeaderTitle = "Welcome to Advanced Wizard";
-            this.awpWelcome.Location = new System.Drawing.Point(0, 0);
-            this.awpWelcome.Margin = new System.Windows.Forms.Padding(2);
-            this.awpWelcome.Name = "awpWelcome";
-            this.awpWelcome.PreviousPage = 0;
-            this.awpWelcome.Size = new System.Drawing.Size(708, 427);
-            this.awpWelcome.SubTitle = "Your page description goes here";
-            this.awpWelcome.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
-            this.awpWelcome.TabIndex = 1;
-            this.awpWelcome.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpWelcome_PageShow);
+            this.awpTopSide.Controls.Add(this.gbTopFiles);
+            this.awpTopSide.Controls.Add(this.gbTopSlicing);
+            this.awpTopSide.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.awpTopSide.Header = true;
+            this.awpTopSide.HeaderBackgroundColor = System.Drawing.Color.White;
+            this.awpTopSide.HeaderFont = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.awpTopSide.HeaderImage = ((System.Drawing.Image)(resources.GetObject("awpTopSide.HeaderImage")));
+            this.awpTopSide.HeaderImageVisible = true;
+            this.awpTopSide.HeaderTitle = "Welcome to Advanced Wizard";
+            this.awpTopSide.Location = new System.Drawing.Point(0, 0);
+            this.awpTopSide.Margin = new System.Windows.Forms.Padding(2);
+            this.awpTopSide.Name = "awpTopSide";
+            this.awpTopSide.PreviousPage = 0;
+            this.awpTopSide.Size = new System.Drawing.Size(708, 427);
+            this.awpTopSide.SubTitle = "Your page description goes here";
+            this.awpTopSide.SubTitleFont = new System.Drawing.Font("Tahoma", 8F);
+            this.awpTopSide.TabIndex = 3;
+            this.awpTopSide.PageShow += new System.EventHandler<AdvancedWizardControl.EventArguments.WizardPageEventArgs>(this.AwpTopSide_PageShow);
             // 
-            // lblVersion
+            // gbTopFiles
             // 
-            this.lblVersion.Location = new System.Drawing.Point(597, 108);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(100, 13);
-            this.lblVersion.TabIndex = 30;
-            this.lblVersion.Text = "vDEV";
-            this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.gbTopFiles.Controls.Add(this.btnTopBrowseSubstractive);
+            this.gbTopFiles.Controls.Add(this.btnTopBrowseAdditive);
+            this.gbTopFiles.Controls.Add(this.txtTopFileSubstractive);
+            this.gbTopFiles.Controls.Add(this.lblTopFileSubstractive);
+            this.gbTopFiles.Controls.Add(this.txtTopFileAdditive);
+            this.gbTopFiles.Controls.Add(this.lblTopFileAdditive);
+            this.gbTopFiles.Location = new System.Drawing.Point(13, 107);
+            this.gbTopFiles.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.gbTopFiles.Name = "gbTopFiles";
+            this.gbTopFiles.Padding = new System.Windows.Forms.Padding(2);
+            this.gbTopFiles.Size = new System.Drawing.Size(684, 67);
+            this.gbTopFiles.TabIndex = 15;
+            this.gbTopFiles.TabStop = false;
+            this.gbTopFiles.Text = "Manufacturing Files for the Top Side";
             // 
-            // gbType
+            // btnTopBrowseSubstractive
             // 
-            this.gbType.Controls.Add(this.rbAdditiveSubstractive);
-            this.gbType.Controls.Add(this.rbAdditive);
-            this.gbType.Location = new System.Drawing.Point(465, 178);
-            this.gbType.Margin = new System.Windows.Forms.Padding(7, 2, 7, 2);
-            this.gbType.Name = "gbType";
-            this.gbType.Padding = new System.Windows.Forms.Padding(2);
-            this.gbType.Size = new System.Drawing.Size(232, 123);
-            this.gbType.TabIndex = 29;
-            this.gbType.TabStop = false;
-            this.gbType.Text = "Manufacturing Type";
+            this.btnTopBrowseSubstractive.Location = new System.Drawing.Point(620, 37);
+            this.btnTopBrowseSubstractive.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTopBrowseSubstractive.Name = "btnTopBrowseSubstractive";
+            this.btnTopBrowseSubstractive.Size = new System.Drawing.Size(32, 22);
+            this.btnTopBrowseSubstractive.TabIndex = 16;
+            this.btnTopBrowseSubstractive.Text = "...";
+            this.btnTopBrowseSubstractive.UseVisualStyleBackColor = true;
+            this.btnTopBrowseSubstractive.Click += new System.EventHandler(this.BtnTopBrowseSubstractive_Click);
             // 
-            // rbAdditiveSubstractive
+            // btnTopBrowseAdditive
             // 
-            this.rbAdditiveSubstractive.AutoSize = true;
-            this.rbAdditiveSubstractive.Location = new System.Drawing.Point(17, 67);
-            this.rbAdditiveSubstractive.Margin = new System.Windows.Forms.Padding(2);
-            this.rbAdditiveSubstractive.Name = "rbAdditiveSubstractive";
-            this.rbAdditiveSubstractive.Size = new System.Drawing.Size(129, 30);
-            this.rbAdditiveSubstractive.TabIndex = 9;
-            this.rbAdditiveSubstractive.Text = "Additive + Subtractive\r\nManufacturing";
-            this.rbAdditiveSubstractive.UseVisualStyleBackColor = true;
+            this.btnTopBrowseAdditive.Location = new System.Drawing.Point(274, 37);
+            this.btnTopBrowseAdditive.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTopBrowseAdditive.Name = "btnTopBrowseAdditive";
+            this.btnTopBrowseAdditive.Size = new System.Drawing.Size(32, 22);
+            this.btnTopBrowseAdditive.TabIndex = 15;
+            this.btnTopBrowseAdditive.Text = "...";
+            this.btnTopBrowseAdditive.UseVisualStyleBackColor = true;
+            this.btnTopBrowseAdditive.Click += new System.EventHandler(this.BtnTopBrowseAdditive_Click);
             // 
-            // rbAdditive
+            // txtTopFileSubstractive
             // 
-            this.rbAdditive.AutoSize = true;
-            this.rbAdditive.Checked = true;
-            this.rbAdditive.Location = new System.Drawing.Point(17, 33);
-            this.rbAdditive.Margin = new System.Windows.Forms.Padding(2);
-            this.rbAdditive.Name = "rbAdditive";
-            this.rbAdditive.Size = new System.Drawing.Size(160, 17);
-            this.rbAdditive.TabIndex = 8;
-            this.rbAdditive.TabStop = true;
-            this.rbAdditive.Text = "Standard Print (additive only)";
-            this.rbAdditive.UseVisualStyleBackColor = true;
+            this.txtTopFileSubstractive.Location = new System.Drawing.Point(356, 38);
+            this.txtTopFileSubstractive.Margin = new System.Windows.Forms.Padding(2);
+            this.txtTopFileSubstractive.Name = "txtTopFileSubstractive";
+            this.txtTopFileSubstractive.Size = new System.Drawing.Size(260, 20);
+            this.txtTopFileSubstractive.TabIndex = 14;
+            this.txtTopFileSubstractive.TextChanged += new System.EventHandler(this.TxtTopGCodeFiles_TextChanged);
             // 
-            // gbMachine
+            // lblTopFileSubstractive
             // 
-            this.gbMachine.Controls.Add(this.lstMachine);
-            this.gbMachine.Controls.Add(this.chkConfigureManually);
-            this.gbMachine.Location = new System.Drawing.Point(11, 178);
-            this.gbMachine.Margin = new System.Windows.Forms.Padding(2);
-            this.gbMachine.Name = "gbMachine";
-            this.gbMachine.Padding = new System.Windows.Forms.Padding(7, 5, 7, 7);
-            this.gbMachine.Size = new System.Drawing.Size(286, 123);
-            this.gbMachine.TabIndex = 26;
-            this.gbMachine.TabStop = false;
-            this.gbMachine.Text = "Machine";
+            this.lblTopFileSubstractive.AutoSize = true;
+            this.lblTopFileSubstractive.Location = new System.Drawing.Point(354, 19);
+            this.lblTopFileSubstractive.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTopFileSubstractive.Name = "lblTopFileSubstractive";
+            this.lblTopFileSubstractive.Size = new System.Drawing.Size(192, 13);
+            this.lblTopFileSubstractive.TabIndex = 13;
+            this.lblTopFileSubstractive.Text = "G-Code File for Subtractive Processing:";
             // 
-            // lstMachine
+            // txtTopFileAdditive
             // 
-            this.lstMachine.Enabled = false;
-            this.lstMachine.FormattingEnabled = true;
-            this.lstMachine.Items.AddRange(new object[] {
-            "Searching..."});
-            this.lstMachine.Location = new System.Drawing.Point(9, 23);
-            this.lstMachine.Margin = new System.Windows.Forms.Padding(2);
-            this.lstMachine.Name = "lstMachine";
-            this.lstMachine.Size = new System.Drawing.Size(201, 69);
-            this.lstMachine.TabIndex = 25;
-            this.lstMachine.SelectedIndexChanged += new System.EventHandler(this.LstMachine_SelectedIndexChanged);
+            this.txtTopFileAdditive.Location = new System.Drawing.Point(10, 38);
+            this.txtTopFileAdditive.Margin = new System.Windows.Forms.Padding(2);
+            this.txtTopFileAdditive.Name = "txtTopFileAdditive";
+            this.txtTopFileAdditive.Size = new System.Drawing.Size(260, 20);
+            this.txtTopFileAdditive.TabIndex = 12;
+            this.txtTopFileAdditive.TextChanged += new System.EventHandler(this.TxtTopGCodeFiles_TextChanged);
             // 
-            // chkConfigureManually
+            // lblTopFileAdditive
             // 
-            this.chkConfigureManually.AutoSize = true;
-            this.chkConfigureManually.Location = new System.Drawing.Point(9, 96);
-            this.chkConfigureManually.Margin = new System.Windows.Forms.Padding(2);
-            this.chkConfigureManually.Name = "chkConfigureManually";
-            this.chkConfigureManually.Size = new System.Drawing.Size(115, 17);
-            this.chkConfigureManually.TabIndex = 26;
-            this.chkConfigureManually.Text = "Configure manually";
-            this.chkConfigureManually.UseVisualStyleBackColor = true;
-            this.chkConfigureManually.CheckedChanged += new System.EventHandler(this.ChkConfigureManually_CheckedChanged);
+            this.lblTopFileAdditive.AutoSize = true;
+            this.lblTopFileAdditive.Location = new System.Drawing.Point(8, 19);
+            this.lblTopFileAdditive.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTopFileAdditive.Name = "lblTopFileAdditive";
+            this.lblTopFileAdditive.Size = new System.Drawing.Size(176, 13);
+            this.lblTopFileAdditive.TabIndex = 11;
+            this.lblTopFileAdditive.Text = "G-Code File for Additive Processing:";
             // 
-            // gbGeometry
+            // gbTopSlicing
             // 
-            this.gbGeometry.Controls.Add(this.rbRotary);
-            this.gbGeometry.Controls.Add(this.rbTwoSided);
-            this.gbGeometry.Controls.Add(this.rbOneSided);
-            this.gbGeometry.Location = new System.Drawing.Point(304, 178);
-            this.gbGeometry.Margin = new System.Windows.Forms.Padding(2);
-            this.gbGeometry.Name = "gbGeometry";
-            this.gbGeometry.Padding = new System.Windows.Forms.Padding(2);
-            this.gbGeometry.Size = new System.Drawing.Size(152, 123);
-            this.gbGeometry.TabIndex = 28;
-            this.gbGeometry.TabStop = false;
-            this.gbGeometry.Text = "Geometry";
+            this.gbTopSlicing.Controls.Add(this.chkTopGenerateSupport);
+            this.gbTopSlicing.Controls.Add(this.btnTopSlice);
+            this.gbTopSlicing.Controls.Add(this.tlpTopFileButtons);
+            this.gbTopSlicing.Controls.Add(this.lstTopInputFiles);
+            this.gbTopSlicing.Controls.Add(this.chkTopUseOwnSettings);
+            this.gbTopSlicing.Controls.Add(this.chkTopUnwrap);
+            this.gbTopSlicing.Controls.Add(this.lblTopInputFiles);
+            this.gbTopSlicing.Location = new System.Drawing.Point(13, 190);
+            this.gbTopSlicing.Margin = new System.Windows.Forms.Padding(2, 2, 4, 2);
+            this.gbTopSlicing.Name = "gbTopSlicing";
+            this.gbTopSlicing.Padding = new System.Windows.Forms.Padding(2);
+            this.gbTopSlicing.Size = new System.Drawing.Size(684, 142);
+            this.gbTopSlicing.TabIndex = 14;
+            this.gbTopSlicing.TabStop = false;
+            this.gbTopSlicing.Text = "Slicing for the Top Side (optional if you already have a G-Code File)";
             // 
-            // rbRotary
+            // chkTopGenerateSupport
             // 
-            this.rbRotary.AutoSize = true;
-            this.rbRotary.Location = new System.Drawing.Point(20, 84);
-            this.rbRotary.Margin = new System.Windows.Forms.Padding(2);
-            this.rbRotary.Name = "rbRotary";
-            this.rbRotary.Size = new System.Drawing.Size(56, 17);
-            this.rbRotary.TabIndex = 2;
-            this.rbRotary.Text = "Rotary";
-            this.rbRotary.UseVisualStyleBackColor = true;
+            this.chkTopGenerateSupport.AutoSize = true;
+            this.chkTopGenerateSupport.Enabled = false;
+            this.chkTopGenerateSupport.Location = new System.Drawing.Point(454, 77);
+            this.chkTopGenerateSupport.Margin = new System.Windows.Forms.Padding(2);
+            this.chkTopGenerateSupport.Name = "chkTopGenerateSupport";
+            this.chkTopGenerateSupport.Size = new System.Drawing.Size(148, 17);
+            this.chkTopGenerateSupport.TabIndex = 21;
+            this.chkTopGenerateSupport.Text = "Generate Special Support";
+            this.chkTopGenerateSupport.UseVisualStyleBackColor = true;
+            this.chkTopGenerateSupport.CheckedChanged += new System.EventHandler(this.ChkTopGenerateSupport_CheckedChanged);
             // 
-            // rbTwoSided
+            // btnTopSlice
             // 
-            this.rbTwoSided.AutoSize = true;
-            this.rbTwoSided.Location = new System.Drawing.Point(20, 56);
-            this.rbTwoSided.Margin = new System.Windows.Forms.Padding(2);
-            this.rbTwoSided.Name = "rbTwoSided";
-            this.rbTwoSided.Size = new System.Drawing.Size(76, 17);
-            this.rbTwoSided.TabIndex = 1;
-            this.rbTwoSided.Text = "Two-Sided";
-            this.rbTwoSided.UseVisualStyleBackColor = true;
+            this.btnTopSlice.Enabled = false;
+            this.btnTopSlice.Image = ((System.Drawing.Image)(resources.GetObject("btnTopSlice.Image")));
+            this.btnTopSlice.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnTopSlice.Location = new System.Drawing.Point(454, 102);
+            this.btnTopSlice.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTopSlice.Name = "btnTopSlice";
+            this.btnTopSlice.Size = new System.Drawing.Size(163, 32);
+            this.btnTopSlice.TabIndex = 20;
+            this.btnTopSlice.Text = "Process via Simplify3D®";
+            this.btnTopSlice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnTopSlice.UseVisualStyleBackColor = true;
+            this.btnTopSlice.Click += new System.EventHandler(this.BtnSlice_Click);
             // 
-            // rbOneSided
+            // tlpTopFileButtons
             // 
-            this.rbOneSided.AutoSize = true;
-            this.rbOneSided.Checked = true;
-            this.rbOneSided.Location = new System.Drawing.Point(20, 27);
-            this.rbOneSided.Margin = new System.Windows.Forms.Padding(2);
-            this.rbOneSided.Name = "rbOneSided";
-            this.rbOneSided.Size = new System.Drawing.Size(75, 17);
-            this.rbOneSided.TabIndex = 0;
-            this.rbOneSided.TabStop = true;
-            this.rbOneSided.Text = "One-Sided";
-            this.rbOneSided.UseVisualStyleBackColor = true;
+            this.tlpTopFileButtons.ColumnCount = 2;
+            this.tlpTopFileButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33F));
+            this.tlpTopFileButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.34F));
+            this.tlpTopFileButtons.Controls.Add(this.btnTopRemoveFiles, 0, 0);
+            this.tlpTopFileButtons.Controls.Add(this.btnTopAddFiles, 0, 0);
+            this.tlpTopFileButtons.Location = new System.Drawing.Point(10, 108);
+            this.tlpTopFileButtons.Margin = new System.Windows.Forms.Padding(2);
+            this.tlpTopFileButtons.Name = "tlpTopFileButtons";
+            this.tlpTopFileButtons.RowCount = 1;
+            this.tlpTopFileButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpTopFileButtons.Size = new System.Drawing.Size(365, 26);
+            this.tlpTopFileButtons.TabIndex = 19;
             // 
-            // lblDescription
+            // btnTopRemoveFiles
             // 
-            this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDescription.AutoSize = true;
-            this.lblDescription.Location = new System.Drawing.Point(11, 110);
-            this.lblDescription.Margin = new System.Windows.Forms.Padding(0);
-            this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(450, 39);
-            this.lblDescription.TabIndex = 14;
-            this.lblDescription.Text = "Welcome to the Diabase toolpath generation wizard!\r\n\r\nPlease follow these instruc" +
-    "tions to generate a new toolpath for a working piece of your choice.";
+            this.btnTopRemoveFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnTopRemoveFiles.Enabled = false;
+            this.btnTopRemoveFiles.Image = global::DiabasePrintingWizard.Properties.Resources.Remove_8x_16x;
+            this.btnTopRemoveFiles.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnTopRemoveFiles.Location = new System.Drawing.Point(184, 0);
+            this.btnTopRemoveFiles.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            this.btnTopRemoveFiles.Name = "btnTopRemoveFiles";
+            this.btnTopRemoveFiles.Size = new System.Drawing.Size(181, 26);
+            this.btnTopRemoveFiles.TabIndex = 19;
+            this.btnTopRemoveFiles.Text = "Remove File(s)";
+            this.btnTopRemoveFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnTopRemoveFiles.UseVisualStyleBackColor = true;
+            this.btnTopRemoveFiles.Click += new System.EventHandler(this.BtnTopRemoveFiles_Click);
+            // 
+            // btnTopAddFiles
+            // 
+            this.btnTopAddFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnTopAddFiles.Image = global::DiabasePrintingWizard.Properties.Resources.Add_thin_10x_16x;
+            this.btnTopAddFiles.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnTopAddFiles.Location = new System.Drawing.Point(0, 0);
+            this.btnTopAddFiles.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.btnTopAddFiles.Name = "btnTopAddFiles";
+            this.btnTopAddFiles.Size = new System.Drawing.Size(180, 26);
+            this.btnTopAddFiles.TabIndex = 18;
+            this.btnTopAddFiles.Text = "Add File(s)";
+            this.btnTopAddFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnTopAddFiles.UseVisualStyleBackColor = true;
+            this.btnTopAddFiles.Click += new System.EventHandler(this.BtnTopAddFiles_Click);
+            // 
+            // lstTopInputFiles
+            // 
+            this.lstTopInputFiles.FormattingEnabled = true;
+            this.lstTopInputFiles.Location = new System.Drawing.Point(10, 35);
+            this.lstTopInputFiles.Margin = new System.Windows.Forms.Padding(7, 2, 7, 2);
+            this.lstTopInputFiles.Name = "lstTopInputFiles";
+            this.lstTopInputFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.lstTopInputFiles.Size = new System.Drawing.Size(424, 69);
+            this.lstTopInputFiles.TabIndex = 16;
+            // 
+            // chkTopUseOwnSettings
+            // 
+            this.chkTopUseOwnSettings.AutoSize = true;
+            this.chkTopUseOwnSettings.Location = new System.Drawing.Point(454, 35);
+            this.chkTopUseOwnSettings.Margin = new System.Windows.Forms.Padding(2);
+            this.chkTopUseOwnSettings.Name = "chkTopUseOwnSettings";
+            this.chkTopUseOwnSettings.Size = new System.Drawing.Size(167, 17);
+            this.chkTopUseOwnSettings.TabIndex = 15;
+            this.chkTopUseOwnSettings.Text = "Use own Simplify3D® settings";
+            this.chkTopUseOwnSettings.UseVisualStyleBackColor = true;
+            this.chkTopUseOwnSettings.CheckedChanged += new System.EventHandler(this.ChkTopUseOwnSettings_CheckedChanged);
+            // 
+            // chkTopUnwrap
+            // 
+            this.chkTopUnwrap.AutoSize = true;
+            this.chkTopUnwrap.Location = new System.Drawing.Point(454, 57);
+            this.chkTopUnwrap.Margin = new System.Windows.Forms.Padding(2);
+            this.chkTopUnwrap.Name = "chkTopUnwrap";
+            this.chkTopUnwrap.Size = new System.Drawing.Size(110, 17);
+            this.chkTopUnwrap.TabIndex = 14;
+            this.chkTopUnwrap.Text = "Unwrap STL Files";
+            this.chkTopUnwrap.UseVisualStyleBackColor = true;
+            this.chkTopUnwrap.CheckedChanged += new System.EventHandler(this.ChkTopUnwrap_CheckedChanged);
+            // 
+            // lblTopInputFiles
+            // 
+            this.lblTopInputFiles.AutoSize = true;
+            this.lblTopInputFiles.Location = new System.Drawing.Point(8, 19);
+            this.lblTopInputFiles.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTopInputFiles.Name = "lblTopInputFiles";
+            this.lblTopInputFiles.Size = new System.Drawing.Size(89, 13);
+            this.lblTopInputFiles.TabIndex = 11;
+            this.lblTopInputFiles.Text = "List of Input Files:";
             // 
             // awpActions
             // 
@@ -935,6 +985,15 @@
             this.gbIDRotaryPrinting.TabStop = false;
             this.gbIDRotaryPrinting.Text = "Inner Diameter of Model (Rotary printing only)";
             // 
+            // lblUnitID
+            // 
+            this.lblUnitID.AutoSize = true;
+            this.lblUnitID.Location = new System.Drawing.Point(136, 19);
+            this.lblUnitID.Name = "lblUnitID";
+            this.lblUnitID.Size = new System.Drawing.Size(23, 13);
+            this.lblUnitID.TabIndex = 2;
+            this.lblUnitID.Text = "mm";
+            // 
             // nudModelID
             // 
             this.nudModelID.DecimalPlaces = 3;
@@ -964,6 +1023,16 @@
             this.gbAdditionalOptions.TabIndex = 22;
             this.gbAdditionalOptions.TabStop = false;
             this.gbAdditionalOptions.Text = "Additional Options";
+            // 
+            // cboSkipHoming
+            // 
+            this.cboSkipHoming.AutoSize = true;
+            this.cboSkipHoming.Location = new System.Drawing.Point(8, 41);
+            this.cboSkipHoming.Name = "cboSkipHoming";
+            this.cboSkipHoming.Size = new System.Drawing.Size(86, 17);
+            this.cboSkipHoming.TabIndex = 1;
+            this.cboSkipHoming.Text = "Skip Homing";
+            this.cboSkipHoming.UseVisualStyleBackColor = true;
             // 
             // cbIslandCombining
             // 
@@ -2167,25 +2236,6 @@
             this.sfdFactory.Filter = "Simplify3D Factory Files (*.factory)|*.factory|All Files (*.*)|*.*";
             this.sfdFactory.RestoreDirectory = true;
             // 
-            // cboSkipHoming
-            // 
-            this.cboSkipHoming.AutoSize = true;
-            this.cboSkipHoming.Location = new System.Drawing.Point(8, 41);
-            this.cboSkipHoming.Name = "cboSkipHoming";
-            this.cboSkipHoming.Size = new System.Drawing.Size(86, 17);
-            this.cboSkipHoming.TabIndex = 1;
-            this.cboSkipHoming.Text = "Skip Homing";
-            this.cboSkipHoming.UseVisualStyleBackColor = true;
-            // 
-            // lblUnitID
-            // 
-            this.lblUnitID.AutoSize = true;
-            this.lblUnitID.Location = new System.Drawing.Point(136, 19);
-            this.lblUnitID.Name = "lblUnitID";
-            this.lblUnitID.Size = new System.Drawing.Size(23, 13);
-            this.lblUnitID.TabIndex = 2;
-            this.lblUnitID.Text = "mm";
-            // 
             // FrmMain
             // 
             this.AcceptButton = this.btnNext;
@@ -2207,18 +2257,6 @@
             this.Deactivate += new System.EventHandler(this.FrmMain_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             this.awContent.ResumeLayout(false);
-            this.awpTopSide.ResumeLayout(false);
-            this.gbTopFiles.ResumeLayout(false);
-            this.gbTopFiles.PerformLayout();
-            this.gbTopSlicing.ResumeLayout(false);
-            this.gbTopSlicing.PerformLayout();
-            this.tlpTopFileButtons.ResumeLayout(false);
-            this.awpBottomSide.ResumeLayout(false);
-            this.gbBottomFiles.ResumeLayout(false);
-            this.gbBottomFiles.PerformLayout();
-            this.gbBottomSlicing.ResumeLayout(false);
-            this.gbBottomSlicing.PerformLayout();
-            this.tlpBottomFileButtons.ResumeLayout(false);
             this.awpWelcome.ResumeLayout(false);
             this.awpWelcome.PerformLayout();
             this.gbType.ResumeLayout(false);
@@ -2227,6 +2265,18 @@
             this.gbMachine.PerformLayout();
             this.gbGeometry.ResumeLayout(false);
             this.gbGeometry.PerformLayout();
+            this.awpBottomSide.ResumeLayout(false);
+            this.gbBottomFiles.ResumeLayout(false);
+            this.gbBottomFiles.PerformLayout();
+            this.gbBottomSlicing.ResumeLayout(false);
+            this.gbBottomSlicing.PerformLayout();
+            this.tlpBottomFileButtons.ResumeLayout(false);
+            this.awpTopSide.ResumeLayout(false);
+            this.gbTopFiles.ResumeLayout(false);
+            this.gbTopFiles.PerformLayout();
+            this.gbTopSlicing.ResumeLayout(false);
+            this.gbTopSlicing.PerformLayout();
+            this.tlpTopFileButtons.ResumeLayout(false);
             this.awpActions.ResumeLayout(false);
             this.gbIDRotaryPrinting.ResumeLayout(false);
             this.gbIDRotaryPrinting.PerformLayout();
@@ -2329,7 +2379,6 @@
         private System.Windows.Forms.OpenFileDialog ofdInputs;
         private System.Windows.Forms.GroupBox gbMachine;
         private System.Windows.Forms.ListBox lstMachine;
-        private System.Windows.Forms.CheckBox chkConfigureManually;
         private System.Windows.Forms.GroupBox gbGeometry;
         private System.Windows.Forms.RadioButton rbRotary;
         private System.Windows.Forms.RadioButton rbTwoSided;
@@ -2427,6 +2476,11 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label lblUnitID;
         private System.Windows.Forms.CheckBox cboSkipHoming;
+        private System.Windows.Forms.TextBox txtNetworkAddress;
+        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.RadioButton rbSearchNetwork;
+        private System.Windows.Forms.RadioButton rbNetworkAddress;
+        private System.Windows.Forms.RadioButton rbConfigureManually;
     }
 }
 
