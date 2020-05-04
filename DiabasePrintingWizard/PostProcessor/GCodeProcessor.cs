@@ -516,7 +516,32 @@ namespace DiabasePrintingWizard
             FixToolChangeRetractionAndPriming(ref iteration);
 
             InsertPreheatingSequences(ref iteration);
+
+			if (settings.SkipHoming)
+			{
+				LoadProbeBeforeFirstZMove();
+			}
         }
+
+		private void LoadProbeBeforeFirstZMove()
+		{
+			for (var layer in layers)
+			{
+				for (var segment in layer.Segments)
+				{
+                    for (int lineIndex = 0; lineIndex < segment.Lines.Count; lineIndex++)
+                    {
+                        GCodeLine line = segment.Lines[lineIndex];
+						int? gCode = line.GetIValue('G');
+						if ((gCode == 0 || gCode == 1) && line.GetFValue('Z').HasValue)
+						{
+							segment.Lines.Insert(lineIndex, new GCodeLine("T10"));
+							return;
+						}
+					}
+				}
+			}
+		}
 
         private void FixToolChangeRetractionAndPriming(ref int iteration)
         {
