@@ -1,4 +1,6 @@
-﻿namespace DiabasePrintingWizard
+﻿using System;
+
+namespace DiabasePrintingWizard
 {
     enum ToolType : int
     {
@@ -13,6 +15,15 @@
         Once,
         Interval,
         Always
+    }
+
+    enum Workplace
+    {
+        G54,
+        G55,
+        G56,
+        G57,
+        G58
     }
 
     class ToolSettings
@@ -60,5 +71,7 @@
         public bool IslandCombining { get; set; } = true;
 
         public bool SkipHoming { get; set; } = false;
+
+        public Workplace Workplace { get; set; } = Workplace.G54;
     }
 }

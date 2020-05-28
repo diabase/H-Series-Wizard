@@ -118,6 +118,7 @@ namespace DiabasePrintingWizard
             }
             sw.WriteLine($";    Island combining: {currentSettings.IslandCombining}");
             sw.WriteLine($";    Skip homing: {currentSettings.SkipHoming}");
+            sw.WriteLine($";    Workplace: {currentSettings.Workplace.ToString()}");
             sw.WriteLine(";");
 
             // Tool settings

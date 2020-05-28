@@ -521,6 +521,23 @@ namespace DiabasePrintingWizard
 			{
 				LoadProbeBeforeFirstZMove();
 			}
+
+            InsertWorkplace();
+        }
+
+        private void InsertWorkplace()
+        {
+            var lines = layers[0].Segments[0].Lines;
+            for (var i = 0; i < lines.Count; i++)
+            {
+                // Search for the first non-comment line
+                if (!lines[i].Content.StartsWith(";", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // Insert Workplace command and stop
+                    lines.Insert(i, new GCodeLine(settings.Workplace.ToString()));
+                    return;
+                }
+            }
         }
 
 		private void LoadProbeBeforeFirstZMove()

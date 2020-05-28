@@ -67,6 +67,8 @@ namespace DiabasePrintingWizard
 
             InitCleaningComboBoxes();
 
+            InitWorkplaceComboBox();
+
             // Load settings
             if (Properties.Settings.Default.Storage != "")
             {
@@ -92,6 +94,12 @@ namespace DiabasePrintingWizard
             cboCleaning3.SelectedIndex = 0;
             cboCleaning4.SelectedIndex = 0;
             cboCleaning5.SelectedIndex = 0;
+        }
+
+        private void InitWorkplaceComboBox()
+        {
+            cboWorkplace.Items.AddRange(Enum.GetNames(typeof(Workplace)));
+            cboWorkplace.SelectedIndex = 0;
         }
 
         private void FrmMain_Deactivate(object sender, EventArgs e)
@@ -193,6 +201,7 @@ namespace DiabasePrintingWizard
                 RotaryPrinting = rotaryPrintingSettings,
                 IslandCombining = cbIslandCombining.Checked,
                 SkipHoming = cboSkipHoming.Checked,
+                Workplace = (Workplace)Enum.Parse(typeof(Workplace), cboWorkplace.SelectedItem.ToString()),
             };
 
             set
@@ -228,6 +237,7 @@ namespace DiabasePrintingWizard
                 nudXChanges5.Value = value.Tools[4].Interval;
                 chkTopUseOwnSettings.Checked = value.UseOwnSettings;
                 chkTopGenerateSupport.Checked = value.GenerateSpecialSupport;
+                cboWorkplace.SelectedItem = value.Workplace.ToString();
             }
         }
         #endregion
