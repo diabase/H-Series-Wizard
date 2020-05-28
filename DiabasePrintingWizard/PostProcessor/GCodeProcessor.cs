@@ -525,9 +525,9 @@ namespace DiabasePrintingWizard
 
 		private void LoadProbeBeforeFirstZMove()
 		{
-			for (var layer in layers)
+			foreach (var layer in layers)
 			{
-				for (var segment in layer.Segments)
+				foreach (var segment in layer.Segments)
 				{
                     for (int lineIndex = 0; lineIndex < segment.Lines.Count; lineIndex++)
                     {
